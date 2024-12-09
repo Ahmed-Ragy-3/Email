@@ -23,7 +23,7 @@ function Navbar() {
     <div className="w-full h-[10%] bg-[#003C43] p-9 flex items-center justify-between">
         <div className="flex items-center w-1/3 h-[80%] ml-[11%]">
           {/* Search bar*/}
-          <div className="flex items-center bg-[#135D66] p-3 rounded-full w-full">
+          <div className="flex items-center bg-[#135D66] p-3 rounded-full w-full shadow-2xl">
             <FontAwesomeIcon
               icon={faMagnifyingGlass}
               className="text-white text-[18px] mr-3 ml-2"

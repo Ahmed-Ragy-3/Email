@@ -19,10 +19,10 @@ className="
 text-2xl 
 px-4 
 py-2 
-bg-[#135D66] 
+bg-[#135D66]
 rounded-2xl 
 text-white 
-hover:bg-[#1F8A99] 
+hover:bg-[#0A4D5A] 
 active:bg-[#0E4B50] 
 transform 
 hover:scale-105 
@@ -37,7 +37,7 @@ ease-in-out shadow-2xl shadow-black
   </div>
     <div>
       <button
-        className="text-white p-9 h-16 w-full font-poppins font-medium flex items-center justify-start space-x-3 hover:bg-[#0A4A53]  active:bg-[#0E4B50]  transform 
+        className="text-white p-9 h-16 w-full font-poppins font-medium flex items-center justify-start space-x-3 hover:bg-[#0A4D5A]  active:bg-[#0E4B50]  transform 
 hover:scale-105 
 active:scale-95 
 transition 
@@ -52,7 +52,7 @@ ease-in-out "
       </button>
 
       <button
-        className="text-white p-9 h-16 w-full font-poppins font-medium flex items-center justify-start space-x-3 hover:bg-[#1F8A99]  active:bg-[#0E4B50]  transform 
+        className="text-white p-9 h-16 w-full font-poppins font-medium flex items-center justify-start space-x-3 hover:bg-[#0A4D5A]  active:bg-[#0E4B50]  transform 
 hover:scale-105 
 active:scale-95 
 transition 
@@ -68,7 +68,7 @@ ease-in-out"
       </button>
 
       <button
-        className="text-white p-9 h-16 w-full font-poppins font-medium flex items-center justify-start space-x-3 hover:bg-[#1F8A99]  active:bg-[#0E4B50]  transform 
+        className="text-white p-9 h-16 w-full font-poppins font-medium flex items-center justify-start space-x-3 hover:bg-[#0A4D5A]  active:bg-[#0E4B50]  transform 
 hover:scale-105 
 active:scale-95 
 transition 
@@ -84,7 +84,7 @@ ease-in-out"
       </button>
 
       <button
-        className="text-white p-9 h-16 w-full font-poppins font-medium flex items-center justify-start space-x-3 hover:bg-[#1F8A99]  active:bg-[#0E4B50]  transform 
+        className="text-white p-9 h-16 w-full font-poppins font-medium flex items-center justify-start space-x-3 hover:bg-[#0A4D5A]  active:bg-[#0E4B50]  transform 
 hover:scale-105 
 active:scale-95 
 transition 
@@ -100,7 +100,7 @@ ease-in-out"
       </button>
 
       <button
-        className="text-white p-9 h-16 w-full font-poppins font-medium flex items-center justify-start space-x-3 hover:bg-[#1F8A99]  active:bg-[#0E4B50]  transform 
+        className="text-white p-9 h-16 w-full font-poppins font-medium flex items-center justify-start space-x-3 hover:bg-[#0A4D5A]  active:bg-[#0E4B50]  transform 
 hover:scale-105 
 active:scale-95 
 transition 
@@ -116,7 +116,7 @@ ease-in-out"
       </button>
 
       <button
-        className="text-white p-9 h-16 w-full font-poppins font-medium flex items-center justify-start space-x-3 hover:bg-[#1F8A99]  active:bg-[#0E4B50]  transform 
+        className="text-white p-9 h-16 w-full font-poppins font-medium flex items-center justify-start space-x-3 hover:bg-[#0A4D5A]  active:bg-[#0E4B50]  transform 
 hover:scale-105 
 active:scale-95 
 transition 
