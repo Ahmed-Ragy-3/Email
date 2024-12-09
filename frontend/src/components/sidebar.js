@@ -29,7 +29,7 @@ hover:scale-105
 active:scale-95 
 transition 
 duration-200 
-ease-in-out
+ease-in-out shadow-2xl shadow-black
 "
 >
       <FontAwesomeIcon icon={faPenToSquare} /> Compose
@@ -42,7 +42,7 @@ hover:scale-105
 active:scale-95 
 transition 
 duration-200 
-ease-in-out"
+ease-in-out "
       >
         <FontAwesomeIcon
           icon={faInbox}
