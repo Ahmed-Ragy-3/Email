@@ -22,6 +22,4 @@ public interface UserQueries {
    void addContact(User user1, User user2, String contactName);
    void renameContact(Id contactId);
    void removeContact(User user1, User user2);
-
-   
 }

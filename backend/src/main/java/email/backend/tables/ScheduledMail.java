@@ -1,5 +1,6 @@
 package email.backend.tables;
 
+import email.backend.services.Importance;
 import jakarta.persistence.Column;
 import java.util.List;
 import email.backend.services.Date;
@@ -14,9 +15,6 @@ import lombok.Setter;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Transient;
 
-enum Importance {
-   URGENT, IMPORTANT, NORMAL
-}
 
 @Setter
 @Getter

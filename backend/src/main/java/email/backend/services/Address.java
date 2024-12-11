@@ -7,8 +7,8 @@ public class Address {
    
    private String emailAddress;
    
-   public Address(String emailAddress) {
-      this.emailAddress = emailAddress;
+   public Address() {
+
    }
    
    public String getEmailAddress() {
@@ -21,6 +21,9 @@ public class Address {
    
    // what to do ?
    public boolean validate() {
-      return true;
+      // anywords@mail.com
+      String[] atSplit = emailAddress.split("@");
+      return atSplit.length == 2 && atSplit[1].equals("@mail.com") && 
+             !atSplit[0].contains(".") && Character.isLetter(atSplit[0].charAt(0));
    }
 }

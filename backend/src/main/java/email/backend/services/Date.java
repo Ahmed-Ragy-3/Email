@@ -2,6 +2,12 @@ package email.backend.services;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+@Embeddable
+@AllArgsConstructor
+@Getter
 public class Date {
 
    private int year;
@@ -11,28 +17,13 @@ public class Date {
    private int hour;
    private int minute;
 
-   public Date(int year, int month, int day, int hour, int minute) {
-      this.year = year;
-      this.month = month;
-      this.day = day;
-      this.hour = hour;
-      this.minute = minute;
-   }
-
-   public int getYear() {
-      return year;
-   }
-   public int getMonth() {
-      return month;
-   }
-   public int getDay() {
-      return day;
-   }
-   public int getHour() {
-      return hour;
-   }
-   public int getMinute() {
-      return minute;
+   
+   public Date(LocalDateTime dateTime) {
+      this.year = dateTime.getYear();
+      this.month = dateTime.getMonthValue();
+      this.day = dateTime.getDayOfMonth();
+      this.hour = dateTime.getHour();
+      this.minute = dateTime.getMinute();
    }
 
    public static Date getTodaysDate() {
@@ -51,9 +42,12 @@ public class Date {
       return "%s / %s / %s | %s: %s ".formatted(year, month, day, hour, minute);
    }
 
-   public boolean isBetween(Date d1, Date d2) {
+   public boolean isBetween(Date date1, Date date2) {
+      if(year < date1.year || year > date2.year)            return false;
+      else if(month < date1.month || month > date2.month)   return false;
+      else if(day < date1.day || day > date2.day)           return false;
+      
       return true;
    }
 
-   // public boolean 
 }

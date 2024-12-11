@@ -1,24 +1,31 @@
 package email.backend.controllers;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
+import email.backend.databaseAccess.MailRepository;
+import email.backend.services.MailService;
+import email.backend.services.MailboxService;
 import email.backend.tables.Mail;
-import email.backend.databaseAccess.MailDataAccess;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/mail")
 public class MailController {
- 
-   private final MailDataAccess mailDataAccess = new MailDataAccess(); 
 
+   @Autowired
+   private MailService mailService;
+   @Autowired
+   private MailboxService mailboxService;
+   
    @PutMapping("/create")
-   public void putMethodName(@RequestBody Mail mail) {
-      
-      // return ;
+   public void createMail(@RequestBody Mail mail) {
+      // mailService.;
    }
+
+   @DeleteMapping("/delete/{mailId}")
+   public void deleteMail(@PathVariable Long mailId) {
+      // mailService.deleteById(mailId);
+   }
+
 }
