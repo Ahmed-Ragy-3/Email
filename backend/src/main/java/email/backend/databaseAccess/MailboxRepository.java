@@ -18,16 +18,16 @@ public interface MailboxRepository extends JpaRepository<Mailbox, Long> {
    Mailbox findByUserAndName(User user, String mailboxName);
 
    // find all mails that contains a certain string
-   @Query("""
-      SELECT m
-      FROM Mail m
-      LEFT JOIN m.sender s
-      LEFT JOIN m.mailboxes mb
-      LEFT JOIN mb.user r
-      WHERE m.subject LIKE %:keyword%
-         OR m.content LIKE %:keyword%
-         OR s.emailAddress.emailAddress LIKE %:keyword%
-         OR r.emailAddress.emailAddress LIKE %:keyword%
-   """)
-   List<Mail> searchMailsByKeyword(@Param("keyword") String keyword);
+   // @Query("""
+   //    SELECT m
+   //    FROM Mail m
+   //    LEFT JOIN m.sender s
+   //    LEFT JOIN m.mailboxes mb
+   //    LEFT JOIN mb.user r
+   //    WHERE m.subject LIKE %:keyword%
+   //       OR m.content LIKE %:keyword%
+   //       OR s.emailAddress.emailAddress LIKE %:keyword%
+   //       OR r.emailAddress.emailAddress LIKE %:keyword%
+   // """)
+   // List<Mail> searchMailsByKeyword(@Param("keyword") String keyword);
 }

@@ -85,9 +85,9 @@ public class MailboxService {
       mailbox.setName(newName);
    }
    
-   public List<Mail> search(String regex) {
-      return mailboxRepository.searchMailsByKeyword(regex);
-   }
+   // public List<Mail> search(String regex) {
+   //    return mailboxRepository.searchMailsByKeyword(regex);
+   // }
 
 
    public List<Mail> filter(Long mailboxId, Importance importance, Boolean attachment, Date date1, Date date2) {

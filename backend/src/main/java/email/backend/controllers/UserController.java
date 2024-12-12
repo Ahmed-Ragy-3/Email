@@ -38,7 +38,7 @@ public class UserController {
       String token = authHeader.substring(7); // "Bearer " is 7 characters long
 
       // Decode the token and get the user ID
-      long userId = userService.extractUserId(token);
+      long userId = userService.extractUserId("iuofwe", token);
 
       // Fetch the user based on the user ID
       User user = userService.getUser(userId);

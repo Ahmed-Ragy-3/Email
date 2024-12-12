@@ -1,9 +1,11 @@
 package email.backend.tables;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-import email.backend.services.Address;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 import lombok.Getter;
@@ -18,8 +20,8 @@ public class User {
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    private long id;
 
-   @Embedded
-   private Address emailAddress;
+   @Column(nullable = false)
+   private String emailAddress;
 
    @Column(nullable = false)
    private String name;
@@ -32,5 +34,9 @@ public class User {
 
    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
    private Set<Contact> contacts = new HashSet<>();
+
+   @OneToMany(mappedBy = "sender")
+   @JsonIgnore
+   private List<Mail> sentMails;
 
 }

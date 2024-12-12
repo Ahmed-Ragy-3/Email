@@ -2,7 +2,7 @@ package email.backend.databaseAccess;
 
 import java.util.List;
 
-import email.backend.services.Address;
+// import email.backend.services.Address;
 import email.backend.tables.Mailbox;
 import email.backend.tables.User;
 import jakarta.persistence.Id;
@@ -12,8 +12,8 @@ public interface UserQueries {
    List<Mailbox> getMailBoxes(Id userId);
 
    User getUser(Id userId); 
-   User getUser(Address userAddress);
-   User getUser(Address userAddress, String password);
+   User getUser(String userAddress);
+   User getUser(String userAddress, String password);
    
    void createUser(User user);
    void removeUser(User user);
