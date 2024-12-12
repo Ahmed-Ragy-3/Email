@@ -1,5 +1,5 @@
-const starred = () => {
-    return <div>starred</div>;
+const Starred = () => {
+    return <div>Starred</div>;
   };
   
-  export default starred;
+  export default Starred;

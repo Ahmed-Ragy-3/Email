@@ -1,5 +1,5 @@
-const drafts = () => {
-    return <div>drafts</div>;
+const Drafts = () => {
+    return <div>Drafts</div>;
   };
   
-  export default drafts;
+  export default Drafts;

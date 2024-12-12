@@ -1,5 +1,5 @@
-const inbox = () => {
-    return <div>inbox</div>;
+const Inbox = () => {
+    return <div>Inbox</div>;
   };
   
-  export default inbox;
+  export default Inbox;

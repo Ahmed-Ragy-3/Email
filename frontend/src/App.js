@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Sidebar from "./components/Sidebar";
+import Sidebar from "./components/sidebar";
 import Navbar from "./components/Navbar";
 import Mainbox from "./components/Mainbox";
 

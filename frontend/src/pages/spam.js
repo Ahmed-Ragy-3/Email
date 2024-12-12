@@ -1,5 +1,5 @@
-const spam = () => {
-    return <div>spam</div>;
+const Spam = () => {
+    return <div>Spam</div>;
   };
   
-  export default spam;
+  export default Spam;

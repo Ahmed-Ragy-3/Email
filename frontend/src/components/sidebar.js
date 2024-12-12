@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useLocation } from "react-router-dom"; // Import Link and useLocation for dynamic routing
 import {
   faInbox,
@@ -12,7 +12,6 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 function Sidebar() {
-  const [activeButton, setActiveButton] = useState(""); // State to track the active button
   const location = useLocation(); // Get the current location
 
   // Button data to dynamically render buttons
@@ -24,14 +23,7 @@ function Sidebar() {
     { id: "drafts", label: "Drafts", icon: faFile, path: "/drafts" },
     { id: "sent", label: "Sent", icon: faPaperPlane, path: "/sent" },
   ];
-
-  const handleButtonClick = (id) => {
-    // Avoid toggling for buttons other than "Compose"
-    if (activeButton !== id) {
-      setActiveButton(id); // Set active button if a new button is clicked
-    }
-  };
-
+  
   // Construct the correct path for the "Compose" page based on the current location
   const composePath = `${location.pathname}/compose`;
 
@@ -49,9 +41,8 @@ function Sidebar() {
         {buttons.map((button) => (
           <Link to={button.path} key={button.id}>
             <button
-              onClick={() => handleButtonClick(button.id)}
               className={`p-9 h-16 w-full font-poppins font-medium flex items-center justify-start space-x-3 transform hover:scale-105 active:scale-105 transition duration-200 ease-in-out ${
-                activeButton === button.id
+                location.pathname === button.path
                   ? "bg-[#135D66] text-white scale-105"
                   : "bg-transparent shadow-none text-white"
               }`}
@@ -70,4 +61,3 @@ function Sidebar() {
 }
 
 export default Sidebar;
-

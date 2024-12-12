@@ -1,5 +1,5 @@
-const sent = () => {
+const Sent = () => {
     return <div>sent</div>;
   };
   
-  export default sent;
+  export default Sent;

@@ -1,5 +1,5 @@
-const trash = () => {
-    return <div>trash</div>;
+const Trash = () => {
+    return <div>Trash</div>;
   };
   
-  export default trash;
+  export default Trash;
