@@ -28,5 +28,5 @@ public interface MailRepository extends JpaRepository<Mail, Long> {
 
    // Custom query example: Find mails sent after a specific date
    // List<Mail> findByDate_DateAfter(Date date);
-   
+
 }

@@ -1,16 +1,18 @@
 package email.backend.services;
 
 import java.util.ArrayList;
+// import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import email.backend.tables.Mail;
 import email.backend.tables.Mailbox;
 import email.backend.tables.User;
-import jakarta.transaction.Transactional;
+// import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import email.backend.databaseAccess.MailboxRepository;
-import email.backend.databaseAccess.MailRepository;
-import email.backend.databaseAccess.UserRepository;
+// import email.backend.databaseAccess.MailRepository;
+// import email.backend.databaseAccess.UserRepository;
 import email.backend.services.filter.*;
 
 @Service
@@ -108,4 +110,31 @@ public class MailboxService {
 
       return null;
    }
+
+
+   public List<Mail> sortBy(List<Mail> mails, String sortKey) {
+      switch (sortKey) {
+         case "Date":
+            mails.sort(new Comparator<Mail>() {
+               @Override
+               public int compare(Mail m1, Mail m2) {
+                  return m1.getDate().compareTo(m2.getDate());
+               }
+            });
+            break;
+         
+         case "Importance":
+            mails.sort(new Comparator<Mail>() {
+               @Override
+               public int compare(Mail m1, Mail m2) {
+                  return m1.getImportance().compareTo(m2.getImportance());
+               }
+            });
+            break;
+         default:
+            break;
+      }
+      return mails;
+   }
+
 }

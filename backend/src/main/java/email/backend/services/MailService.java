@@ -24,6 +24,8 @@ public class MailService {
    // private final UserRepository userRepository;
    private final MailboxRepository mailboxRepository;
 
+   private final UserService userService;
+
    /**
     * Send an email from one user to multiple recipients.
     *
@@ -68,9 +70,18 @@ public class MailService {
       return true;
    }
 
+   public Mail getMailById(Long mailId){
+      return mailRepository.findById(mailId).get();
+   }
+
    public List<Mail> getEmailsInMailbox(User user, String mailboxName) {
       Mailbox mailbox = mailboxRepository.findByUserAndName(user, mailboxName);
       return new ArrayList<Mail>(mailbox.getMails());
+   }
+
+   // we can use this to get sent mailbox
+   public List<Mail> getMailsBySenderId(Long senderId) {
+      return mailRepository.findBySender(userService.getUser(senderId));
    }
 
    public void deleteEmail(Long mailId) {
@@ -80,10 +91,8 @@ public class MailService {
       mailRepository.deleteById(mailId);
    }
 
-   public void createMail() {
-      
+   public void createMail(Mail mail) {
+      mailRepository.save(mail);
    }
-
-   
 
 }

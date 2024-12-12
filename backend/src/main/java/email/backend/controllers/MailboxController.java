@@ -5,7 +5,12 @@ import org.springframework.web.bind.annotation.*;
 
 import email.backend.services.MailboxService;
 import email.backend.services.UserService;
-import email.backend.tables.Mailbox;
+// import email.backend.tables.Mailbox;
+
+
+import email.backend.tables.User;
+import email.backend.tables.Mail;
+import java.util.List;
 
 @RestController
 @CrossOrigin("*")
@@ -24,6 +29,11 @@ public class MailboxController {
    @DeleteMapping("/delete/{mailId}")
    public void deleteMailbox(@PathVariable Long mailboxId) {
       mailboxService.delete(mailboxId);
+   }
+
+   @PostMapping("/getMails/{mailboxName}")
+   public List<Mail> getMailbox(@RequestBody User user, @PathVariable String mailboxName) {
+      return mailboxService.getEmailsInMailbox(user, mailboxName);
    }
 
 }

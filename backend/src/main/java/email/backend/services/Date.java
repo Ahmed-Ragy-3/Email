@@ -1,7 +1,9 @@
 package email.backend.services;
 
 import java.time.LocalDateTime;
+// import java.util.Comparator;
 
+// import email.backend.tables.Mail;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +19,7 @@ public class Date {
    private int hour;
    private int minute;
 
-   
+
    public Date(LocalDateTime dateTime) {
       this.year = dateTime.getYear();
       this.month = dateTime.getMonthValue();
@@ -50,4 +52,22 @@ public class Date {
       return true;
    }
 
+   public int compareTo(Date that) {
+      if (this.year < that.year)          return -1;
+      else if(this.year > that.year)      return 1;
+      
+      else if(this.month < that.month)    return -1;
+      else if(this.month > that.month)    return 1;
+
+      else if(this.day < that.day)        return -1;
+      else if(this.day > that.day)        return 1;
+      
+      else if(this.hour < that.hour)      return -1;
+      else if(this.hour > that.hour)      return 1;
+      
+      else if(this.minute < that.minute)  return -1;
+      else if(this.minute > that.minute)  return 1;
+      
+      return 0;
+   }
 }
