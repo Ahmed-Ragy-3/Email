@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from "react";
 import { Routes, Route } from "react-router-dom";
-import Inbox from "../pages/inbox";
-import Sent from "../pages/sent";
-import Spam from "../pages/spam";
-import Starred from "../pages/starred";
-import Trash from "../pages/trash";
-import Drafts from "../pages/drafts";
+import Inbox from "../pages/Inbox";
+import Sent from "../pages/Sent";
+import Spam from "../pages/Spam";
+import Starred from "../pages/Starred";
+import Trash from "../pages/Trash";
+import Drafts from "../pages/Drafts";
 import FullEmailView from "./FullEmailView";
 
 function Mainbox({ emails , searchQuery}) {

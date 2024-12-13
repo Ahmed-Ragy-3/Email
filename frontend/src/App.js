@@ -2,16 +2,16 @@ import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import emails from './files/emails.json'
-import Sidebar from "./components/sidebar";
+import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
 import Mainbox from "./components/Mainbox";
-import Inbox from "./pages/inbox";
-import Trash from "./pages/trash";
-import Starred from "./pages/starred";
-import Spam from "./pages/spam";
-import Drafts from "./pages/drafts";
-import Sent from "./pages/sent";
-import Compose from "./pages/compose";
+import Inbox from "./pages/Inbox";
+import Trash from "./pages/Trash";
+import Starred from "./pages/Starred";
+import Spam from "./pages/Spam";
+import Drafts from "./pages/Drafts";
+import Sent from "./pages/Sent";
+import Compose from "./pages/Compose";
 import FullEmailView from "./components/FullEmailView";
 import NoPage from "./pages/NoPage";
 
@@ -49,7 +49,7 @@ export default function App() {
           <Route path="spam" element={<Spam />} />
           <Route path="drafts" element={<Drafts />} />
           <Route path="sent" element={<Sent />} />
-          <Route path="compose" element={<Compose />} />
+          {/* <Route path="compose" element={<Compose />} /> */}
           <Route path="/email/:id" element={<FullEmailView emails={emails} />} />
         </Route>
 

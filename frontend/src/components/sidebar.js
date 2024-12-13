@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom"; // Import Link and useLocation for dynamic routing
 import {
   faInbox,
@@ -10,10 +10,12 @@ import {
   faPaperPlane,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Compose from "../pages/Compose";
 
 function Sidebar() {
   const location = useLocation(); // Get the current location
-
+  const [showComposeModal, setShowComposeModal] = useState(false); // Control modal visibility
+  const [activeButton, setActiveButton] = useState("")
   // Button data to dynamically render buttons
   const buttons = [
     { id: "inbox", label: "Inbox", icon: faInbox, path: "/" },
@@ -25,17 +27,34 @@ function Sidebar() {
   ];
   
   // Construct the correct path for the "Compose" page based on the current location
-  const composePath = `${location.pathname.replace(/\/$/, '')}/compose`;
+  const composePath = `${location.pathname}/compose`;
+
+  const handleButtonClick = (id) => {
+    if (id !== "compose") {
+      setActiveButton(id); // Update active button for all buttons except Compose
+    }
+    if (id === "compose") {
+      setShowComposeModal(true); // Show modal when "Compose" is clicked
+    }
+  };
+
+  const closeModal = () => {
+    setShowComposeModal(false); // Close the modal
+    setActiveButton(""); // Reset active button when closing modal
+  };
+
 
   return (
     <div id="side-bar" className="h-full basis-[11%] bg-[#003C43] pb-[10%]">
       <div className="w-full flex justify-center mb-10">
         {/* Link to the dynamic "Compose" route */}
-        <Link to={composePath}>
-          <button className="text-2xl px-4 py-2 bg-[#135D66] rounded-2xl text-white hover:bg-[#0A4D5A] active:bg-[#0E4B50] transform hover:scale-105 active:scale-105 transition duration-200 ease-in-out shadow-2xl shadow-black">
-            <FontAwesomeIcon icon={faPenToSquare} /> Compose
-          </button>
-        </Link>
+        <button
+          onClick={() => handleButtonClick("compose")}
+          className="text-2xl px-4 py-2 bg-[#135D66] rounded-2xl text-white hover:bg-[#0A4D5A] active:bg-[#0E4B50] transform hover:scale-105 active:scale-105 transition duration-200 ease-in-out shadow-2xl shadow-black"
+        >
+          <FontAwesomeIcon icon={faPenToSquare} /> Compose
+        </button>
+
       </div>
       <div>
         {buttons.map((button) => (
@@ -56,6 +75,11 @@ function Sidebar() {
           </Link>
         ))}
       </div>
+      {/* Modal for composing an email, passed as a component */}
+      {showComposeModal && (
+        <Compose closeModal={closeModal} /> // Pass closeModal as a prop
+      )}
+
     </div>
   );
 }
