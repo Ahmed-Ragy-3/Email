@@ -9,7 +9,7 @@ import Inbox from "./pages/Inbox";
 import Trash from "./pages/Trash";
 import Starred from "./pages/Starred";
 import Spam from "./pages/Spam";
-import Drafts from "./pages/Drafts";
+import Drafts from "./pages/DraftsPage";
 import Sent from "./pages/Sent";
 import Compose from "./pages/Compose";
 import FullEmailView from "./components/FullEmailView";

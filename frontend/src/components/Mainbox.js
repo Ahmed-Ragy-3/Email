@@ -5,7 +5,7 @@ import Sent from "../pages/Sent";
 import Spam from "../pages/Spam";
 import Starred from "../pages/Starred";
 import Trash from "../pages/Trash";
-import Drafts from "../pages/Drafts";
+import Drafts from "../pages/DraftsPage";
 import FullEmailView from "./FullEmailView";
 
 function Mainbox({ emails , searchQuery}) {
