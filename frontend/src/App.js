@@ -1,32 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
+import emails from './files/emails.json'
 import Sidebar from "./components/sidebar";
 import Navbar from "./components/Navbar";
 import Mainbox from "./components/Mainbox";
-
-import inbox from "./pages/inbox";
-import trash from "./pages/trash";
-import starred from "./pages/starred";
-import spam from "./pages/spam";
-import drafts from "./pages/drafts";
-import sent from "./pages/sent";
-import compose from "./pages/compose";
+import Inbox from "./pages/inbox";
+import Trash from "./pages/trash";
+import Starred from "./pages/starred";
+import Spam from "./pages/spam";
+import Drafts from "./pages/drafts";
+import Sent from "./pages/sent";
+import Compose from "./pages/compose";
+import FullEmailView from "./components/FullEmailView";
+import NoPage from "./pages/NoPage";
 
 // Define NoPage component to handle undefined routes
-const NoPage = () => {
-  return <div>Page Not Found</div>;
-};
-
 // Layout component (to wrap common layout components like Sidebar and Navbar)
-const Layout = () => {
+const Layout = ({emails}) => {  
+  const [searchQuery, setSearchQuery] = useState("")
   return (
     <div className="h-screen overflow-clip bg-[#003C43]">
-      <Navbar />
+        <Navbar setSearchQuery={setSearchQuery}/>
       <div className="h-full flex">
         <Sidebar />
-        <Mainbox />
+        <Routes>
+          <Route path="/email/:id" element={<FullEmailView emails={emails}/>}>
+
+          </Route>
+          <Route path="*" element={<Mainbox emails={emails} searchQuery={searchQuery}/>}></Route>
+        </Routes>
       </div>
     </div>
   );
@@ -34,19 +37,20 @@ const Layout = () => {
 
 // The App component with routing setup
 export default function App() {
+
   return (
     <BrowserRouter>
       <Routes>
         {/* Main layout route */}
-        <Route path="/" element={<Layout />}>
-          {/* Define your page routes here */}
-          <Route path="inbox" element={<inbox />} />
-          <Route path="trash" element={<trash />} />
-          <Route path="starred" element={<starred />} />
-          <Route path="spam" element={<spam />} />
-          <Route path="drafts" element={<drafts />} />
-          <Route path="sent" element={<sent />} />
-          <Route path="compose" element={<compose />} />
+        <Route path="/" element={<Layout emails = {emails} />}>
+          <Route path="" element={<Inbox />} />
+          <Route path="trash" element={<Trash />} />
+          <Route path="starred" element={<Starred />} />
+          <Route path="spam" element={<Spam />} />
+          <Route path="drafts" element={<Drafts />} />
+          <Route path="sent" element={<Sent />} />
+          <Route path="compose" element={<Compose />} />
+          <Route path="/email/:id" element={<FullEmailView emails={emails} />} />
         </Route>
 
         {/* Catch-all route for undefined paths */}

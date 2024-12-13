@@ -16,7 +16,7 @@ function Sidebar() {
 
   // Button data to dynamically render buttons
   const buttons = [
-    { id: "inbox", label: "Inbox", icon: faInbox, path: "/inbox" },
+    { id: "inbox", label: "Inbox", icon: faInbox, path: "/" },
     { id: "starred", label: "Starred", icon: faStar, path: "/starred" },
     { id: "trash", label: "Trash", icon: faTrash, path: "/trash" },
     { id: "spam", label: "Spam", icon: faCircleExclamation, path: "/spam" },
@@ -25,7 +25,7 @@ function Sidebar() {
   ];
   
   // Construct the correct path for the "Compose" page based on the current location
-  const composePath = `${location.pathname}/compose`;
+  const composePath = `${location.pathname.replace(/\/$/, '')}/compose`;
 
   return (
     <div id="side-bar" className="h-full basis-[11%] bg-[#003C43] pb-[10%]">
@@ -43,7 +43,7 @@ function Sidebar() {
             <button
               className={`p-9 h-16 w-full font-poppins font-medium flex items-center justify-start space-x-3 transform hover:scale-105 active:scale-105 transition duration-200 ease-in-out ${
                 location.pathname === button.path
-                  ? "bg-[#135D66] text-white scale-105"
+                  ? "bg-[#135D66] text-white shadow-inner-tb scale-[105%]"
                   : "bg-transparent shadow-none text-white"
               }`}
             >
