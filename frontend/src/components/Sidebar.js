@@ -10,7 +10,7 @@ import {
   faPaperPlane,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Compose from "../pages/ComposePage";
+import Compose from "../pages/Compose";
 
 function Sidebar() {
   const location = useLocation(); // Get the current location

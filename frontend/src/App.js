@@ -2,16 +2,16 @@ import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import emails from './files/emails.json'
-import Sidebar from "./components/SidebarPage";
+import Sidebar from "./components/Sidebar";
 import Navbar from "./components/Navbar";
 import Mainbox from "./components/Mainbox";
-import Inbox from "./pages/InboxPage";
-import Trash from "./pages/TrashPage";
-import Starred from "./pages/StarredPage";
-import Spam from "./pages/SpamPage";
-import Drafts from "./pages/DraftsPage";
-import Sent from "./pages/SentPage";
-import Compose from "./pages/ComposePage";
+import Inbox from "./pages/Inbox";
+import Trash from "./pages/Trash";
+import Starred from "./pages/Starred";
+import Spam from "./pages/Spam";
+import Drafts from "./pages/Drafts";
+import Sent from "./pages/Sent";
+import Compose from "./pages/Compose";
 import FullEmailView from "./components/FullEmailView";
 import NoPage from "./pages/NoPage";
 
