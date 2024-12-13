@@ -14,7 +14,7 @@ function EmailList({ emails }) {
       {emails.map((email, index) => (
         <div
           key={index}
-          className='border-2 space-y-2 mb-4 rounded-2xl p-4'
+          className='border-2 space-y-2 mb-4 rounded-2xl p-4 hover:cursor-pointer active:scale-95'
           onClick={() => handleEmailClick(index)} // Pass the email id to the handler
         >
           <h3 className='text-xl'>{email.subject}</h3>

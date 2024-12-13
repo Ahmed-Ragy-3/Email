@@ -23,9 +23,9 @@ const Layout = ({emails}) => {
     <div className="h-screen overflow-clip bg-[#003C43]">
         <Navbar setSearchQuery={setSearchQuery}/>
       <div className="h-full flex">
-        <Sidebar />
+        <Sidebar emails={emails}/>
         <Routes>
-          <Route path="/email/:id" element={<FullEmailView emails={emails}/>}>
+          <Route path="/email/:id" element={<FullEmailView emails = {emails}/>}>
 
           </Route>
           <Route path="*" element={<Mainbox emails={emails} searchQuery={searchQuery}/>}></Route>
