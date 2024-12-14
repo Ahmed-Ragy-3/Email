@@ -7,11 +7,8 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -38,8 +35,8 @@ public class Mail {
    private Importance importance;
 
    @JsonIgnore
-   @ManyToMany(mappedBy = "mails")
-   private Set<Mailbox> mailboxes;
+   @ManyToMany(mappedBy = "mails", fetch = FetchType.LAZY)
+   private List<Mailbox> mailboxes;
 
    @Embedded
    private Date date;

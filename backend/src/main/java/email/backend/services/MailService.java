@@ -75,7 +75,7 @@ public class MailService {
    }
 
    public List<Mail> getEmailsInMailbox(User user, String mailboxName) {
-      Mailbox mailbox = mailboxRepository.findByUserAndName(user, mailboxName);
+      Mailbox mailbox = mailboxRepository.findByOwnerAndName(user, mailboxName);
       return new ArrayList<Mail>(mailbox.getMails());
    }
 

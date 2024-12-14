@@ -24,7 +24,7 @@ public class MailboxService {
    private final MailboxRepository mailboxRepository;
 
    public List<Mail> getEmailsInMailbox(User user, String mailboxName) {
-      Mailbox mailbox = mailboxRepository.findByUserAndName(user, mailboxName);
+      Mailbox mailbox = mailboxRepository.findByOwnerAndName(user, mailboxName);
       return new ArrayList<Mail>(mailbox.getMails());
    }
 
@@ -72,7 +72,7 @@ public class MailboxService {
    
    public void createCategory(User user) {
       Mailbox mailbox = new Mailbox();
-      mailbox.setUser(user);
+      // mailbox.setUser(user);
       mailbox.setName("New Category");
       mailboxRepository.save(mailbox);
    }

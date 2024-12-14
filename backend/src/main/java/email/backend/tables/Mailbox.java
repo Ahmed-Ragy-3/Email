@@ -6,12 +6,12 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Getter
 @Setter
+@Getter
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Mailbox {
 
@@ -24,14 +24,14 @@ public class Mailbox {
 
    @JsonIgnore
    @ManyToOne
-   @JoinColumn(name = "user_id", nullable = false)
-   private User user;
+   @JoinColumn(name = "user_id",nullable = false)
+   private User owner;
 
-   @ManyToMany
+   @ManyToMany(fetch = FetchType.EAGER)
    @JoinTable(
       name = "mail_mailbox",
       joinColumns = @JoinColumn(name = "mailbox_id"),
       inverseJoinColumns = @JoinColumn(name = "mail_id")
    )
-   private Set<Mail> mails = new HashSet<>();
+   private List<Mail> mails = new ArrayList<>();
 }

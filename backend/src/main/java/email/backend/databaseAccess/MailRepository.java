@@ -2,7 +2,7 @@ package email.backend.databaseAccess;
 
 import email.backend.tables.Mail;
 import email.backend.tables.User;
-import email.backend.services.Importance;
+// import email.backend.services.Importance;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -16,18 +16,10 @@ public interface MailRepository extends JpaRepository<Mail, Long> {
 
    List<Mail> findBySender(User sender);
 
-   List<Mail> findBySubject(String subject);
+   // List<Mail> findByMailboxes_Id(Long mailboxId); 
 
-   // Find all mails by importance
-   List<Mail> findByImportance(Importance importance);
+   // List<Mail> findByMailboxes_User_Id(Long userId);
 
-   // Find all mails in a specific mailbox
-   List<Mail> findByMailboxes_Id(Long mailboxId);
-
-   // Find mails sent to a specific recipient (if recipients are stored in a relation)
-   List<Mail> findByMailboxes_User_Id(Long userId);
-
-   // Custom query example: Find mails sent after a specific date
    // List<Mail> findByDate_DateAfter(Date date);
 
 }
