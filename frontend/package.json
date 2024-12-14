@@ -5,9 +5,11 @@
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.7.1",
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "axios": "^1.7.9",
     "cra-template": "1.2.0",
     "fontawesome": "^5.6.3",
     "fortawesome": "^0.0.1-security",
+    "jwt-decode": "^4.0.0",
     "mail": "file:",
     "react": "^19.0.0",
     "react-color": "^2.19.3",
@@ -42,5 +44,6 @@
   },
   "devDependencies": {
     "tailwindcss": "^3.4.16"
-  }
+  },
+  "proxy": "http://localhost:8080"
 }
