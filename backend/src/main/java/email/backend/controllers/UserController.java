@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.*;
 import email.backend.services.UserService;
 import email.backend.services.MailboxService;
 import email.backend.tables.User;
-import email.backend.tables.Mail;
-import org.springframework.web.bind.annotation.PostMapping;
+// import email.backend.tables.Mail;
+// import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import java.util.List;
+// import java.util.List;
 
 
 @RestController
@@ -32,19 +32,19 @@ public class UserController {
       userService.createUser(user);
    }
 
-   @PostMapping("/getMails/{mailboxName}")
-   public List<Mail> getMailbox(@PathVariable String mailboxName, @RequestHeader("Authorization") String authHeader) {
-      // Extract the token from the Authorization header (assuming it's prefixed with "Bearer ")
-      String token = authHeader.substring(7); // "Bearer " is 7 characters long
+   // @PostMapping("/getMails/{mailboxName}")
+   // public List<Mail> getMailbox(@PathVariable String mailboxName, @RequestHeader("Authorization") String authHeader) {
+   //    // Extract the token from the Authorization header (assuming it's prefixed with "Bearer ")
+   //    String token = authHeader.substring(7); // "Bearer " is 7 characters long
 
-      // Decode the token and get the user ID
-      long userId = userService.extractUserId("iuofwe", token);
+   //    // Decode the token and get the user ID
+   //    long userId = userService.extractUserId("iuofwe", token);
 
-      // Fetch the user based on the user ID
-      User user = userService.getUser(userId);
+   //    // Fetch the user based on the user ID
+   //    User user = userService.getUser(userId);
 
-      return mailboxService.getEmailsInMailbox(user, mailboxName);
-   }
+   //    return mailboxService.getEmailsInMailbox(user, mailboxName);
+   // }
 
 
    @DeleteMapping("/delete/{userId}")

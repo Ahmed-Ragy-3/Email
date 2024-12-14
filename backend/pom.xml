@@ -83,10 +83,11 @@
 		</dependency>
 
 
-
-
-
-
+		<dependency>
+			<groupId>org.mindrot</groupId>
+			<artifactId>jbcrypt</artifactId>
+			<version>0.4</version> <!-- Or the latest version -->
+		</dependency>
 
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>

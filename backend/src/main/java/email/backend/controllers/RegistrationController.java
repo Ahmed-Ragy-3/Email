@@ -1,19 +1,19 @@
 package email.backend.controllers;
 
-import java.util.ArrayList;
-import java.util.List;
+// import java.util.ArrayList;
+// import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
+// import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+// import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import email.backend.DTO.ContactDTO;
+// import email.backend.DTO.ContactDTO;
 import email.backend.DTO.JwtUtil;
-import email.backend.DTO.MailboxDTO;
+// import email.backend.DTO.MailboxDTO;
 import email.backend.DTO.UserDTO;
 
 // import com.fasterxml.jackson.annotation.JsonProperty;
@@ -25,9 +25,9 @@ import email.backend.tables.User;
 // import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+// import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 // import org.springframework.web.bind.annotation.RequestParam;
-
 
 @RestController
 @CrossOrigin("*")
@@ -58,11 +58,13 @@ public class RegistrationController {
 
    @PutMapping("/create")
    public ResponseEntity<String> createNewAccount(@RequestBody UserDTO userdto) {
+      System.out.println(userdto);
       // enter name in userdto
       try {
          User user = userService.createNewAccount(userdto.getName(), userdto.getEmailAddress(), userdto.getPassword());
          System.out.println(user);
          String token = JwtUtil.generateToken(userdto);
+         System.out.println(token);
 
          return ResponseEntity
             .status(HttpStatus.CREATED)

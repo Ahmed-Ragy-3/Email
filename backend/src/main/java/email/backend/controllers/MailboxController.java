@@ -3,6 +3,7 @@ package email.backend.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import email.backend.DTO.JwtUtil;
 import email.backend.services.MailboxService;
 import email.backend.services.UserService;
 // import email.backend.tables.Mailbox;
@@ -21,12 +22,12 @@ public class MailboxController {
    @Autowired
    private UserService userService;
    
-   @PutMapping("/create/{userId}")
-   public void createMailbox(@PathVariable Long userId) {
-      mailboxService.createCategory(userService.getUser(userId));
+   @PutMapping("/create")
+   public void createMailbox(@RequestHeader("Authorization") String token) {
+      mailboxService.createCategory(userService.getUser(JwtUtil.getUserFromToken(token)), "New Category");
    }
 
-   @DeleteMapping("/delete/{mailId}")
+   @DeleteMapping("/delete")
    public void deleteMailbox(@PathVariable Long mailboxId) {
       mailboxService.delete(mailboxId);
    }

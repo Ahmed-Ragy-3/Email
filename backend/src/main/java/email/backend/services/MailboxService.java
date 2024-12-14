@@ -11,6 +11,7 @@ import email.backend.tables.User;
 // import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import email.backend.databaseAccess.MailboxRepository;
+import email.backend.databaseAccess.UserRepository;
 // import email.backend.databaseAccess.MailRepository;
 // import email.backend.databaseAccess.UserRepository;
 import email.backend.services.filter.*;
@@ -20,7 +21,7 @@ import email.backend.services.filter.*;
 public class MailboxService {
    
    // private final MailRepository mailRepository;
-   // private final UserRepository userRepository;
+   private final UserRepository userRepository;
    private final MailboxRepository mailboxRepository;
 
    public List<Mail> getEmailsInMailbox(User user, String mailboxName) {
@@ -70,11 +71,14 @@ public class MailboxService {
       return mailboxRepository.findById(mailboxId).get();
    }
    
-   public void createCategory(User user) {
+   public void createCategory(User user, String name) {
       Mailbox mailbox = new Mailbox();
-      // mailbox.setUser(user);
-      mailbox.setName("New Category");
+      mailbox.setName(name);
+      mailbox.setOwner(user);
       mailboxRepository.save(mailbox);
+      
+      user.getMailboxes().add(mailbox);
+      userRepository.save(user);
    }
 
    public void createFriendZone(User user) {
