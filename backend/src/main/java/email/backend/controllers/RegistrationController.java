@@ -45,7 +45,7 @@ public class RegistrationController {
          String token = JwtUtil.generateToken(userdto);
 
          return ResponseEntity
-            .status(HttpStatus.FOUND)
+            .status(HttpStatus.ACCEPTED)
             .header("Authorization", "Bearer " + token) // Add the token to the Authorization header
             .body("Login successful"); // Optional response body message
       
@@ -61,14 +61,16 @@ public class RegistrationController {
       // enter name in userdto
       try {
          User user = userService.createNewAccount(userdto.getName(), userdto.getEmailAddress(), userdto.getPassword());
+         System.out.println(user);
          String token = JwtUtil.generateToken(userdto);
 
          return ResponseEntity
-            .status(HttpStatus.FOUND)
+            .status(HttpStatus.CREATED)
             .header("Authorization", "Bearer " + token) // Add the token to the Authorization header
             .body("Account created successfully"); // Optional response body message
       
       } catch (Exception e) {
+         System.out.println(e.getMessage());
          return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
             .body(e.getMessage());
