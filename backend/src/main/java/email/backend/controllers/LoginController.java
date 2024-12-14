@@ -7,8 +7,14 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import email.backend.services.UserService;
+import email.backend.tables.User;
+
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -20,12 +26,9 @@ public class LoginController {
    @Autowired
    private UserService userService;
 
-   @GetMapping("/enter")
-   public Object enterUser(
-      @RequestParam("emailAddress") String emailAddress,
-      @RequestParam("password") String password
-   ) {
-      return userService.login(emailAddress, password);
+   @PostMapping("/enter")
+   public Object enterUser(@RequestBody User user) {
+      return userService.login(user.getEmailAddress(), user.getPassword());
    
    }
 

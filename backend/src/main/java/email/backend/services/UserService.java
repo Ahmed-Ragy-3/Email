@@ -40,6 +40,11 @@ public class UserService {
    
    @Autowired
    private final UserRepository userRepository;
+
+   public void deleteMe(){
+      
+   }
+
    // @Autowired
    // private final MailboxRepository mailboxRepository;
 
@@ -75,7 +80,7 @@ public class UserService {
       }
 
       Optional<User> user = userRepository.findByEmailAddressAndPassword(address, password);
-      if(!user.isPresent()) {
+      if(user.isPresent()) {
          return new LoginResponse(true, "Login Successfully", user.get());
       }else {
          return new LoginResponse(false, "Email Address and Password are not found", null);
@@ -101,11 +106,16 @@ public class UserService {
       userRepository.delete(user);
    }
 
+   public boolean isContact(User user1, User user2) {
+      return true;
+   }
+
    public boolean validate(String emailAddress) {
       // anywords@mail.com
       String[] atSplit = emailAddress.split("@");
       return atSplit.length == 2 && atSplit[1].equals("@mail.com") && 
             !atSplit[0].contains(".") && Character.isLetter(atSplit[0].charAt(0));
    }
+
 
 }

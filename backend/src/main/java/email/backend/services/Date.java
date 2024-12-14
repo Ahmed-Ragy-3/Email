@@ -39,6 +39,10 @@ public class Date {
       );
    }
 
+   public boolean future() {
+      return this.compareTo(getTodaysDate()) > 0;
+   }
+
    @Override
    public String toString() {
       return "%s / %s / %s | %s: %s ".formatted(year, month, day, hour, minute);

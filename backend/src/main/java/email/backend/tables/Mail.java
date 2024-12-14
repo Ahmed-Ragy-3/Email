@@ -55,19 +55,4 @@ public class Mail {
    )
    private List<User> receivers;  // Added receivers list
 
-   /**
-    * Replies to this mail.
-    * This creates a self-referencing relationship where a mail can have many replies,
-    * and each reply references a parent mail.
-    */
-   @OneToMany(mappedBy = "parentMail", cascade = CascadeType.ALL, orphanRemoval = true)
-   private List<Mail> replies;
-
-   /**
-    * Parent mail for this reply.
-    * This establishes the inverse side of the relationship.
-    */
-   @ManyToOne
-   @JoinColumn(name = "parent_mail_id")
-   private Mail parentMail;
 }

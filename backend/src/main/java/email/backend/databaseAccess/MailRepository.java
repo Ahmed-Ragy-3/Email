@@ -11,10 +11,11 @@ import java.util.List;
 
 @EnableJpaRepositories
 public interface MailRepository extends JpaRepository<Mail, Long> {
-   // Find all mails sent by a specific user
+
+   List<Mail> findById(long id);
+
    List<Mail> findBySender(User sender);
 
-   // Find all mails with a specific subject
    List<Mail> findBySubject(String subject);
 
    // Find all mails by importance
