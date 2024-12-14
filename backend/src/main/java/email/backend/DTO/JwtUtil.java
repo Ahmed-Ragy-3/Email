@@ -50,6 +50,7 @@ public class JwtUtil {
       user.setName(claims.get("name").toString());
       user.setEmailAddress(claims.get("email").toString());
       user.setPassword(claims.get("password").toString());
+      
       return user;
    }
 
