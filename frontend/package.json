@@ -5,6 +5,7 @@
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.7.1",
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "@stomp/stompjs": "^7.0.0",
     "axios": "^1.7.9",
     "cra-template": "1.2.0",
     "fontawesome": "^5.6.3",
@@ -16,6 +17,8 @@
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.0.2",
     "react-scripts": "5.0.1",
+    "sockjs": "^0.3.24",
+    "sockjs-client": "^1.6.1",
     "web-vitals": "^4.2.4"
   },
   "scripts": {

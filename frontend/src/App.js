@@ -17,11 +17,13 @@ import NoPage from "./pages/NoPage";
 import Registration from "./pages/Registration";
 import { jwtDecode } from "jwt-decode";
 import Login from "./pages/Login";
-
+import SockJS from "sockjs-client";
+import { Stomp } from "@stomp/stompjs";
 // Define NoPage component to handle undefined routes
 // Layout component (to wrap common layout components like Sidebar and Navbar)
 const Layout = ({emails}) => {  
   const [searchQuery, setSearchQuery] = useState("")
+  const [stompClient, setStompClient] = useState(null);
   const navigate = useNavigate()
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -32,11 +34,29 @@ const Layout = ({emails}) => {
 
   // If no token, do not render the rest of the component
   const token = localStorage.getItem('token');
-  if (!token) {
-    return null; // Or a loading state, while redirecting
-  }
   const decodedToken = jwtDecode(token)
+  
   const userName = decodedToken.name;
+  const email = decodedToken.email
+  useEffect(() => {
+    const socket = new SockJS("http://localhost:8080/ws");
+    const client = Stomp.over(socket);
+  
+    client.connect({}, () => {
+      console.log("Connected to WebSocket server");
+  
+      // Send the message after successful connection
+      client.send("/app/send-email", {'email' : email}, JSON.stringify({ 'name': 'Spring' }));
+      
+      client.subscribe(`/topic/emails/${email}`, (msg) => {
+        console.log("Received ", msg.body);
+      });
+    });
+    
+    setStompClient(client);
+    
+  }, []);
+  
   console.log("name : " +userName)
   return (
     <div className="h-screen overflow-clip bg-[#003C43]">
