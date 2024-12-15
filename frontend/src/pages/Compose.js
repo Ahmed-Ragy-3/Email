@@ -11,12 +11,53 @@ function Compose({ closeModal , client}) {
   const [textColor, setTextColor] = useState("#000000"); // Default black color
   const [showColorPicker, setShowColorPicker] = useState(false); // Toggle for color picker visibility
   const editorRef = useRef(null); // Ref for the contenteditable div
+
+  const [contactInput, setContactInput] = useState("");
+  const [selectedContacts, setSelectedContacts] = useState([]);
+  const [filteredContacts, setFilteredContacts] = useState([]);
+
+  const contacts = ["Alice Smith", "Bob Johnson", "Charlie Brown", "Diana Prince", "Eve Adams", "Frank Castle"];
+  const handleContactInput = (e) => {
+    const value = e.target.value;
+    setContactInput(value);
+    if (value.trim()) {
+      const matches = contacts.filter((contact) =>
+        contact.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredContacts(matches);
+    } else {
+      setFilteredContacts([]);
+    }
+  };
+
+  const addContact = (contact) => {
+    if (!selectedContacts.includes(contact)) {
+      setSelectedContacts((prev) => [...prev, contact]);
+    }
+    setContactInput("");
+    setFilteredContacts([]);
+  };
+  
+  const removeContact = (contact) => {
+    setSelectedContacts((prev) => prev.filter((c) => c !== contact));
+  };
+
   const upload = ()=>{
     let e = document.getElementById("text-field")
+    let subject_field = document.getElementById("subject")
+    let time_options = document.getElementById("time-options")
+    let importance = document.getElementById("importance")
+    console.log(`{
+        "subject" : ${subject_field.value},
+        "time_options": ${time_options.value},
+        "importance" : ${importance.value},
+        "body" : ${e.innerHTML},
+        "receivers" : ${selectedContacts}
+      }`)
     console.log(e.innerHTML)
     console.log(client)
     console.log(attachments)
-    client.send("/app/send-email", {'email' : "hello mfs"}, attachments)
+    
   };
   // Handle file uploads
   const handleFileUpload = (e) => {
@@ -77,18 +118,49 @@ function Compose({ closeModal , client}) {
         </div>
 
         {/* To Field */}
-        <div className="flex items-center mb-4">
+        <div className="flex flex-col mb-4 relative">
           <label
             htmlFor="to"
             className="block text-[16px] font-semibold mr-4 w-16"
           >
             To
           </label>
+          <div className="flex flex-wrap gap-2 items-center">
+            {selectedContacts.map((contact, index) => (
+              <div
+                key={index}
+                className="flex items-center bg-blue-100 text-blue-800 px-2 py-1 rounded-lg"
+              >
+                <span>{contact}</span>
+                <button
+                  className="ml-2 text-red-500 hover:text-red-700"
+                  onClick={() => removeContact(contact)}
+                >
+                  &times;
+                </button>
+              </div>
+            ))}
+          </div>
           <input
             id="to"
-            className="flex-grow p-2 outline-none"
+            value={contactInput}
+            onChange={handleContactInput}
+            className="flex-grow p-2 outline-none mt-2"
             placeholder="Search or add a contact"
           />
+          {filteredContacts.length > 0 && (
+            <ul className="absolute z-10 bg-white border rounded-lg shadow-lg mt-1 w-full">
+              {filteredContacts.map((contact, index) => (
+                <li
+                  key={index}
+                  className="p-2 hover:bg-gray-100 cursor-pointer"
+                  onClick={() => addContact(contact)}
+                >
+                  {contact}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         {/* Separator Line */}
@@ -182,7 +254,7 @@ function Compose({ closeModal , client}) {
         </div>
 
         {/* When to Send Section */}
-        <div className="mb-4">
+        <div className="mb-4 space-x-4">
           <label htmlFor="time-options" className="font-bold">
             When to send:
           </label>
@@ -201,6 +273,21 @@ function Compose({ closeModal , client}) {
             <option value="6-hours">6 hours</option>
             <option value="12-hours">12 hours</option>
             <option value="1-day">1 day</option>
+          </select>
+        </div>
+        <div className="mb-4 space-x-4">
+          <label htmlFor="time-options" className="font-bold">
+            Importance :
+          </label>
+          <select
+            name="importance"
+            id="importance"
+            className="border-2 border-gray-400 rounded-xl p-2 hover:cursor-pointer active:scale-105"
+          >
+            <option value="delayable">Delayable</option>
+            <option value="normal">Normal</option>
+            <option value="important">Important</option>
+            <option value="urgent">Urgent</option>
           </select>
         </div>
 
@@ -263,7 +350,7 @@ function Compose({ closeModal , client}) {
           {/* Send and Save Buttons */}
           <div className="flex space-x-2">
             <button className="flex items-center space-x-2 px-4 py-2 bg-[#5d7fd7] text-white rounded-full hover:bg-[#415a98] active:scale-95">
-              <FontAwesomeIcon icon={faFile} />
+              <FontAwesomeIcon icon={faFile} /> 
               <span>Save to drafts</span>
             </button>
             <button className="flex items-center space-x-2 px-4 py-2 bg-[#4841ff] text-white rounded-full hover:bg-[#2e2aa4] active:scale-95"
