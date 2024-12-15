@@ -19,11 +19,13 @@ import { jwtDecode } from "jwt-decode";
 import Login from "./pages/Login";
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
+import axios from "axios";
 // Define NoPage component to handle undefined routes
 // Layout component (to wrap common layout components like Sidebar and Navbar)
 const Layout = ({emails}) => {  
   const [searchQuery, setSearchQuery] = useState("")
   const [stompClient, setStompClient] = useState(null);
+  const [userEmails,setUserEmails] = useState([])
   const navigate = useNavigate()
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -31,13 +33,17 @@ const Layout = ({emails}) => {
       navigate('/login');
     }
   }, [navigate]);
-
+  
+  
   // If no token, do not render the rest of the component
   const token = localStorage.getItem('token');
   const decodedToken = jwtDecode(token)
   
   const userName = decodedToken.name;
   const email = decodedToken.email
+
+    
+
   useEffect(() => {
     const socket = new SockJS("http://localhost:8080/ws");
     const client = Stomp.over(socket);
@@ -52,9 +58,17 @@ const Layout = ({emails}) => {
         console.log("Received ", msg.body);
       });
     });
-    
     setStompClient(client);
-    
+    const getMails = async () => {
+      console.log("sending email " ,email)
+      const response = await axios.post("http://localhost:8080/mail/allMails",{
+        "email" : email
+      })
+      console.log(response)
+      setUserEmails(response.data)
+    }
+      
+    getMails()
   }, []);
   
   console.log("name : " +userName)
@@ -62,7 +76,7 @@ const Layout = ({emails}) => {
     <div className="h-screen overflow-clip bg-[#003C43]">
         <Navbar setSearchQuery={setSearchQuery} username={userName}/>
       <div className="h-full flex">
-        <Sidebar emails={emails}/>
+        <Sidebar emails={emails} client = {stompClient}/>
         <Routes>
           <Route path="/email/:id" element={<FullEmailView emails = {emails}/>}>
 

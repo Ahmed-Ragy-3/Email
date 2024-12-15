@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile, faPaperPlane, faTrash, faPalette } from "@fortawesome/free-solid-svg-icons";
 
-function Compose({ closeModal }) {
+function Compose({ closeModal , client}) {
   const [attachments, setAttachments] = useState([]);
   const [attachmentURLs, setAttachmentURLs] = useState([]);
   const [isBold, setIsBold] = useState(false);
@@ -13,7 +13,10 @@ function Compose({ closeModal }) {
   const editorRef = useRef(null); // Ref for the contenteditable div
   const upload = ()=>{
     let e = document.getElementById("text-field")
-    console.log(e.innerHTML) 
+    console.log(e.innerHTML)
+    console.log(client)
+    console.log(attachments)
+    client.send("/app/send-email", {'email' : "hello mfs"}, attachments)
   };
   // Handle file uploads
   const handleFileUpload = (e) => {

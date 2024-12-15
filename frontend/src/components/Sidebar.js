@@ -12,7 +12,8 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Compose from "../pages/Compose";
 
-function Sidebar() {
+function Sidebar({client}) {
+  console.log("client is ",client)
   const location = useLocation(); // Get the current location
   const [showComposeModal, setShowComposeModal] = useState(false); // Control modal visibility
   const [activeButton, setActiveButton] = useState("")
@@ -77,7 +78,7 @@ function Sidebar() {
       </div>
       {/* Modal for composing an email, passed as a component */}
       {showComposeModal && (
-        <Compose closeModal={closeModal} /> // Pass closeModal as a prop
+        <Compose closeModal={closeModal} client = {client} /> // Pass closeModal as a prop
       )}
 
     </div>
