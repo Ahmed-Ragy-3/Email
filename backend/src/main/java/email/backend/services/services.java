@@ -1,13 +1,18 @@
 package email.backend.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import email.backend.databaseAccess.MailRepository;
 import email.backend.databaseAccess.MailboxRepository;
 import email.backend.databaseAccess.UserRepository;
 // import email.backend.tables.Mail;
 
 public class services {
+   
    UserRepository userRepository;
+   
    MailRepository mailRepository;
+   
    MailboxRepository mailboxRepository;
 
    // fucntions to get user Id from token

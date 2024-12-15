@@ -17,8 +17,10 @@ import java.util.List;
 @CrossOrigin("*")
 @RequestMapping("/mailbox")
 public class MailboxController {
+   
    @Autowired
    private MailboxService mailboxService;
+   
    @Autowired
    private UserService userService;
    

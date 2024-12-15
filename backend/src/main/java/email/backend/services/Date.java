@@ -1,14 +1,14 @@
 package email.backend.services;
 
 import java.time.LocalDateTime;
-// import java.util.Comparator;
 
-// import email.backend.tables.Mail;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 @Embeddable
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 public class Date {
 
@@ -18,7 +18,6 @@ public class Date {
 
    private int hour;
    private int minute;
-
 
    public Date(LocalDateTime dateTime) {
       this.year = dateTime.getYear();
@@ -38,6 +37,34 @@ public class Date {
          localTime.getMinute() 
       );
    }
+   
+   public static Date getDateFromSTring(String dateString) {
+      LocalDateTime now = LocalDateTime.now();
+
+      switch (dateString) {
+         case "5-mins":
+            return new Date(now.plusMinutes(5));
+         case "10-mins":
+            return new Date(now.plusMinutes(10));
+         case "30-mins":
+            return new Date(now.plusMinutes(30));
+         
+         case "1-hour":
+            return new Date(now.plusHours(1));
+         case "2-hours":
+            return new Date(now.plusHours(2));
+         case "3-hours":
+            return new Date(now.plusHours(3));
+         case "6-hours":
+            return new Date(now.plusHours(6));
+         case "12-hours":
+            return new Date(now.plusHours(12));
+         case "1-day":
+            return new Date(now.plusDays(1));
+         default:
+            throw new IllegalArgumentException("Unsupported date string: " + dateString);
+      }
+   }
 
    public boolean future() {
       return this.compareTo(getTodaysDate()) > 0;
@@ -45,7 +72,7 @@ public class Date {
 
    @Override
    public String toString() {
-      return "%s / %s / %s | %s: %s ".formatted(year, month, day, hour, minute);
+      return "%s / %s / %s  |  %s: %s ".formatted(day, month, year, hour, minute);
    }
 
    public boolean isBetween(Date date1, Date date2) {

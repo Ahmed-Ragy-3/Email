@@ -37,6 +37,6 @@ public class User {
 
    @JsonIgnore
    @OneToMany(mappedBy = "sender")
-   private List<Mail> sentMails;
+   private List<Mail> sentMails = new ArrayList<>();
 
 }

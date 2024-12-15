@@ -3,11 +3,14 @@ package email.backend.services;
 import email.backend.tables.Mail;
 import email.backend.tables.Mailbox;
 import email.backend.tables.User;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import email.backend.databaseAccess.MailRepository;
 // import email.backend.databaseAccess.UserRepository;
 import email.backend.databaseAccess.MailboxRepository;
+import email.backend.databaseAccess.UserRepository;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 // import java.time.LocalDateTime;
@@ -20,50 +23,39 @@ import java.util.List;
 @AllArgsConstructor
 public class MailService {
 
-   private final MailRepository mailRepository;
-   // private final UserRepository userRepository;
-   private final MailboxRepository mailboxRepository;
+   @Autowired
+   private MailRepository mailRepository;
+   @Autowired
+   private UserRepository userRepository;
+   @Autowired
+   private MailboxRepository mailboxRepository;
 
-   private final UserService userService;
+   @Autowired
+   private UserService userService;
 
    /**
-    * Send an email from one user to multiple recipients.
-    *
-    * @param senderId    ID of the sender
-    * @param recipientIds List of recipient IDs
-    * @param subject     Subject of the email
-    * @param content     Email content
-    * @param importance  Importance level of the email
-    * @return Sent Mail entity
-    * @throws IllegalArgumentException if sender or recipients are not found
+    * create mail and put into drafts category without any validations
+    * @param Mail mail 
     */
-   // public Mail sendEmail(Long senderId, List<Long> recipientIds, String subject, String content, Importance importance) {
-   //    Optional<User> senderOptional = userRepository.findById(senderId);
-   //    if (senderOptional.isEmpty()) {
-   //       throw new IllegalArgumentException("Sender not found");
-   //    }
-
-   //    List<User> recipients = userRepository.findAllById(recipientIds);
-   //    if (recipients.isEmpty()) {
-   //       throw new IllegalArgumentException("No valid recipients found");
-   //    }
-
-   //    // Create a new Mail entity
-   //    Mail mail = Mail.builder()
-   //    .content(content)
-   //    .sender(someUserInstance)  // assume someUserInstance is an existing User object
-   //    .subject(subject)
-   //    .importance(importance)
-   //    .date(new Date(LocalDateTime.now()))   // assume someDateInstance is a Date object
-   //    .attachments(someAttachmentList) // assume someAttachmentList is a List<Attachment>
-   //    .receivers(recipients) // assume someReceiverList is a List<User>
-   //    .build();
-
-   //    // Optionally save recipient information in a transient field
-   //    // mail.setRecievers(recipients);
-
-   //    return mailRepository.save(mail);
-   // }
+    @Transactional
+   public Mail createMailToDrafts(Mail mail) {
+      
+      User sender = mail.getSender();
+      // System.out.println("1 =================" + mail.getContent() + "===================" );
+      sender.getMailboxes().get(MailboxService.DRAFTS_INDEX).getMails().add(mail);
+      // System.out.println("2 =================" + mail.getContent() + "===================" );
+      // System.out.println(sender.getId());
+      // System.out.println(sender.getName());
+      // System.out.println(sender.getEmailAddress());
+      // System.out.println(sender.getPassword());
+      // System.out.println("2 =================" + mail.getContent() + "===================" );
+      
+      // userRepository.save(sender);
+      
+      // System.out.println("3 =================" + mail.getContent() + "===================" );
+      // mailRepository.save(mail);
+      return mail;
+   }
 
    public boolean isReady() {
       
@@ -91,8 +83,29 @@ public class MailService {
       mailRepository.deleteById(mailId);
    }
 
-   public void createMail(Mail mail) {
+   public void sendMails(Mail mail) {
+      // MailSenderProxy mailSenderProxy;
+
       mailRepository.save(mail);
+   }
+
+   public Importance getImportanceFromString(String importance) {
+      if(importance == null) return Importance.NORMAL;
+
+      importance = importance.toLowerCase();
+
+      switch (importance) {
+         case "URGENT":
+            return Importance.URGENT;
+         case "IMPORTANT":
+            return Importance.IMPORTANT;
+         case "NORMAL":
+            return Importance.NORMAL;
+         case "DELAYABLE":
+            return Importance.DELAYABLE;
+      }
+
+      return Importance.NORMAL;
    }
 
 }

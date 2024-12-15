@@ -30,7 +30,7 @@ public class Mailbox {
    @JoinColumn(name = "user_id",nullable = false)
    private User owner;
 
-   @ManyToMany(fetch = FetchType.EAGER)
+   @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
    @JoinTable(
       name = "mail_mailbox",
       joinColumns = @JoinColumn(name = "mailbox_id"),

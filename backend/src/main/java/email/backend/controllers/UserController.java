@@ -27,11 +27,6 @@ public class UserController {
    @Autowired
    MailboxService mailboxService;
    
-   @PutMapping("/create")
-   public void createUser(@RequestBody User user) {
-      userService.createUser(user);
-   }
-
    // @PostMapping("/getMails/{mailboxName}")
    // public List<Mail> getMailbox(@PathVariable String mailboxName, @RequestHeader("Authorization") String authHeader) {
    //    // Extract the token from the Authorization header (assuming it's prefixed with "Bearer ")

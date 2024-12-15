@@ -1,34 +1,80 @@
 package email.backend.DTO;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import email.backend.services.Date;
+import email.backend.services.MailService;
+import email.backend.services.UserService;
 import email.backend.tables.Attachment;
+import email.backend.tables.Mail;
+import email.backend.tables.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.util.List;
-import java.util.ArrayList;
-
 
 @Setter
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class MailDTO {
 
    private String subject;
    private String content;
    private String senderAddress;
    private String importance;
-   private String date;
+   private String dateString;
    private List<Attachment> attachments = new ArrayList<>();
-   private List<String> receiversAdresses = new ArrayList<>();
+   private List<String> receiversAddresses = new ArrayList<>();
 
-   // @JsonIgnore
-   // public void addAttachment(Attachment attachment){
-   //    attachments.add(attachment);
-   // }
+   /**
+    * Constructor to map Mail entity to MailDTO.
+    */
+   public MailDTO(Mail mail) {
+      this.subject = mail.getSubject();
+      this.content = mail.getContent();
+      this.senderAddress = mail.getSender().getEmailAddress();
+      this.importance = mail.getImportance().toString();
+      this.dateString = mail.getDate().toString();
+      
+      if (mail.getReceivers() != null) {
+         for (User user : mail.getReceivers()) {
+            this.receiversAddresses.add(user.getEmailAddress());
+         }
+      }
+      this.attachments = mail.getAttachments();
+   }
 
-   // @JsonIgnore
-   // public void addReceiver(String receiverAdresses){
-   //    receiversAdresses.add(receiverAdresses);
-   // }
+   /**
+    * Converts MailDTO back to Mail entity.
+    *
+    * @param sender       Sender of the email
+    * @param userService  User service for fetching users
+    * @param mailService  Mail service for fetching importance
+    * @return A new Mail object
+    */
+   public Mail toMail(User sender, UserService userService, MailService mailService) {
+      Date date = (dateString == null || dateString.equalsIgnoreCase("now") || dateString.isEmpty())
+            ? Date.getTodaysDate()
+            : Date.getDateFromSTring(dateString);
 
+      List<User> receivers = new ArrayList<>();
+      for (String userAddress : this.getReceiversAddresses()) {
+         receivers.add(userService.getUserFromAddress(userAddress));
+      }
+      System.out.println(this.content + "===========================");
+
+      return Mail.builder()
+            .content(this.content)
+            .subject(this.subject)
+            .sender(sender)
+            .importance(mailService.getImportanceFromString(this.importance))
+            .date(date)
+            .attachments(attachments)
+            .receivers(receivers)
+            .build();
+   }
 }

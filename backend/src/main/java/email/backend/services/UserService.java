@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 // import email.backend.databaseAccess.MailboxRepository;
 import email.backend.DTO.ContactDTO;
+import email.backend.DTO.JwtUtil;
 import email.backend.DTO.UserDTO;
 // import email.backend.databaseAccess.MailRepository;
 import email.backend.databaseAccess.UserRepository;
@@ -26,28 +27,15 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.List;
 
-@AllArgsConstructor
-class LoginResponse {
-   boolean valid;
-   String message;
-   User user;
-}
-
 @Service
 @AllArgsConstructor
 public class UserService {
    
-   // @Autowired
-   // private String secretKey = "your-secret-key";
-   
    @Autowired
-   private final UserRepository userRepository;
-   // @Autowired
-   // private final MailboxRepository mailboxRepository;
-   // @Autowired
-   // private final MailRepository mailRepository;
+   private UserRepository userRepository;
 
-   MailboxService mailboxService;
+   @Autowired
+   private MailboxService mailboxService;
 
    public String encodePassword(String rawPassword) {
       return BCrypt.hashpw(rawPassword, BCrypt.gensalt());
@@ -93,10 +81,11 @@ public class UserService {
       userRepository.save(newUser);
 
       mailboxService.createCategory(newUser, "Inbox");
-      mailboxService.createCategory(newUser, "Draft");
+      mailboxService.createCategory(newUser, "Drafts");
       mailboxService.createCategory(newUser, "Sent");
-      mailboxService.createCategory(newUser, "Scheduled");
       mailboxService.createCategory(newUser, "Trash");
+      mailboxService.createCategory(newUser, "Starred");
+      mailboxService.createCategory(newUser, "Scheduled");
       
       return newUser;
    }
@@ -136,15 +125,20 @@ public class UserService {
       return user.isPresent() ? user.get() : null;
    }
    
-   public User getUser(UserDTO userDto) {
-      Optional<User> user = userRepository.findById(userDto.getId());
+   public User getUserFromAddress(String userAddress) {
+      Optional<User> user = userRepository.findByEmailAddress(userAddress);
       return user.isPresent() ? user.get() : null;
    }
 
-   // @Transactional
-   public void createUser(User user) {
-      // validate 
-      userRepository.save(user);
+   public User getUser(String token) {
+      System.out.println("entered get user by token");
+      return getUser(JwtUtil.getUserFromToken(token));
+   }
+   
+   public User getUser(UserDTO userDto) {
+      System.out.println("entered get user by dto");
+      Optional<User> user = userRepository.findById(userDto.getId());
+      return user.isPresent() ? user.get() : null;
    }
 
    // @Transactional

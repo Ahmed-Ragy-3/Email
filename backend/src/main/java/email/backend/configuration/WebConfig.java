@@ -12,7 +12,7 @@ public class WebConfig implements WebMvcConfigurer {
             .allowedOriginPatterns("http://localhost:3000")  // Adjust the frontend URL
             .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
             .allowedHeaders("Authorization", "Content-Type", "Accept")  // Allow specific headers
-            .exposedHeaders("Authorization")  // Expose Authorization header to the frontend
-            .allowCredentials(true);  // Allow credentials (cookies, HTTP authentication, etc.)
+            .exposedHeaders("Authorization");  // Expose Authorization header to the frontend
+            // .allowCredentials(true);  // Allow credentials (cookies, HTTP authentication, etc.)
     }
 }
