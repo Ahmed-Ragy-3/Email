@@ -45,8 +45,6 @@ public class MailboxService {
       mailbox.getMails().add(mail);
    }
 
-   
-
    // @Transactional
    public void moveTo(Mailbox from, Mailbox to, Mail mail) {
       copyTo(mail, to);

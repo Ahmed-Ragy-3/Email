@@ -126,8 +126,6 @@ public class MailSenderProxy {
       Mailbox friendMailbox;
       User sender = mail.getSender();
       
-      
-
       for (User receiver : mail.getReceivers()) {
          friendMailbox = getFriendZone(sender, receiver);
 

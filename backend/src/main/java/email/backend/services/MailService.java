@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import email.backend.DTO.MailDTO;
+import email.backend.DTO.MailboxDTO;
 import email.backend.databaseAccess.MailRepository;
 // import email.backend.databaseAccess.UserRepository;
 import email.backend.databaseAccess.MailboxRepository;
@@ -56,6 +57,28 @@ public class MailService {
       // System.out.println("3 =================" + mail.getContent() + "===================" );
       // mailRepository.save(mail);
       return mail;
+   }
+
+   public List<MailboxDTO> getAllMails(User user) {
+      List<MailboxDTO> mailboxesDto = new ArrayList<>();
+
+      for (Mailbox mailbox : user.getMailboxes()) {
+         MailboxDTO dto = new MailboxDTO();
+         
+         dto.setId(mailbox.getId());
+         dto.setName(mailbox.getName());
+         
+         List<MailDTO> mailsDto = new ArrayList<>();
+         for (Mail mail : mailbox.getMails()) {
+            mailsDto.add(new MailDTO(mail));
+         }
+
+         dto.setMails(mailsDto);
+         
+         mailboxesDto.add(dto);
+      }
+
+      return mailboxesDto;
    }
 
    @Transactional
