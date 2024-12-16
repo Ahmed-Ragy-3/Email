@@ -36,51 +36,30 @@ public class MailboxService {
    @Autowired
    private final MailboxRepository mailboxRepository;
 
-   public List<Mail> getEmailsInMailbox(User user, String mailboxName) {
-      Mailbox mailbox = mailboxRepository.findByOwnerAndName(user, mailboxName);
-      return new ArrayList<Mail>(mailbox.getMails());
-   }
+   // public List<Mail> getEmailsInMailbox(User user, String mailboxName) {
+   //    Optional<Mailbox> mailbox = mailboxRepository.findByOwnerAndName(user, mailboxName);
+   //    return new ArrayList<Mail>(mailbox.getMails().get());
+   // }
 
    public void addTo(Mailbox mailbox, Mail mail) {
       mailbox.getMails().add(mail);
    }
 
    // @Transactional
+   public void copyTo(Mail mail, Mailbox mailbox) {
+      addTo(mailbox, mail);
+   }
+   
+   // @Transactional
    public void moveTo(Mailbox from, Mailbox to, Mail mail) {
       copyTo(mail, to);
       deleteFrom(mail, from);
    }
-
+   
    // @Transactional
    public void deleteFrom(Mail mail, Mailbox mailbox) {
-      mailbox.getMails().remove(mail);
-      mail.getMailboxes().remove(mailbox);
+      addTo(mailbox, mail);
     
-   }
-
-   // @Transactional
-   public void copyTo(Mail mail, Mailbox mailbox) {
-      mailbox.getMails().add(mail);
-      mail.getMailboxes().add(mailbox);
-
-   }
-
-   // @Transactional
-   // public void delete(Mailbox mailbox, User user) {
-   //    for (Mail mail : mailbox.getMails()) {
-   //       mail.getMailboxes().remove(mailbox);
-   //    }
-   //    user.getMailboxes().remove(mailbox);
-   //    mailboxRepository.delete(mailbox);
-   // }
-
-   // @Transactional
-   public void delete(Long mailboxId) {
-      // for (Mail mail : mailbox.getMails()) {
-      //    mail.getMailboxes().remove(mailbox);
-      // }
-      // user.getMailboxes().remove(mailbox);
-      mailboxRepository.delete(getMailbox(mailboxId));
    }
 
    public Mailbox getMailbox(Long mailboxId) {
@@ -89,8 +68,9 @@ public class MailboxService {
    }
    
    public Mailbox getMailbox(User user, String name) {
-      return mailboxRepository.findByOwnerAndName(user, name);
+      return mailboxRepository.findByOwnerAndName(user, name).get();
    }
+
    public Mailbox getMailbox(User user, int index) throws IllegalArgumentException {
       if(user.getMailboxes().size() <= index) {
          throw new IllegalArgumentException("In getMailbox: Unable to access mail box of index" + index);
@@ -98,28 +78,29 @@ public class MailboxService {
       return user.getMailboxes().get(index);
    }
    
-   public void createCategory(User user, String name) {
+   // @Transactional
+   public Mailbox createMailbox(User user, String name) {
+
+      Optional<Mailbox> opMailbox = mailboxRepository.findByOwnerAndName(user, name);
+
+      if(opMailbox.isPresent()) {
+         throw new IllegalArgumentException("Mailbox already exists");
+      }
+
       Mailbox mailbox = new Mailbox();
-      mailbox.setName(name);
+      mailbox.setName(name); 
       mailbox.setOwner(user);
       mailboxRepository.save(mailbox);
       
       user.getMailboxes().add(mailbox);
       userRepository.save(user);
-   }
 
-   public void createFriendZone(User user) {
-      //
-   }
-   
-   public void rename(Mailbox mailbox, String newName) {
-      mailbox.setName(newName);
+      return mailbox;
    }
    
    // public List<Mail> search(String regex) {
    //    return mailboxRepository.searchMailsByKeyword(regex);
    // }
-
 
    public List<Mail> filter(Long mailboxId, Importance importance, Boolean attachment, Date date1, Date date2) {
       List<Mail> filteredMails = new ArrayList<>();

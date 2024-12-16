@@ -1,6 +1,7 @@
 package email.backend.databaseAccess;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 // import org.springframework.data.jpa.repository.Query;
@@ -18,7 +19,7 @@ public interface MailboxRepository extends JpaRepository<Mailbox, Long> {
  
    List<Mailbox> findByOwner(User owner);
    
-   Mailbox findByOwnerAndName(User owner, String mailboxName);
+   Optional<Mailbox> findByOwnerAndName(User owner, String mailboxName);
 
    // find all mails that contains a certain string
    // @Query("""

@@ -1,17 +1,21 @@
 package email.backend.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import email.backend.DTO.JwtUtil;
+import email.backend.DTO.MailboxDTO;
 import email.backend.services.MailboxService;
 import email.backend.services.UserService;
-// import email.backend.tables.Mailbox;
+import email.backend.tables.Mailbox;
 
-
-import email.backend.tables.User;
-import email.backend.tables.Mail;
-import java.util.List;
 
 @RestController
 @CrossOrigin("*")
@@ -24,19 +28,19 @@ public class MailboxController {
    @Autowired
    private UserService userService;
    
-   @PutMapping("/create")
-   public void createMailbox(@RequestHeader("Authorization") String token) {
-      mailboxService.createCategory(userService.getUser(JwtUtil.getUserFromToken(token)), "New Category");
+   @PutMapping("/add")
+   public ResponseEntity<?> createMailbox(@RequestBody MailboxDTO mailboxDto,
+                                          @RequestHeader("Authorization") String token) {                           
+      try {
+         Mailbox mailbox = mailboxService.createMailbox(userService.getUser(JwtUtil.getUserFromToken(token)), mailboxDto.getName());
+         mailboxDto.setId(mailbox.getId());
+         return ResponseEntity
+            .status(HttpStatus.ACCEPTED)
+            .body(mailboxDto);
+      } catch (Exception e) {
+         return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(e.getMessage());
+      }
    }
-
-   @DeleteMapping("/delete")
-   public void deleteMailbox(@PathVariable Long mailboxId) {
-      mailboxService.delete(mailboxId);
-   }
-
-   @PostMapping("/getMails/{mailboxName}")
-   public List<Mail> getMailbox(@RequestBody User user, @PathVariable String mailboxName) {
-      return mailboxService.getEmailsInMailbox(user, mailboxName);
-   }
-
 }

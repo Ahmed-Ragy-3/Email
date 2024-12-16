@@ -74,12 +74,12 @@ public class UserService {
 
       userRepository.save(newUser);
 
-      mailboxService.createCategory(newUser, "Inbox");
-      mailboxService.createCategory(newUser, "Drafts");
-      mailboxService.createCategory(newUser, "Sent");
-      mailboxService.createCategory(newUser, "Trash");
-      mailboxService.createCategory(newUser, "Starred");
-      mailboxService.createCategory(newUser, "Scheduled");
+      mailboxService.createMailbox(newUser, "Inbox");
+      mailboxService.createMailbox(newUser, "Drafts");
+      mailboxService.createMailbox(newUser, "Sent");
+      mailboxService.createMailbox(newUser, "Trash");
+      mailboxService.createMailbox(newUser, "Starred");
+      mailboxService.createMailbox(newUser, "Scheduled");
       
       return userRepository.save(newUser);
    }
@@ -131,10 +131,6 @@ public class UserService {
       if(!givenContact.isPresent()) {
          throw new IllegalArgumentException("Contact doesn't exist");
       } else {
-         // System.out.println(givenContact.get().getId());
-         // System.out.println(givenContact.get().getUser().getName());
-         // System.out.println(givenContact.get().getContactUser().getName());
-         // contactRepository.deleteById(givenContact.get().getId());
          user.getContacts().remove(givenContact.get());
          userRepository.save(user);
       }
@@ -150,10 +146,6 @@ public class UserService {
       }
 
       return contactsDTO;
-   }
-
-   public boolean isContact(User user1, User user2) {
-      return true;
    }
 
    public boolean validate(String emailAddress) {

@@ -51,7 +51,7 @@ public class MailSenderProxy {
    }
 
    /**
-    * @param user has user2 as a friendZone
+    * @param user that have mailbox
     * @param user2 is
     * returns true if user has a friend zone mailbox containing user2
     */

@@ -54,6 +54,7 @@ public class RegistrationController {
       try {
          User user = userService.createNewAccount(userdto.getName(), userdto.getEmailAddress(), userdto.getPassword());
          System.out.println(user);
+         userdto.setId(user.getId());
          String token = JwtUtil.generateToken(userdto);
          System.out.println(token);
 

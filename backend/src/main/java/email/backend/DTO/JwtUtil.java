@@ -1,14 +1,13 @@
 package email.backend.DTO;
 
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 
 public class JwtUtil {
    private static final String SECRET_KEY = "HaMaDa BeL GaNzAbIl BeL 2OrOnFeL";
@@ -20,7 +19,7 @@ public class JwtUtil {
    public static String generateToken(UserDTO userDto) {
       Map<String, Object> claims = new HashMap<>();
       claims.put("id", userDto.getId());
-      // claims.put("name", userDto.getName());
+      claims.put("name", userDto.getName());
       claims.put("email", userDto.getEmailAddress());
       // claims.put("password", userDto.getPassword());
 
@@ -53,7 +52,7 @@ public class JwtUtil {
 
       UserDTO user = new UserDTO();
       user.setId(Long.parseLong(claims.get("id").toString()));
-      // user.setName(claims.get("name").toString());
+      user.setName(claims.get("name").toString());
       user.setEmailAddress(claims.get("email").toString());
       // user.setPassword(claims.get("password").toString());
       return user;
