@@ -32,6 +32,7 @@ public class MailDTO {
     * Constructor to map Mail entity to MailDTO.
     */
    public MailDTO(Mail mail) {
+      this.id = mail.getId();
       this.subject = mail.getSubject();
       this.content = mail.getContent();
       this.senderAddress = mail.getSender().getEmailAddress();

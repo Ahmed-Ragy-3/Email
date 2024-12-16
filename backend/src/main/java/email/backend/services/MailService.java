@@ -26,8 +26,10 @@ public class MailService {
 
    @Autowired
    private MailRepository mailRepository;
+   
    @Autowired
    private MailboxRepository mailboxRepository;
+   
    @Autowired
    private MailSenderProxy mailSenderProxy;
 
@@ -93,6 +95,7 @@ public class MailService {
       }
 
       mailSenderProxy.sendMail(mail);
+      mailRepository.save(mail);
       return mail;
    }
    

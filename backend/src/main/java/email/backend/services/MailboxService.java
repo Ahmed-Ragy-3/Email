@@ -17,6 +17,7 @@ import email.backend.services.filter.ImportanceCriteria;
 import email.backend.tables.Mail;
 import email.backend.tables.Mailbox;
 import email.backend.tables.User;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -36,30 +37,25 @@ public class MailboxService {
    @Autowired
    private final MailboxRepository mailboxRepository;
 
-   // public List<Mail> getEmailsInMailbox(User user, String mailboxName) {
-   //    Optional<Mailbox> mailbox = mailboxRepository.findByOwnerAndName(user, mailboxName);
-   //    return new ArrayList<Mail>(mailbox.getMails().get());
-   // }
-
+   @Transactional
    public void addTo(Mailbox mailbox, Mail mail) {
       mailbox.getMails().add(mail);
    }
 
-   // @Transactional
+   @Transactional
    public void copyTo(Mail mail, Mailbox mailbox) {
       addTo(mailbox, mail);
    }
    
-   // @Transactional
+   @Transactional
    public void moveTo(Mailbox from, Mailbox to, Mail mail) {
       copyTo(mail, to);
-      deleteFrom(mail, from);
+      deleteFrom(from, mail);
    }
    
-   // @Transactional
-   public void deleteFrom(Mail mail, Mailbox mailbox) {
-      addTo(mailbox, mail);
-    
+   @Transactional
+   public void deleteFrom(Mailbox mailbox, Mail mail) {
+      mailbox.getMails().remove(mail);
    }
 
    public Mailbox getMailbox(Long mailboxId) {

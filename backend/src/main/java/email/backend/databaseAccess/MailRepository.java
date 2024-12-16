@@ -1,13 +1,13 @@
 package email.backend.databaseAccess;
 
-import email.backend.tables.Mail;
-import email.backend.tables.User;
-// import email.backend.services.Importance;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import java.util.List;
+import email.backend.tables.Mail;
+import email.backend.tables.User;
+// import email.backend.services.Importance;
 
 @EnableJpaRepositories
 public interface MailRepository extends JpaRepository<Mail, Long> {

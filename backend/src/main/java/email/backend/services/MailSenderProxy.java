@@ -13,7 +13,6 @@ import email.backend.tables.Contact;
 import email.backend.tables.Mail;
 import email.backend.tables.Mailbox;
 import email.backend.tables.User;
-import jakarta.transaction.Transactional;
 
 @Service
 public class MailSenderProxy {
@@ -110,7 +109,7 @@ public class MailSenderProxy {
    private Mail handleScheduling(Mail mail) {    // Gate 2
       
       Runnable task = () -> {
-         // remove from scheduled
+         mailboxService.deleteFrom(mailboxService.getMailbox(mail.getSender(), MailboxService.SCHEDULED_INDEX), mail);
          sendToDatabase(mail);
          sendInstantly(mail);
       };
@@ -120,12 +119,13 @@ public class MailSenderProxy {
       return mail;
    }
 
-   @Transactional
    private void sendToDatabase(Mail mail) {      // Gate 3
       
       Mailbox friendMailbox;
       User sender = mail.getSender();
       
+      // Hibernate.initialize(sender.getMailboxes());
+
       for (User receiver : mail.getReceivers()) {
          friendMailbox = getFriendZone(sender, receiver);
 

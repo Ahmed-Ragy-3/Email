@@ -80,6 +80,7 @@ public class UserService {
       mailboxService.createMailbox(newUser, "Trash");
       mailboxService.createMailbox(newUser, "Starred");
       mailboxService.createMailbox(newUser, "Scheduled");
+      mailboxService.createMailbox(newUser, "Spam");
       
       return userRepository.save(newUser);
    }

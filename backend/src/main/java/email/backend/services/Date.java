@@ -44,6 +44,8 @@ public class Date {
       LocalDateTime now = LocalDateTime.now();
 
       switch (dateString) {
+         case "1-mins":
+            return new Date(now.plusMinutes(1));
          case "5-mins":
             return new Date(now.plusMinutes(5));
          case "10-mins":

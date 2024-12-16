@@ -21,6 +21,7 @@ public interface MailboxRepository extends JpaRepository<Mailbox, Long> {
    
    Optional<Mailbox> findByOwnerAndName(User owner, String mailboxName);
 
+
    // find all mails that contains a certain string
    // @Query("""
    //    SELECT m

@@ -48,7 +48,7 @@ public class MailController {
    public ResponseEntity<?> sendMail(@RequestBody MailDTO mailDto,
                         @RequestHeader("Authorization") String token) {
       try {
-         Mail mail = mailService.sendMail(userService.getUser(token), mailDto);                    
+         Mail mail = mailService.sendMail(userService.getUser(token), mailDto);
          return ResponseEntity
                .status(HttpStatus.ACCEPTED)
                .body(new MailDTO(mail));

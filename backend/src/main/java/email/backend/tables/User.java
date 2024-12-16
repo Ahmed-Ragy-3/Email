@@ -34,7 +34,8 @@ public class User {
    @Column(nullable = false)
    private String password;
 
-   @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+   // @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+   @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
    private List<Mailbox> mailboxes = new ArrayList<>();
 
    @JsonIgnore
