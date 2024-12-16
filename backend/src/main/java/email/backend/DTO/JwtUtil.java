@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import email.backend.tables.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 

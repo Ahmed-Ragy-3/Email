@@ -1,19 +1,22 @@
 package email.backend.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.http.HttpStatus;
-// import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-// import org.springframework.web.server.ResponseStatusException;
+import java.util.List;
 
-// import email.backend.databaseAccess.UserRepository;
-import email.backend.services.UserService;
-import email.backend.services.MailboxService;
-import email.backend.tables.User;
-// import email.backend.tables.Mail;
-// import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-// import java.util.List;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import email.backend.DTO.ContactDTO;
+import email.backend.services.UserService;
 
 
 @RestController
@@ -22,30 +25,76 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class UserController {
 
    @Autowired
-   UserService userService;
+   private UserService userService;
 
-   @Autowired
-   MailboxService mailboxService;
-   
-   // @PostMapping("/getMails/{mailboxName}")
-   // public List<Mail> getMailbox(@PathVariable String mailboxName, @RequestHeader("Authorization") String authHeader) {
-   //    // Extract the token from the Authorization header (assuming it's prefixed with "Bearer ")
-   //    String token = authHeader.substring(7); // "Bearer " is 7 characters long
+   @PutMapping("/contact/add")
+   public ResponseEntity<?> addContact(
+      @RequestBody ContactDTO contactDto,
+      @RequestHeader("Authorization") String token) {
+      
+      try {
+         ContactDTO newContact = userService.addContact(userService.getUser(token), contactDto);
+         
+         return ResponseEntity
+            .status(HttpStatus.ACCEPTED)
+            .body(newContact);
+      } catch (Exception e) {
+         return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(e.getMessage());
+      }
+   }
 
-   //    // Decode the token and get the user ID
-   //    long userId = userService.extractUserId("iuofwe", token);
+   @PutMapping("/contact/edit")
+   public ResponseEntity<?> editContact(
+      @RequestBody ContactDTO contactDto,
+      @RequestHeader("Authorization") String token) {
+      
+      try {
+         ContactDTO contact = userService.editContact(userService.getUser(token), contactDto);
+         
+         return ResponseEntity
+            .status(HttpStatus.ACCEPTED)
+            .body(contact);
+      } catch (Exception e) {
+         return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(e.getMessage());
+      }
+   }
 
-   //    // Fetch the user based on the user ID
-   //    User user = userService.getUser(userId);
+   @DeleteMapping("/contact/delete")
+   public ResponseEntity<?> deleteContact(
+      @RequestBody ContactDTO contactDto,
+      @RequestHeader("Authorization") String token ) {
+      try {
+         userService.deleteContact(userService.getUser(token), contactDto);
+          return ResponseEntity
+            .status(HttpStatus.ACCEPTED)
+            .body("Contact Deleted");
+      } catch (Exception e) {
+         return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(e.getMessage());
+      }
+   }
 
-   //    return mailboxService.getEmailsInMailbox(user, mailboxName);
-   // }
-
+   @GetMapping("/contacts")
+   public ResponseEntity<?> getContacts(@RequestHeader("Authorization") String token) {
+      try {
+         List<ContactDTO> contacts = userService.getContacts(userService.getUser(token));
+          return ResponseEntity
+            .status(HttpStatus.ACCEPTED)
+            .body(contacts);
+      } catch (Exception e) {
+         return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(e.getMessage());
+      }
+   }
 
    @DeleteMapping("/delete/{userId}")
    public void deleteUser(@PathVariable Long userId) {
       // userService.deleteUser(userService.getUser(userId));
    }
- 
-
 }

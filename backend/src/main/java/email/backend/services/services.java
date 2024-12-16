@@ -1,6 +1,5 @@
 package email.backend.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 
 import email.backend.databaseAccess.MailRepository;
 import email.backend.databaseAccess.MailboxRepository;

@@ -1,11 +1,13 @@
 package email.backend.services;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 @Embeddable
 @AllArgsConstructor
 @NoArgsConstructor
@@ -38,7 +40,7 @@ public class Date {
       );
    }
    
-   public static Date getDateFromSTring(String dateString) {
+   public static Date getDateFromString(String dateString) {
       LocalDateTime now = LocalDateTime.now();
 
       switch (dateString) {
@@ -48,7 +50,6 @@ public class Date {
             return new Date(now.plusMinutes(10));
          case "30-mins":
             return new Date(now.plusMinutes(30));
-         
          case "1-hour":
             return new Date(now.plusHours(1));
          case "2-hours":
@@ -64,6 +65,13 @@ public class Date {
          default:
             throw new IllegalArgumentException("Unsupported date string: " + dateString);
       }
+   }
+
+
+   public java.time.Instant toInstant() {
+      return LocalDateTime.of(this.year, this.month, this.day, this.hour, this.minute)
+                        .atZone(ZoneId.systemDefault())
+                        .toInstant();
    }
 
    public boolean future() {
@@ -101,4 +109,5 @@ public class Date {
       
       return 0;
    }
+
 }

@@ -1,16 +1,31 @@
 package email.backend.tables;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import email.backend.services.Date;
 import email.backend.services.Importance;
-
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.List;
 
 @Entity
 @Getter
@@ -45,7 +60,8 @@ public class Mail {
    @Embedded
    private Date date;
 
-   @OneToMany(mappedBy = "mail", cascade = CascadeType.ALL, orphanRemoval = true)
+   @OneToMany(mappedBy = "mail", fetch = FetchType.LAZY, orphanRemoval = true)
+   @JsonIgnore
    private List<Attachment> attachments;
 
    @ManyToMany
@@ -55,5 +71,16 @@ public class Mail {
       inverseJoinColumns = @JoinColumn(name = "user_id")
    )
    private List<User> receivers;  // Added receivers list
+
+   @Transient
+   private List<Long> attachmentIds;
+
+   // Getter for attachmentIds
+   public List<Long> getAttachmentIds() {
+      if (attachments == null) {
+         return List.of(); // Return an empty list if attachments are not initialized
+      }
+      return attachments.stream().map(Attachment::getId).toList();
+   }
 
 }

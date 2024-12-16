@@ -3,12 +3,9 @@ package email.backend.DTO;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import email.backend.services.Date;
 import email.backend.services.MailService;
 import email.backend.services.UserService;
-import email.backend.tables.Attachment;
 import email.backend.tables.Mail;
 import email.backend.tables.User;
 import lombok.AllArgsConstructor;
@@ -22,12 +19,13 @@ import lombok.Setter;
 @NoArgsConstructor
 public class MailDTO {
 
+   private Long id;
    private String subject;
    private String content;
    private String senderAddress;
    private String importance;
    private String dateString;
-   private List<Attachment> attachments = new ArrayList<>();
+   // private List<Long> attachmentsIds = new ArrayList<>();
    private List<String> receiversAddresses = new ArrayList<>();
 
    /**
@@ -45,7 +43,7 @@ public class MailDTO {
             this.receiversAddresses.add(user.getEmailAddress());
          }
       }
-      this.attachments = mail.getAttachments();
+      // this.attachments = mail.getAttachments();
    }
 
    /**
@@ -57,9 +55,12 @@ public class MailDTO {
     * @return A new Mail object
     */
    public Mail toMail(User sender, UserService userService, MailService mailService) {
-      Date date = (dateString == null || dateString.equalsIgnoreCase("now") || dateString.isEmpty())
-            ? Date.getTodaysDate()
-            : Date.getDateFromSTring(dateString);
+      Date date;
+      if(dateString == null || dateString.equalsIgnoreCase("now") || dateString.isEmpty()) {
+         date = Date.getTodaysDate();
+      }else {
+         date = Date.getDateFromString(dateString);
+      }
 
       List<User> receivers = new ArrayList<>();
       for (String userAddress : this.getReceiversAddresses()) {
@@ -73,8 +74,8 @@ public class MailDTO {
             .sender(sender)
             .importance(mailService.getImportanceFromString(this.importance))
             .date(date)
-            .attachments(attachments)
             .receivers(receivers)
             .build();
+            // .attachments(attachments)
    }
 }

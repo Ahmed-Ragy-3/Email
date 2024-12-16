@@ -1,6 +1,8 @@
 package email.backend.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,10 +33,28 @@ public class MailController {
    @PutMapping("/create")
    public MailDTO createMail(@RequestBody MailDTO maildDto,
                           @RequestHeader("Authorization") String token) {
-      System.out.println("entered request");
+      // System.out.println("entered request");
       Mail mail = maildDto.toMail(userService.getUser(token), userService, mailService);
       mailService.createMailToDrafts(mail);
       return new MailDTO(mail);
+   }
+
+   @PutMapping("/send")
+   public ResponseEntity<?> sendMail(@RequestBody MailDTO mailDto,
+                        @RequestHeader("Authorization") String token) {
+      try {
+         Mail mail = mailService.sendMail(userService.getUser(token), mailDto);                    
+         return ResponseEntity
+               .status(HttpStatus.ACCEPTED)
+               .body(new MailDTO(mail));
+      
+      } catch (Exception e) {
+         System.out.println(e.getMessage());
+         
+         return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(e.getMessage());
+      }
    }
 
    @DeleteMapping("/delete/{mailId}")

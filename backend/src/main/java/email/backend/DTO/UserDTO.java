@@ -1,12 +1,13 @@
 package email.backend.DTO;
 
-import lombok.AllArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-// @Builder
 @Setter
 @Getter
 @AllArgsConstructor
@@ -16,4 +17,6 @@ public class UserDTO {
    private String emailAddress;
    private String name;
    private String password;
+
+   private List<ContactDTO> contacts = new ArrayList<>();
 }
