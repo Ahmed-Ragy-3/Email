@@ -42,3 +42,16 @@ attachment:
    name
    data
    mail
+
+
+
+Used design pattern:
+   Adapter (dto)
+   Fascade (dto)
+   Proxy
+   Filter   dp
+   Factory
+   Strategy
+
+   Builder     (spring)
+   Singleton   (spring)

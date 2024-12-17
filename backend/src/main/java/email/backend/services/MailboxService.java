@@ -40,6 +40,7 @@ public class MailboxService {
    @Transactional
    public void addTo(Mailbox mailbox, Mail mail) {
       mailbox.getMails().add(mail);
+      mailboxRepository.save(mailbox);
    }
 
    @Transactional
@@ -53,9 +54,10 @@ public class MailboxService {
       deleteFrom(from, mail);
    }
    
-   @Transactional
+   // @Transactional
    public void deleteFrom(Mailbox mailbox, Mail mail) {
       mailbox.getMails().remove(mail);
+      mailboxRepository.save(mailbox);
    }
 
    public Mailbox getMailbox(Long mailboxId) {

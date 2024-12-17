@@ -7,12 +7,15 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
 import email.backend.DTO.MailDTO;
+import email.backend.DTO.WebSocketMsgDTO;
+// import email.backend.DTO.WebsocketMsgDTO;
 import email.backend.controllers.EmailWebSocketController;
 import email.backend.databaseAccess.ContactRepository;
 import email.backend.tables.Contact;
 import email.backend.tables.Mail;
 import email.backend.tables.Mailbox;
 import email.backend.tables.User;
+import jakarta.transaction.Transactional;
 
 @Service
 public class MailSenderProxy {
@@ -101,7 +104,6 @@ public class MailSenderProxy {
          return handleScheduling(mail);
       }
       sendToDatabase(mail);
-      sendInstantly(mail);
 
       return mail;
    }
@@ -111,7 +113,6 @@ public class MailSenderProxy {
       Runnable task = () -> {
          mailboxService.deleteFrom(mailboxService.getMailbox(mail.getSender(), MailboxService.SCHEDULED_INDEX), mail);
          sendToDatabase(mail);
-         sendInstantly(mail);
       };
 
       taskScheduler.schedule(task, mail.getDate().toInstant());
@@ -119,17 +120,19 @@ public class MailSenderProxy {
       return mail;
    }
 
+   // @Transactional
    private void sendToDatabase(Mail mail) {      // Gate 3
       
       Mailbox friendMailbox;
       User sender = mail.getSender();
-      
-      // Hibernate.initialize(sender.getMailboxes());
+      MailDTO mailDto = new MailDTO(mail);
+
+      String receiverMailboxName = "";
 
       for (User receiver : mail.getReceivers()) {
          friendMailbox = getFriendZone(sender, receiver);
 
-         if(friendMailbox != null) { 
+         if(friendMailbox != null) {
             friendMailbox.getMails().add(mail);
          } else {
             mailboxService.addTo(sender.getMailboxes().get(MailboxService.SENT_INDEX), mail);
@@ -139,20 +142,21 @@ public class MailSenderProxy {
 
          if(friendMailbox != null) {
             friendMailbox.getMails().add(mail);
+            receiverMailboxName = friendMailbox.getName();
          } else {
             mailboxService.addTo(receiver.getMailboxes().get(MailboxService.INBOX_INDEX), mail);
+            receiverMailboxName = receiver.getMailboxes().get(MailboxService.INBOX_INDEX).getName();
          }
-      }
-   }
-
-   private void sendInstantly(Mail mail) {          // Gate 4
-      // send email by websockets
-      MailDTO mailDto = new MailDTO(mail);
-      try {
-         socketSender.sendEmail(mailDto, mailDto.getSenderAddress());
-      } catch(Exception e) {
-         System.out.println("Error in sending websocket message");
-         System.out.println(e.getMessage());
+         
+         try {
+            for (String recieverAddress : mailDto.getReceiversAddresses()) {
+               socketSender.sendEmail(new WebSocketMsgDTO(new MailDTO(mail), receiverMailboxName),
+               recieverAddress, mailDto.getSenderAddress());
+            }
+         } catch(Exception e) {
+            System.out.println("Error in sending websocket message");
+            System.out.println(e.getMessage());
+         }
       }
    }
 }
