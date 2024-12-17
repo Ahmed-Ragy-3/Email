@@ -22,7 +22,7 @@ public class EmailWebSocketController {
             // recieverAddress = recieverAddress.split("@mail.com")[0];
             String destination = "/topic/emails/" + recieverAddress;
             System.out.println(destination);
-            simpMessagingTemplate.convertAndSend(destination, emailAddress);
+            simpMessagingTemplate.convertAndSend(destination,mailDto);
         }
         System.out.println("Done sending by websockets to all recievers");
     }

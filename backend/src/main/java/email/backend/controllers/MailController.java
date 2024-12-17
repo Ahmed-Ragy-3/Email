@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import email.backend.DTO.MailDTO;
@@ -45,10 +46,9 @@ public class MailController {
    }
 
    @PostMapping("/send")
-   public ResponseEntity<?> sendMail(@RequestBody MailDTO mailDto,
-                        @RequestHeader("Authorization") String token) {
+   public ResponseEntity<?> sendMail(@RequestBody MailDTO mailDto) {
       try {
-         Mail mail = mailService.sendMail(userService.getUser(token), mailDto);
+         Mail mail = mailService.sendMail(userService.getUserFromAddress(mailDto.getSenderAddress()), mailDto);
          return ResponseEntity
                .status(HttpStatus.ACCEPTED)
                .body(new MailDTO(mail));
@@ -76,6 +76,14 @@ public class MailController {
       }
    }
    
+   @GetMapping("/getmail")
+   public Mail getSingleMail(@RequestParam long id)
+   {
+         System.out.println("here");
+         Mail email = mailService.getMailById(id);
+         return email;
+   }
+
    @DeleteMapping("/delete/{mailId}")
    public void deleteMail(@PathVariable Long mailId) {
       mailService.deleteEmail(mailId);
