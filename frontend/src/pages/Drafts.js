@@ -1,12 +1,12 @@
 import EmailList from "../components/EmailList";
 
-const Drafts = ({emails}) => {
+const Drafts = ({emails , pagination}) => {
   // Filter emails to only include those in the "inbox" folder
-  const draftEmails = emails.filter(email => email.folder === "drafts");
+  const draftEmails = emails
 
   return (
     <div className="text-white">
-      <EmailList emails = {draftEmails}></EmailList>
+      <EmailList emails = {draftEmails}  emailsPerPage={pagination}></EmailList>
     </div>
   );
   };

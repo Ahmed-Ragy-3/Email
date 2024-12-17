@@ -23,65 +23,76 @@ import axios from "axios";
 // Define NoPage component to handle undefined routes
 // Layout component (to wrap common layout components like Sidebar and Navbar)
 const Layout = ({emails}) => {  
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState("");
   const [stompClient, setStompClient] = useState(null);
-  const [userEmails,setUserEmails] = useState([])
-  const navigate = useNavigate()
+  const [folders, setFolders] = useState([]); // Initialize state as empty array
+  const [userName, setUserName] = useState();
+  const navigate = useNavigate();
+
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token) {
+    if (!token || typeof token !== 'string') {
       navigate('/login');
+      return;
     }
-  }, [navigate]);
   
+    const decodedToken = jwtDecode(token);
+    setUserName(decodedToken.name);
+    const email = decodedToken.email;
   
-  // If no token, do not render the rest of the component
-  const token = localStorage.getItem('token');
-  const decodedToken = jwtDecode(token)
-  
-  const userName = decodedToken.name;
-  const email = decodedToken.email
-
-    
-
-  useEffect(() => {
     const socket = new SockJS("http://localhost:8080/ws");
     const client = Stomp.over(socket);
   
     client.connect({}, () => {
       console.log("Connected to WebSocket server");
-  
-      // Send the message after successful connection
-      client.send("/app/send-email", {'email' : email}, JSON.stringify({ 'name': 'Spring' }));
-      
       client.subscribe(`/topic/emails/${email}`, (msg) => {
         console.log("Received ", msg.body);
+        const newMail = JSON.parse(msg.body);
+        console.log(newMail)
+        setFolders((prevFolders) => {
+          if (!prevFolders || prevFolders.length === 0) {
+            console.error("Folders are empty or undefined");
+            return prevFolders; // Early return to prevent errors
+          }
+        
+          // Ensure `mails` exists
+          const updatedFolders = [...prevFolders];
+          const firstFolder = { ...updatedFolders[0] };
+          firstFolder.mails = [...(firstFolder.mails || []), newMail]; // Add newMail immutably
+        
+          updatedFolders[0] = firstFolder;
+          return updatedFolders;
+        });
+        console.log(folders)
       });
     });
     setStompClient(client);
-    const getMails = async () => {
-      console.log("sending email " ,email)
-      const response = await axios.post("http://localhost:8080/mail/allMails",{
-        "email" : email
-      })
-      console.log(response)
-      setUserEmails(response.data)
-    }
-      
-    getMails()
-  }, []);
   
-  console.log("name : " +userName)
+    const getMails = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/mail/all", {
+          headers: { "Authorization": token }
+        });
+        console.log(response);
+        setFolders(response.data); // Update the folders state here
+      } catch (error) {
+        console.error("Error fetching emails:", error);
+      }
+    };
+  
+    getMails();
+  }, []); // Empty dependency array ensures this only runs once on mount
+  
   return (
     <div className="h-screen overflow-clip bg-[#003C43]">
         <Navbar setSearchQuery={setSearchQuery} username={userName}/>
       <div className="h-full flex">
-        <Sidebar emails={emails} client = {stompClient}/>
+        <Sidebar emails={emails} client = {stompClient} folders={folders}/>
         <Routes>
           <Route path="/email/:id" element={<FullEmailView emails = {emails}/>}>
 
           </Route>
-          <Route path="*" element={<Mainbox emails={emails} searchQuery={searchQuery}/>}></Route>
+          <Route path="*" element={<Mainbox emails={emails} folders ={folders} searchQuery={searchQuery}/>}></Route>
         </Routes>
       </div>
     </div>

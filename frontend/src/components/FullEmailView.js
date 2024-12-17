@@ -1,20 +1,30 @@
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons/faArrowLeft";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-
-function FullEmailView({ emails }) {
-  console.log(emails)
-  emails = emails.emails
+function FullEmailView({  }) {
   const { id } = useParams();
   const navigate = useNavigate();
-
+  const [email, setemail] = useState()
   const handleGoBack = () => {
     navigate(-1); // Go back to the previous page
   };
 
   // Find the email by ID
-  const email = emails.find((_, index) => index.toString() === id);
+  useEffect(() => {
+    const getEmail = async () => {
+      const response = await axios.get(`http://localhost:8080/mail/getmail?id=${id}`,
+        {
+          "id" : id
+        }
+      )
+      console.log(response.data)
+      setemail(response.data)
+    }
+    getEmail()
+  }, [])
+  
 
   if (!email) {
     return (
@@ -41,11 +51,11 @@ function FullEmailView({ emails }) {
       >
         <FontAwesomeIcon icon={faArrowLeft} /> Back
       </button>
-      <p className="text-2xl">From: {email.sender}</p>
-      <p className="text-opacity-40 text-white">Sent: {email.date}</p>
+      <p className="text-2xl">From: {email.sender.emailAddress}</p>
+      <p className="text-opacity-40 text-white">Sent: {email.dateString}</p>
       <p className="text-2xl">Subject: {email.subject}</p>
       <hr />
-      <p>{email.body}</p>
+      <div dangerouslySetInnerHTML={{__html : email.content}} className="text-3xl py-4"></div>
       <hr />
     </div>
   );

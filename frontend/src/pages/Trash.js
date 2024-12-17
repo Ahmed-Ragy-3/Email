@@ -1,12 +1,12 @@
 import EmailList from "../components/EmailList";
 
-const Trash = ({emails}) => {
+const Trash = ({emails, pagination}) => {
 
-  const trashEmails = emails.filter(email => email.folder === "trash");
+  const trashEmails = emails
 
   return (
     <div className="text-white">
-      <EmailList emails={trashEmails}></EmailList>
+      <EmailList emails={trashEmails}  emailsPerPage={pagination}></EmailList>
     </div>
   );
   };

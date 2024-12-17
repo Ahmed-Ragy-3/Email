@@ -1,6 +1,8 @@
 import React, { useState, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile, faPaperPlane, faTrash, faPalette } from "@fortawesome/free-solid-svg-icons";
+import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 
 function Compose({ closeModal , client}) {
   const [attachments, setAttachments] = useState([]);
@@ -42,22 +44,36 @@ function Compose({ closeModal , client}) {
     setSelectedContacts((prev) => prev.filter((c) => c !== contact));
   };
 
-  const upload = ()=>{
+  const upload = async ()=>{
     let e = document.getElementById("text-field")
     let subject_field = document.getElementById("subject")
     let time_options = document.getElementById("time-options")
     let importance = document.getElementById("importance")
-    console.log(`{
-        "subject" : ${subject_field.value},
-        "time_options": ${time_options.value},
-        "importance" : ${importance.value},
-        "body" : ${e.innerHTML},
-        "receivers" : ${selectedContacts}
-      }`)
-    console.log(e.innerHTML)
-    console.log(client)
-    console.log(attachments)
-    
+    let token = localStorage.getItem('token')
+    let decodedtoken = jwtDecode(token)
+    let email = decodedtoken.email;
+    console.log(token)
+    let data_sent = {
+      "senderAddress": email,
+      "receiversAddresses": selectedContacts,
+      "content": e.innerHTML,
+      "subject": subject_field.value,
+      "importance": importance.value,
+      // "attachments": attachments,
+      "dateString": time_options.value
+  }
+    console.log(data_sent)
+    let response = await axios.post(
+      "http://localhost:8080/mail/send",
+      data_sent,  // Send the data in the request body
+      {
+        headers: {
+          'Authorization': token,  // Add the token to the Authorization header
+          'Content-Type': 'application/json'  // Ensure the content type is JSON
+        }
+      }
+    );
+    console.log(response)
   };
   // Handle file uploads
   const handleFileUpload = (e) => {
@@ -70,7 +86,16 @@ function Compose({ closeModal , client}) {
 
     e.target.value = ""; // Clear the input value after upload
   };
-
+  const addEmail =()=>
+  {
+    let contact = contactInput
+    console.log(contact)
+    if (!selectedContacts.includes(contact)) {
+      setSelectedContacts((prev) => [...prev, contact]);
+    }
+    setContactInput("");
+    setFilteredContacts([]);
+  }
   // Remove a specific attachment
   const removeAttachment = (index) => {
     // Clean up the object URL
@@ -145,6 +170,14 @@ function Compose({ closeModal , client}) {
             id="to"
             value={contactInput}
             onChange={handleContactInput}
+            onKeyDown={(e)=>
+            {
+              if(e.key == "Enter")
+              {
+                addEmail()
+              }
+            }
+            }
             className="flex-grow p-2 outline-none mt-2"
             placeholder="Search or add a contact"
           />
@@ -264,6 +297,7 @@ function Compose({ closeModal , client}) {
             className="border-2 border-gray-400 rounded-xl p-2 hover:cursor-pointer active:scale-105"
           >
             <option value="now">Now</option>
+            <option value="1-mins">1 mins</option>
             <option value="5-mins">5 mins</option>
             <option value="10-mins">10 mins</option>
             <option value="30-mins">30 mins</option>
@@ -284,10 +318,10 @@ function Compose({ closeModal , client}) {
             id="importance"
             className="border-2 border-gray-400 rounded-xl p-2 hover:cursor-pointer active:scale-105"
           >
-            <option value="delayable">Delayable</option>
-            <option value="normal">Normal</option>
-            <option value="important">Important</option>
-            <option value="urgent">Urgent</option>
+            <option value="DELAYABLE">Delayable</option>
+            <option value="NORMAL">Normal</option>
+            <option value="IMPORTANT">Important</option>
+            <option value="URGENT">Urgent</option>
           </select>
         </div>
 

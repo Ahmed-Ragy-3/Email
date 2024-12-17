@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from "react";
-import { Routes, Route } from "react-router-dom";
+import React, { useState, useMemo, useEffect } from "react";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import Inbox from "../pages/Inbox";
 import Sent from "../pages/Sent";
 import Spam from "../pages/Spam";
@@ -7,127 +7,200 @@ import Starred from "../pages/Starred";
 import Trash from "../pages/Trash";
 import Drafts from "../pages/Drafts";
 import FullEmailView from "./FullEmailView";
+import axios from "axios";
 
-function Mainbox({ emails , searchQuery}) {
-  emails = emails.emails;
-  // State to track the sorting method, sort direction, and filters
-  const [sortBy, setSortBy] = useState("date"); // Default sort by date
-  const [isDescending, setIsDescending] = useState(false); // Default to ascending
-  const [filterSender, setFilterSender] = useState(""); // Filter by sender
-  const [filterSubject, setFilterSubject] = useState(""); // Filter by subject
-  const [filterStartDate, setFilterStartDate] = useState(""); // Filter by start date
-  const [filterEndDate, setFilterEndDate] = useState(""); // Filter by end date
+function Mainbox({ folders, searchQuery }) {
+  console.log("folders in mainbox are ", folders);
+  let path = window.location.pathname;
+  console.log(path);
+  let newmails;
 
-  // Function to sort emails by date
-  const sortByDate = (a, b) => {
-    const dateA = new Date(a.date);
-    const dateB = new Date(b.date);
-    return isDescending ? dateA - dateB : dateB - dateA; // Toggle sorting order
+  if (path === "/") {
+    newmails = folders[0]?.mails || [];
+  } else if (path === "/drafts") {
+    newmails = folders[1]?.mails || [];
+  } else if (path === "/sent") {
+    newmails = folders[2]?.mails || [];
+  } else if (path === "/trash") {
+    newmails = folders[3]?.mails || [];
+  } else if (path === "/starred") {
+    newmails = folders[4]?.mails || [];
+  } else if (path === "/scheduled") {
+    newmails = folders[5]?.mails || [];
+  } else if (path === "/spam") {
+    newmails = folders[6]?.mails || [];
+  }
+  let emails = newmails;
+  console.log(emails);
+  const importancePriority = {
+    DELAYABLE: 0,
+    NORMAL: 1,
+    IMPORTANT: 2,
+    URGENT: 3,
   };
 
-  // Function to sort emails by subject
+  const sortByImportance = (a, b) => {
+    const importanceA = importancePriority[a.importance] || 0;
+    const importanceB = importancePriority[b.importance] || 0;
+    return isDescending ? importanceB - importanceA : importanceA - importanceB;
+  };
+
+  // State to track sorting, filters, and sorting order
+  const [sortBy, setSortBy] = useState("dateString");
+  const [isDescending, setIsDescending] = useState(true);
+  const [filterSender, setFilterSender] = useState("");
+  const [filterSubject, setFilterSubject] = useState("");
+  const [filterStartDate, setFilterStartDate] = useState("");
+  const [filterEndDate, setFilterEndDate] = useState("");
+  const [filterImportance, setFilterImportance] = useState("");
+  const parseCustomDate = (dateString) => {
+    // Example input: "17 / 12 / 2024 | 2: 18"
+    const [datePart, timePart] = dateString.split(" | ");
+    const [day, month, year] = datePart.split(" / ").map(Number);
+    const [hour, minute] = timePart.split(":").map((val) => Number(val.trim()));
+  
+    // Convert to valid ISO string
+    return new Date(year, month - 1, day, hour, minute);
+  };
+  // Sorting functions
+  const sortByDate = (a, b) => {
+    const dateA = parseCustomDate(a.dateString);
+    const dateB = parseCustomDate(b.dateString);
+    console.log(dateA , dateB)
+    return isDescending ? dateB - dateA : dateA - dateB;
+  };
+
   const sortBySubject = (a, b) => {
     return isDescending
-      ? b.subject.localeCompare(a.subject) // Reverse alphabetical order
-      : a.subject.localeCompare(b.subject); // Alphabetical order
+      ? b.subject.localeCompare(a.subject)
+      : a.subject.localeCompare(b.subject);
   };
 
-  // Function to sort emails by sender
   const sortBySender = (a, b) => {
     return isDescending
-      ? b.sender.localeCompare(a.sender) // Reverse alphabetical order
-      : a.sender.localeCompare(b.sender); // Alphabetical order
+      ? b.senderAddress.localeCompare(a.senderAddress)
+      : a.senderAddress.localeCompare(b.senderAddress);
   };
 
-  // Function to handle sorting based on the selected option
   const handleSort = (e) => {
     setSortBy(e.target.value);
   };
 
-  // Toggle between ascending and descending order
   const toggleSortOrder = () => {
     setIsDescending((prev) => !prev);
   };
 
-  // Function to clear all filters
   const clearFilters = () => {
     setFilterSender("");
     setFilterSubject("");
     setFilterStartDate("");
     setFilterEndDate("");
+    setFilterImportance(""); // Clear importance filter
   };
 
-  // Filter function to filter by sender, subject, and date range
+  // Filtered and sorted emails
   const filteredEmails = useMemo(() => {
     return emails
-        .filter((email) => {
-            const senderMatch = filterSender ? email.sender === filterSender : true;
-            const subjectMatch = filterSubject ? email.subject === filterSubject : true;
-            const startDateMatch = filterStartDate ? new Date(email.date) >= new Date(filterStartDate) : true;
-            const endDateMatch = filterEndDate ? new Date(email.date) <= new Date(filterEndDate) : true;
-            const searchMatch = 
-                searchQuery ? 
-                    email.subject.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                    email.sender.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                    email.body.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    email.date.toLowerCase().includes(searchQuery.toLowerCase())
-                : true; 
-            return senderMatch && subjectMatch && startDateMatch && endDateMatch && searchMatch;
-        })
-        .sort(
-            sortBy === "subject"
-                ? sortBySubject
-                : sortBy === "sender"
-                ? sortBySender
-                : sortByDate
-        );
-}, [emails, filterSender, filterSubject, filterStartDate, filterEndDate, sortBy, isDescending, searchQuery]);
+      .filter((email) => {
+        // Function to remove HTML tags from content
+        const removeHTMLTags = (text) => text.replace(/<[^>]*>/g, '');
+  
+        // Remove HTML tags from email content for search comparison
+        const plainContent = removeHTMLTags(email.content).toLowerCase();
+  
+        const senderMatch = filterSender
+          ? email.senderAddress === filterSender
+          : true;
+        const subjectMatch = filterSubject
+          ? email.subject === filterSubject
+          : true;
+        const startDateMatch = filterStartDate
+          ? new Date(email.dateString) >= new Date(filterStartDate)
+          : true;
+        const endDateMatch = filterEndDate
+          ? new Date(email.dateString) <= new Date(filterEndDate)
+          : true;
+        const importanceMatch = filterImportance
+          ? email.importance === filterImportance
+          : true;
+  
+        // Modify the search match logic to also use plainContent (without HTML tags)
+        const searchMatch = searchQuery
+          ? email.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            email.senderAddress
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            plainContent.includes(searchQuery.toLowerCase()) ||  // Search within plain text content
+            email.dateString.toLowerCase().includes(searchQuery.toLowerCase())
+          : true;
+  
+        return senderMatch && subjectMatch && startDateMatch && endDateMatch && importanceMatch && searchMatch;
+      })
+      .sort(
+        sortBy === "subject"
+          ? sortBySubject
+          : sortBy === "sender"
+          ? sortBySender
+          : sortBy === "importance"
+          ? sortByImportance
+          : sortByDate
+      );
+  }, [
+    emails,
+    filterSender,
+    filterSubject,
+    filterStartDate,
+    filterEndDate,
+    filterImportance, // Added filterImportance to dependency list
+    sortBy,
+    isDescending,
+    searchQuery,
+  ]);
 
-  // Get unique senders and subjects for dropdowns
-  const uniqueSenders = [...new Set(emails.map((email) => email.sender))];
+  const uniqueSenders = [...new Set(emails.map((email) => email.senderAddress))];
   const uniqueSubjects = [...new Set(emails.map((email) => email.subject))];
-
+  const [paginationNumber, setpaginationNumber] = useState(5)
+  const uniqueImportance = ["DELAYABLE", "NORMAL", "IMPORTANT", "URGENT"]; // Unique importance options
   return (
-    
     <div
       id="main-box"
       className="h-full basis-[89%] px-6 py-6 bg-[#135D66] overflow-auto rounded-3xl shadow-inner shadow-gray-800 pb-[5%]"
     >
-
       {/* Sorting options */}
       <div className="mb-4 flex items-center">
-        <label htmlFor="sort" className="text-white mr-2">
-          Sort By
-        </label>
-        <select
-          id="sort"
-          value={sortBy}
-          onChange={handleSort}
-          className="p-2 bg-[#135D66] text-white rounded-md hover:bg-[#0A4D5A]"
-        >
-          <option value="date" className="bg-[#135D66] hover:bg-[#0A4D5A]">
-            Date
-          </option>
-          <option value="subject" className="bg-[#135D66] hover:bg-[#0A4D5A]">
-            Subject
-          </option>
-          <option value="sender" className="bg-[#135D66] hover:bg-[#0A4D5A]">
-            Sender
-          </option>
-        </select>
+  <label htmlFor="sort" className="text-white mr-2">
+    Sort By
+  </label>
+  <select
+    id="sort"
+    value={sortBy}
+    onChange={handleSort}
+    className="p-2 bg-[#135D66] text-white rounded-md hover:bg-[#0A4D5A]"
+  >
+    <option value="dateString" className="bg-[#135D66] hover:bg-[#0A4D5A]">
+      Date
+    </option>
+    <option value="subject" className="bg-[#135D66] hover:bg-[#0A4D5A]">
+      Subject
+    </option>
+    <option value="sender" className="bg-[#135D66] hover:bg-[#0A4D5A]">
+      Sender
+    </option>
+    <option value="importance" className="bg-[#135D66] hover:bg-[#0A4D5A]">
+      Importance
+    </option>
+  </select>
 
-        {/* Button to toggle ascending/descending */}
-        <button
-          onClick={toggleSortOrder}
-          className="ml-4 p-2 bg-[#135D66] text-white rounded-md hover:bg-[#0A4D5A]"
-        >
-          {isDescending ? "Descending" : "Ascending"}
-        </button>
-      </div>
+  <button
+    onClick={toggleSortOrder}
+    className="ml-4 p-2 bg-[#135D66] text-white rounded-md hover:bg-[#0A4D5A]"
+  >
+    {isDescending ? "Descending" : "Ascending"}
+  </button>
+</div>
 
       {/* Filter options */}
       <div className="mb-4 flex items-center space-x-4">
-        {/* Sender filter */}
         <div>
           <label htmlFor="sender" className="text-white mr-2">
             Sender
@@ -147,7 +220,6 @@ function Mainbox({ emails , searchQuery}) {
           </select>
         </div>
 
-        {/* Date filter */}
         <div>
           <label htmlFor="start-date" className="text-white mr-2">
             Date Range
@@ -169,7 +241,6 @@ function Mainbox({ emails , searchQuery}) {
           />
         </div>
 
-        {/* Subject filter */}
         <div>
           <label htmlFor="subject" className="text-white mr-2">
             Subject
@@ -188,6 +259,37 @@ function Mainbox({ emails , searchQuery}) {
             ))}
           </select>
         </div>
+        <div>
+          <label htmlFor="importance" className="text-white mr-2">
+            Importance
+          </label>
+          <select
+            id="importance"
+            value={filterImportance}
+            onChange={(e) => setFilterImportance(e.target.value)}
+            className="p-2 bg-[#135D66] text-white rounded-md hover:bg-[#0A4D5A]"
+          >
+            <option value="">All Importance</option>
+            {uniqueImportance.map((importance, index) => (
+              <option key={index} value={importance}>
+                {importance}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <select name="pagination-select" value={paginationNumber} id="" className="p-2 bg-[#135D66] text-white rounded-md hover:bg-[#0A4D5A]" onChange={(e)=>{
+              setpaginationNumber(Number(e.target.value))
+          }}>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+          </select>
+        </div>
         <button
           onClick={clearFilters}
           className="p-2 bg-transparent hover:bg-[#0A4D5A] text-white border-2 rounded-3xl"
@@ -195,13 +297,14 @@ function Mainbox({ emails , searchQuery}) {
           Clear Filters
         </button>
       </div>
+
       <Routes>
-        <Route path="/" element={<Inbox emails={filteredEmails} />} />
-        <Route path="/sent" element={<Sent emails={filteredEmails} />} />
-        <Route path="/spam" element={<Spam emails={filteredEmails} />} />
-        <Route path="/drafts" element={<Drafts emails={filteredEmails} />} />
-        <Route path="/starred" element={<Starred emails={filteredEmails} />} />
-        <Route path="/trash" element={<Trash emails={filteredEmails} />} />
+        <Route path="/" element={<Inbox emails={filteredEmails} pagination = {paginationNumber}/>} />
+        <Route path="/sent" element={<Sent emails={filteredEmails}  pagination = {paginationNumber}/>} />
+        <Route path="/spam" element={<Spam emails={filteredEmails}  pagination = {paginationNumber}/>} />
+        <Route path="/drafts" element={<Drafts emails={filteredEmails}  pagination = {paginationNumber}/>} />
+        <Route path="/starred" element={<Starred emails={filteredEmails}  pagination = {paginationNumber}/>} />
+        <Route path="/trash" element={<Trash emails={filteredEmails}  pagination = {paginationNumber}/>} />
       </Routes>
     </div>
   );

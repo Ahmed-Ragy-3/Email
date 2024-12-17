@@ -1,12 +1,12 @@
 import EmailList from "../components/EmailList";
 
-const Sent = ({emails}) => {
+const Sent = ({emails , pagination}) => {
 
-  const sentEmails = emails.filter(email => email.folder === "sent");
+  const sentEmails = emails
 
   return (
     <div className="text-white">
-      <EmailList emails={sentEmails}></EmailList>
+      <EmailList emails={sentEmails} emailsPerPage={pagination}></EmailList>
     </div>
   );
   };

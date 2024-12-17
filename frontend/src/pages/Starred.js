@@ -1,13 +1,13 @@
 import EmailList from "../components/EmailList";
 
-const Starred = ({emails}) => {
+const Starred = ({emails, pagination}) => {
 
   // Filter emails to only include those in the "inbox" folder
-  const starredEmails = emails.filter(email => email.folder === "starred");
+  const starredEmails = emails
 
   return (
     <div className="text-white">
-      <EmailList emails={starredEmails}></EmailList>
+      <EmailList emails={starredEmails} emailsPerPage={pagination}></EmailList>
     </div>
   );
   };
