@@ -26,6 +26,7 @@ public class UserController {
    @Autowired
    private UserService userService;
 
+
    @PutMapping("/contact/add")
    public ResponseEntity<?> addContact(
       @RequestBody ContactDTO contactDto,
@@ -44,65 +45,49 @@ public class UserController {
       }
    }
 
+
    @PutMapping("/contact/edit")
    public ResponseEntity<?> editContact(
       @RequestBody ContactDTO contactDto,
-      @RequestHeader("Authorization") String token) {
+      @RequestHeader("Authorization") String token
+   ) {
       
       try {
          ContactDTO contact = userService.editContact(userService.getUser(token), contactDto);
          
-         return ResponseEntity
-            .status(HttpStatus.ACCEPTED)
-            .body(contact);
+         return ResponseEntity.status(HttpStatus.ACCEPTED).body(contact);
+      
       } catch (Exception e) {
-         return ResponseEntity
-            .status(HttpStatus.BAD_REQUEST)
-            .body(e.getMessage());
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
       }
    }
+
 
    @PostMapping("/contact/delete")
    public ResponseEntity<?> deleteContact(
       @RequestBody ContactDTO contactDto,
-      @RequestHeader("Authorization") String token ) {
+      @RequestHeader("Authorization") String token
+   ) {
+
       try {
          userService.deleteContact(userService.getUser(token), contactDto);
-          return ResponseEntity
-            .status(HttpStatus.ACCEPTED)
-            .body("Contact Deleted Successfully");
+         return ResponseEntity.status(HttpStatus.ACCEPTED).body("Contact Deleted Successfully");
+      
       } catch (Exception e) {
-         return ResponseEntity
-            .status(HttpStatus.BAD_REQUEST)
-            .body(e.getMessage());
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
       }
    }
 
+   
    @GetMapping("/contacts")
    public ResponseEntity<?> getContacts(@RequestHeader("Authorization") String token) {
       try {
          List<ContactDTO> contacts = userService.getContacts(userService.getUser(token));
-          return ResponseEntity
-            .status(HttpStatus.ACCEPTED)
-            .body(contacts);
+         return ResponseEntity.status(HttpStatus.ACCEPTED).body(contacts);
+      
       } catch (Exception e) {
-         return ResponseEntity
-            .status(HttpStatus.BAD_REQUEST)
-            .body(e.getMessage());
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
       }
    }
 
-   // @PostMapping("/delete")
-   // public ResponseEntity<?> deleteUser(@RequestHeader("Authorization") String token ) {
-   //    try {
-   //       userService.deleteUser(userService.getUser(token));
-   //       return ResponseEntity
-   //          .status(HttpStatus.ACCEPTED)
-   //          .body("User Deleted Successfully");
-   //    } catch (Exception e) {
-   //       return ResponseEntity
-   //          .status(HttpStatus.BAD_REQUEST)
-   //          .body(e.getMessage());
-   //    }
-   // }
 }

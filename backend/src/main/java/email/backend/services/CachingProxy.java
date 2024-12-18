@@ -3,28 +3,16 @@ package email.backend.services;
 import java.util.HashMap;
 
 import org.springframework.stereotype.Service;
-
 import email.backend.tables.Mail;
 import email.backend.tables.Mailbox;
 import email.backend.tables.User;
-// import jakarta.persistence.Id;
 
 @Service
 public class CachingProxy {
    
-   // private HashMap<Long, String> tokens = new HashMap<>();
-
    private HashMap<Long, User> usersCache = new HashMap<>();
    private HashMap<Long, Mailbox> mailboxCache = new HashMap<>();
    private HashMap<Long, Mail> mailCache = new HashMap<>();
-
-   // public void putToken(User user, String token) {
-   //    tokens.put(user.getId(), token);
-   // }
-
-   // public String getToken(User user) {
-   //    return tokens.get(user.getId());
-   // }
 
    public User getUser(Long userId) {
       return usersCache.get(userId);

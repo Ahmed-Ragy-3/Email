@@ -1,7 +1,6 @@
 package email.backend.tables;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,10 +25,9 @@ public class Contact {
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Long id;
 
-   // The user who owns the contact
    @ManyToOne
    @JsonIgnore
-   @JoinColumn(name = "owner_id", nullable = false) // Rename to avoid conflict
+   @JoinColumn(name = "owner_id", nullable = false)
    private User user;
 
    @ManyToOne

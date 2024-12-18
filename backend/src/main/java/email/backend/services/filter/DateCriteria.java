@@ -19,8 +19,8 @@ public class DateCriteria implements Criteria {
    public List<Mail> meetCriteria(List<Mail> mails) {
          
       return mails.stream()
-                     .filter(mail -> mail.getDate().isBetween(date1, date2) == true)
-                     .collect(Collectors.toList());
+                  .filter(mail -> mail.getDate().isBetween(date1, date2) == true)
+                  .collect(Collectors.toList());
    }
    
 }

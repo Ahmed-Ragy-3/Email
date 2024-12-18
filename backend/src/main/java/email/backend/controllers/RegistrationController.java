@@ -23,8 +23,10 @@ public class RegistrationController {
    @Autowired
    private UserService userService;
 
+   
    @PostMapping("/login")
    public ResponseEntity<String> login(@RequestBody UserDTO userdto) {
+      
       try {
          User user = userService.login(userdto.getEmailAddress(), userdto.getPassword());
          userdto.setName(user.getName());
@@ -44,27 +46,22 @@ public class RegistrationController {
       }
    }
 
+
    @PutMapping("/create")
    public ResponseEntity<String> createNewAccount(@RequestBody UserDTO userdto) {
-      System.out.println(userdto);
-      // enter name in userdto
+      
       try {
          User user = userService.createNewAccount(userdto.getName(), userdto.getEmailAddress(), userdto.getPassword());
-         System.out.println(user);
          userdto.setId(user.getId());
          String token = JwtUtil.generateToken(userdto);
-         System.out.println(token);
 
          return ResponseEntity
-            .status(HttpStatus.CREATED)
-            .header("Authorization", token)
-            .body("Account created successfully");
+               .status(HttpStatus.CREATED)
+               .header("Authorization", token)
+               .body("Account created successfully");
       
       } catch (Exception e) {
-         System.out.println(e.getMessage());
-         return ResponseEntity
-            .status(HttpStatus.BAD_REQUEST)
-            .body(e.getMessage());
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
       }
    }
 }

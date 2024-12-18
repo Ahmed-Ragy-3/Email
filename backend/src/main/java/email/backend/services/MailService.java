@@ -1,35 +1,27 @@
 package email.backend.services;
 
-// import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-// import java.util.Set;
-// import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
-import ch.qos.logback.core.pattern.parser.OptionTokenizer;
 import email.backend.DTO.AttachedMailDTO;
 import email.backend.DTO.MailDTO;
 import email.backend.DTO.MailboxDTO;
 import email.backend.DTO.WebSocketMsgDTO;
 import email.backend.controllers.EmailWebSocketController;
-import email.backend.databaseAccess.MailRepository;
-// import email.backend.databaseAccess.UserRepository;
-import email.backend.databaseAccess.MailboxRepository;
-import email.backend.databaseAccess.UserRepository;
-import email.backend.databaseAccess.ContactRepository;
+import email.backend.repo.ContactRepository;
+import email.backend.repo.MailRepository;
+import email.backend.repo.MailboxRepository;
+import email.backend.repo.UserRepository;
 import email.backend.tables.Attachment;
 import email.backend.tables.Contact;
 import email.backend.tables.Mail;
 import email.backend.tables.Mailbox;
 import email.backend.tables.User;
-// import email.backend.tables.UserService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
@@ -61,6 +53,29 @@ public class MailService {
    private EmailWebSocketController socketSender;
 
 
+   public void moveMailsToTrash(Mailbox mailbox, List<Long> ids, User user) throws IllegalArgumentException {
+      for (Long mailId : ids) {
+         Mail mail = getMailById(mailId);
+         if(mail == null) {
+            throw new IllegalArgumentException("Email don't exist");
+         } else {
+            mailboxService.moveToTrash(mailbox, mail, user);
+         }
+      }
+   }
+
+   
+   public void moveMailsToMailbox(Mailbox from, Mailbox to, List<Long> mailIds, User user) {
+      for (Long mailId : mailIds) {
+         Mail mail = getMailById(mailId);
+         if(mail == null) {
+            throw new IllegalArgumentException("Email don't exist");
+         } else {
+            mailboxService.moveTo(from, to, mail, user);
+         }
+      }
+   }
+
    /**
     * create mail and put into drafts category without any validations
     * @param Mail mail 
@@ -84,32 +99,32 @@ public class MailService {
       return attachedMailDto;
    }
 
-   @Transactional
-   public MailDTO editDraftMail(MailDTO mailDto, User user) throws IllegalArgumentException {
 
-      Optional<Mail> OpMail = mailRepository.findById(mailDto.getId());
+   @Transactional
+   public AttachedMailDTO editDraftMail(AttachedMailDTO attachedMailDto, User user) throws IllegalArgumentException {
+
+      Optional<Mail> OpMail = mailRepository.findById(attachedMailDto.getMailDto().getId());
 
       if(OpMail.isPresent()) {
-         Mail mail = mailDto.toMail(user, userService, this);
+         Mail mail = attachedMailDto.toMail(user, userService, this);
    
-         mail.setId(mailDto.getId());
+         mail.setId(attachedMailDto.getMailDto().getId());
          
          mail = mailRepository.save(mail);
    
          User sender = mail.getSender();
 
-         // should old mail from list of drafts ?
-
          mailboxRepository.save(sender.getMailboxes().get(MailboxService.DRAFTS_INDEX));
 
          userRepository.save(user);
    
-         return mailDto;
+         return attachedMailDto;
       } else {
          throw new IllegalArgumentException("Mail doesn't exists");
       }
       
    }
+
 
    public List<MailboxDTO> getAllMails(User user) {
       List<MailboxDTO> mailboxesDto = new ArrayList<>();
@@ -138,17 +153,19 @@ public class MailService {
       return mailRepository.findById(mailId).get();
    }
 
+
    public List<Mail> getEmailsInMailbox(User user, String mailboxName) {
       Mailbox mailbox = mailboxRepository.findByOwnerAndName(user, mailboxName).get();
       return new ArrayList<Mail>(mailbox.getMails());
    }
 
-   // we can use this to get sent mailbox
+
    public List<Mail> getMailsBySenderId(Long senderId) {
       return mailRepository.findBySender(userService.getUser(senderId));
    }
 
-   @Scheduled(cron = "0 0 0 * * ?") // Runs daily at midnight
+
+   @Scheduled(cron = "0 0 0 * * ?")
    public void deleteTrashMails() {
       List<User> users = userService.getAllUsers();
 
@@ -165,13 +182,10 @@ public class MailService {
             
          }
       }
-      // we never actualy delete from data base
    }
 
    public Importance getImportanceFromString(String importance) {
       if(importance == null) return Importance.NORMAL;
-
-      // importance = importance.toLowerCase();
 
       switch (importance.toLowerCase()) {
          case "urgent":
@@ -189,7 +203,6 @@ public class MailService {
 
 
    private Mailbox getFriendZone(User user, User user2) {
-      // Friend zone logic
       Optional<Contact> contact = contactRepository.findByUserAndContactUser(user, user2); 
       if(contact.isPresent()) {
          for (Mailbox mailbox : user.getMailboxes()) {
@@ -198,9 +211,9 @@ public class MailService {
             }
          }
       }
-      // return contact.map(c -> mailboxService.getMailbox(user, c.getContactName())).orElse(null);
       return null;
    }
+
 
    public void sendToDatabase(Mail mail) {      // Gate 3
       
@@ -252,12 +265,11 @@ public class MailService {
       }
    }
 
+
    public Mail setAttachments(Mail mail, List<Attachment> attachments) {
-      // mail.getAttachments()
       mail.setAttachments(attachments);
       mailRepository.save(mail);
       return mail;
    }
-
 
 }

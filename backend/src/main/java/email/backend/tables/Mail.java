@@ -1,9 +1,7 @@
 package email.backend.tables;
 
 import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import email.backend.services.Date;
 import email.backend.services.Importance;
 import jakarta.persistence.*;
@@ -28,7 +26,6 @@ public class Mail {
    @Column(nullable = false)
    private String subject;
 
-   // @NonNull(message = "Content cannot be null")
    @Column(nullable = false)
    private String content;
 
@@ -47,7 +44,6 @@ public class Mail {
    @Embedded
    private Date date;
 
-   // @JsonIgnore
    @OneToMany(mappedBy = "mail", fetch = FetchType.LAZY, orphanRemoval = true)
    private List<Attachment> attachments;
 
@@ -57,15 +53,14 @@ public class Mail {
       joinColumns = @JoinColumn(name = "mail_id"),
       inverseJoinColumns = @JoinColumn(name = "user_id")
    )
-   private List<User> receivers;  // Added receivers list
+   private List<User> receivers;
 
    @Transient
    private List<Long> attachmentIds;
 
-   // Getter for attachmentIds
    public List<Long> getAttachmentIds() {
       if (attachments == null) {
-         return List.of(); // Return an empty list if attachments are not initialized
+         return List.of();
       }
       return attachments.stream().map(Attachment::getId).toList();
    }
