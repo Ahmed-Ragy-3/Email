@@ -48,7 +48,7 @@ const Layout = ({ emails }) => {
 
     const socket = new SockJS("http://localhost:8080/ws");
     const client = Stomp.over(socket);
-
+    
     client.connect({}, () => {
       console.log("Connected to WebSocket server");
       client.subscribe(`/topic/emails/${email}`, (msg) => {
@@ -105,8 +105,8 @@ const Layout = ({ emails }) => {
   }, []); // Empty dependency array ensures this only runs once on mount
 
   return (
-    <div className="h-screen overflow-clip bg-[#003C43]">
-      <Navbar setSearchQuery={setSearchQuery} username={userName} />
+    <div className="h-screen overflow-clip bg-[#223047]">
+        <Navbar setSearchQuery={setSearchQuery} username={userName}/>
       <div className="h-full flex">
         <Sidebar emails={emails} client={stompClient} setFolders={setFolders} />
         <Routes>
@@ -121,6 +121,7 @@ const Layout = ({ emails }) => {
                 emails={emails}
                 folders={folders}
                 searchQuery={searchQuery}
+                setFolders = {setFolders}
               />
             }
           ></Route>

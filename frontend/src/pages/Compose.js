@@ -13,8 +13,6 @@ import { useFolders } from "../components/FoldersContext";
 import { folders } from "fontawesome";
 
 function Compose({ closeModal, client , setFolders }) {
-  console.log(folders)
-  console.log(folders)
   const [attachments, setAttachments] = useState([]);
   const [attachmentURLs, setAttachmentURLs] = useState([]);
   const [isBold, setIsBold] = useState(false);
@@ -28,6 +26,18 @@ function Compose({ closeModal, client , setFolders }) {
   const [selectedContacts, setSelectedContacts] = useState([]);
   const [filteredContacts, setFilteredContacts] = useState([]);
 
+  const [subject, setSubject] = useState(""); // State for the subject
+  const [content, setContent] = useState("");
+
+  const handleContentChange = () => {
+    setContent(editorRef.current.innerHTML); // Update content state
+  };
+
+  // Handle subject input
+  const handleSubjectChange = (e) => {
+    setSubject(e.target.value); // Update subject state
+  };
+  
   const contacts = [
     "Alice Smith",
     "Bob Johnson",
@@ -73,8 +83,8 @@ function Compose({ closeModal, client , setFolders }) {
     let data_sent = {
       senderAddress: email,
       receiversAddresses: selectedContacts,
-      content: e.innerHTML,
-      subject: subject_field.value,
+      content: content,
+      subject: subject,
       importance: importance.value,
       // "attachments": attachments,
       dateString: time_options.value,
@@ -130,22 +140,12 @@ function Compose({ closeModal, client , setFolders }) {
       });
       closeModal();
     } catch (error) {
-      alert("An error has occured")
+      alert(error)
     }
     
     // navigate("/");
     
-  };
-  useEffect(() => {
-    
-    console.log("folders are ", folders)
-    
-  }, [folders])
-  
-  
-  
-  
-  
+  };  
   // Handle file uploads
   const handleFileUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -277,6 +277,8 @@ function Compose({ closeModal, client , setFolders }) {
           <input
             id="subject"
             type="text"
+            value={subject} // Bind subject state to input field
+            onChange={handleSubjectChange} // Update state when subject changes
             className="flex-grow p-2 outline-none"
             placeholder="Add a subject"
           />
@@ -287,14 +289,14 @@ function Compose({ closeModal, client , setFolders }) {
 
         {/* Message Body */}
         <div className="mb-4">
-          <div
+        <div
             ref={editorRef}
             contentEditable
             className="w-full h-40 p-2 border border-gray-300 rounded-lg outline-none"
             placeholder="Write your message here"
             role="textbox"
             aria-placeholder="Write your message here"
-            id="text-field"
+            onInput={handleContentChange} // Update content state
           />
         </div>
 
