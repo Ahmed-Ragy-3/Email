@@ -54,6 +54,7 @@ public class MailSenderProxy {
    public Mail sendMail(User user, MailDTO mailDto) {
       
       Mail mail;
+      System.out.println(mailDto.getContent());
       if(mailDto.getId() == null) {
          mail = mailDto.toMail(user, userService, mailService);
       } else {

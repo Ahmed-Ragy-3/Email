@@ -68,7 +68,7 @@ public class MailDTO {
          receivers.add(userService.getUserFromAddress(userAddress));
       }
       // System.out.println(this.content + "===========================");
-
+      System.out.println("content before creating email . " + this.content);
       return Mail.builder()
             .content(this.content)
             .subject(this.subject)

@@ -73,6 +73,7 @@ public class MailController {
 
    @PostMapping("/send")
    public ResponseEntity<?> sendMail(@RequestBody MailDTO mailDto, @RequestHeader("Authorization") String token) {
+      System.out.println(mailDto.getContent());
       try {
          Mail mail = mailSenderProxy.sendMail(userService.getUserFromAddress(mailDto.getSenderAddress()), mailDto);
          return ResponseEntity
