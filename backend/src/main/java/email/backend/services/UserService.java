@@ -12,9 +12,12 @@ import email.backend.DTO.ContactDTO;
 import email.backend.DTO.JwtUtil;
 import email.backend.DTO.UserDTO;
 import email.backend.databaseAccess.ContactRepository;
+import email.backend.databaseAccess.MailRepository;
+import email.backend.databaseAccess.MailboxRepository;
 import email.backend.databaseAccess.UserRepository;
 import email.backend.services.MailboxService;
 import email.backend.tables.Contact;
+import email.backend.tables.Mailbox;
 import email.backend.tables.User;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -28,6 +31,12 @@ public class UserService {
 
    @Autowired
    private ContactRepository contactRepository;
+   
+   @Autowired
+   private MailboxRepository mailboxRepository;
+
+   @Autowired
+   private MailRepository mailRepository;
 
    @Autowired
    private MailboxService mailboxService;
@@ -188,6 +197,7 @@ public class UserService {
    @Transactional // don't work
    public void deleteUser(User user) throws IllegalArgumentException {
       if(userRepository.findById(user.getId()).isPresent()){ 
+         userRepository.save(user);
          userRepository.deleteById(user.getId());
       } else {
          throw new IllegalArgumentException("User doesn't exist");

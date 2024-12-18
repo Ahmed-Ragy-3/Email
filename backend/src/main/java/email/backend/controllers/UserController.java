@@ -94,17 +94,17 @@ public class UserController {
       }
    }
 
-   @DeleteMapping("/delete")
-   public ResponseEntity<?> deleteUser(@RequestHeader("Authorization") String token ) {
-      try {
-         userService.deleteUser(userService.getUser(token));
-         return ResponseEntity
-            .status(HttpStatus.ACCEPTED)
-            .body("User Deleted Successfully");
-      } catch (Exception e) {
-         return ResponseEntity
-            .status(HttpStatus.BAD_REQUEST)
-            .body(e.getMessage());
-      }
-   }
+   // @DeleteMapping("/delete")
+   // public ResponseEntity<?> deleteUser(@RequestHeader("Authorization") String token ) {
+   //    try {
+   //       userService.deleteUser(userService.getUser(token));
+   //       return ResponseEntity
+   //          .status(HttpStatus.ACCEPTED)
+   //          .body("User Deleted Successfully");
+   //    } catch (Exception e) {
+   //       return ResponseEntity
+   //          .status(HttpStatus.BAD_REQUEST)
+   //          .body(e.getMessage());
+   //    }
+   // }
 }

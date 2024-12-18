@@ -158,7 +158,7 @@ public class MailService {
 
          for (Mail mail : trashMails) {
             if(mail.getDate().getDay() == today.getDay()){
-               mailboxService.delete(mail, user);
+               mailboxService.deleteFromTrash(mail, user);
             }
             
          }

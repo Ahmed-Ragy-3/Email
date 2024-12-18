@@ -132,7 +132,7 @@ public class MailController {
    public ResponseEntity<?> delete( @RequestHeader("Authorization") String token, 
                                     @RequestBody MailDTO mailDto) {
       try {
-         mailboxService.delete(mailService.getMailById(mailDto.getId()), userService.getUser(token));
+         mailboxService.deleteFromTrash(mailService.getMailById(mailDto.getId()), userService.getUser(token));
          return ResponseEntity
                .status(HttpStatus.ACCEPTED)
                .body("Deleted the mail permenantly");

@@ -43,6 +43,7 @@ public class MailboxService {
    // schedueling still works fine 
    public void addTo(Mailbox mailbox, Mail mail) {
       mailbox.getMails().add(mail);
+      mailboxRepository.save(mailbox);
    }
    
    @Transactional // i added those for now to work
@@ -77,20 +78,23 @@ public class MailboxService {
    // schedueling still works fine 
    public void deleteFrom(Mailbox mailbox, Mail mail) {
       mailbox.getMails().remove(mail);
+      mailboxRepository.save(mailbox);
    }
 
    @Transactional
    public void moveToTrash(Mailbox mailbox, Mail mail, User user) throws IllegalArgumentException{
+      System.out.println(mailbox.getId());
+      System.out.println(mail.getId());
+      System.out.println(user.getName());
       if (mailbox.getOwner() == user) {
-         deleteFrom(mailbox, mail);
-         addTo(getMailbox(mail.getSender(), TRASH_INDEX), mail);
+         moveTo(mailbox, getMailbox(mail.getSender(), TRASH_INDEX), mail, user);
       } else {
          throw new IllegalArgumentException("The from mailbox don't belong to given user");
       }
    }
    
    @Transactional 
-   public void delete(Mail mail, User user) throws IllegalArgumentException { // delete from trash only
+   public void deleteFromTrash(Mail mail, User user) throws IllegalArgumentException { // delete from trash only
       if(getMailbox(user, TRASH_INDEX).getMails().contains(mail)) {
          deleteFrom(getMailbox(mail.getSender(), TRASH_INDEX), mail); 
       } else {
@@ -151,6 +155,39 @@ public class MailboxService {
       userRepository.save(user);
 
       return mailbox;
+   }
+
+   @Transactional
+   public void deleteMailbox(User user, MailboxDTO mailboxDto) throws IllegalArgumentException {
+      Optional<Mailbox> opMailbox = mailboxRepository.findByOwnerAndName(user, mailboxDto.getName());
+      
+      if(opMailbox.isPresent()) {
+         Mailbox mailbox = opMailbox.get();
+         
+         List<Mail> mails = mailbox.getMails();
+         
+         System.out.println("ahhhhhhhhhhhhhhhhhhhhh");
+         for (Mail mail : mails) {
+            moveToTrash(mailbox, mail, user);
+         }
+
+         System.out.println("1");
+         mailboxRepository.save(getMailbox(user, TRASH_INDEX));
+         System.out.println("2");
+         
+         
+         user.getMailboxes().remove(mailbox);
+         System.out.println("3");
+         
+         userRepository.save(user);
+         System.out.println("4");
+         
+         mailboxRepository.delete(mailbox);
+         
+         System.out.println("5");
+      } else {
+         throw new IllegalArgumentException("Mailbox doesn't exist");
+      }
    }
    
    public List<Mail> filter(Long mailboxId, Importance importance, Boolean attachment, Date date1, Date date2) {
