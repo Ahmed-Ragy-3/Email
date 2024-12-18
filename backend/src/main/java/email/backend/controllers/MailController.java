@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import email.backend.DTO.AttachedMailDTO;
 import email.backend.DTO.MailDTO;
 import email.backend.DTO.MailboxDTO;
 import email.backend.services.MailSenderProxy;
@@ -42,9 +43,10 @@ public class MailController {
    private MailboxService mailboxService;
    
    @PutMapping("/create")
-   public ResponseEntity<?> createDraftMail(@RequestBody MailDTO maildDto, @RequestHeader("Authorization") String token) {
+   public ResponseEntity<?> createDraftMail(@RequestBody AttachedMailDTO attachedMailDto, 
+   @RequestHeader("Authorization") String token) {
       try {
-         MailDTO dto = mailService.createDraftMail(maildDto, userService.getUser(token));
+         AttachedMailDTO dto = mailService.createDraftMail(attachedMailDto, userService.getUser(token));
          return ResponseEntity
                .status(HttpStatus.ACCEPTED)
                .body(dto);
@@ -57,9 +59,10 @@ public class MailController {
    }
 
    @PostMapping("/edit")
-   public ResponseEntity<?> editDraftMail(@RequestBody MailDTO maildDto, @RequestHeader("Authorization") String token) {
+   public ResponseEntity<?> editDraftMail(@RequestBody MailDTO mailDto, 
+   @RequestHeader("Authorization") String token) {
       try {
-         MailDTO dto = mailService.editDraftMail(maildDto, userService.getUser(token));
+         MailDTO dto = mailService.editDraftMail(mailDto, userService.getUser(token));
          return ResponseEntity
                .status(HttpStatus.ACCEPTED)
                .body(dto);
@@ -72,9 +75,18 @@ public class MailController {
    }
 
    @PostMapping("/send")
-   public ResponseEntity<?> sendMail(@RequestBody MailDTO mailDto, @RequestHeader("Authorization") String token) {
+   public ResponseEntity<?> sendMail(
+      @RequestBody AttachedMailDTO attachedMailDto,
+      @RequestHeader("Authorization") String token
+   ) {
+
       try {
-         Mail mail = mailSenderProxy.sendMail(userService.getUserFromAddress(mailDto.getSenderAddress()), mailDto);
+         MailDTO mailDto = attachedMailDto.getMailDto();
+         System.out.println(mailDto.getContent());
+         Mail mail = mailSenderProxy.sendMail(
+         userService.getUserFromAddress(mailDto.getSenderAddress()), 
+         attachedMailDto);
+         
          return ResponseEntity
                .status(HttpStatus.ACCEPTED)
                .body(new MailDTO(mail));
@@ -103,21 +115,25 @@ public class MailController {
    }
    
    @GetMapping("/getmail")
-   public Mail getSingleMail(@RequestParam long id)
-   {
-         System.out.println("here");
-         Mail email = mailService.getMailById(id);
-         return email;
+   public AttachedMailDTO getSingleMail(@RequestParam long id) {
+      // System.out.println("here");
+      Mail mail = mailService.getMailById(id);
+      return new AttachedMailDTO(mail);
    }
 
    @DeleteMapping("/moveToTrash/{fromMailboxId}")
-   public ResponseEntity<?> moveToTrash(  @RequestHeader("Authorization") String token, 
-                                          @RequestBody MailDTO mailDto,
-                                          @PathVariable Long fromMailboxId) {
+   public ResponseEntity<?> moveToTrash(
+      @RequestHeader("Authorization") String token, 
+      @RequestBody MailDTO mailDto,
+      @PathVariable Long fromMailboxId
+   ) {
+
       try {
-         mailboxService.moveToTrash(  mailboxService.getMailbox(fromMailboxId),
-                                      mailService.getMailById(mailDto.getId()),
-                                      userService.getUser(token));
+         mailboxService.moveToTrash(  
+            mailboxService.getMailbox(fromMailboxId),
+            mailService.getMailById(mailDto.getId()),
+            userService.getUser(token)
+         );
          return ResponseEntity
                .status(HttpStatus.ACCEPTED)
                .body("Moved to trash");

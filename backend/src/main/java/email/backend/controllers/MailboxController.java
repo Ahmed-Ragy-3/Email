@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import email.backend.DTO.JwtUtil;
 import email.backend.DTO.MailboxDTO;
 import email.backend.services.MailboxService;
 import email.backend.tables.Mailbox;
@@ -48,7 +46,7 @@ public class MailboxController {
 
    @PostMapping("/edit")
    public ResponseEntity<?> editMailbox(@RequestBody MailboxDTO mailboxDto,
-                                          @RequestHeader("Authorization") String token) {                           
+                                       @RequestHeader("Authorization") String token) {                           
       try {
          mailboxService.editMailbox(userService.getUser(token), mailboxDto);
          return ResponseEntity

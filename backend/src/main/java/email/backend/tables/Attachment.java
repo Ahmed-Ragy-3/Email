@@ -1,5 +1,6 @@
 package email.backend.tables;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.GeneratedValue;
@@ -19,10 +20,14 @@ public class Attachment {
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    private long id;
 
+   @Column(nullable = false)
    private String name;
 
    @Lob
    private byte[] file;
+
+   @Column(nullable = false)
+   private String type;
 
    @ManyToOne
    @JoinColumn(name = "mail_id", nullable = false)

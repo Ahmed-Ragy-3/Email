@@ -7,11 +7,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 // import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 // import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 // import email.backend.tables.Mail;
 import email.backend.tables.Mailbox;
 import email.backend.tables.User;
 
+@Repository
 @EnableJpaRepositories
 public interface MailboxRepository extends JpaRepository<Mailbox, Long> {
    
