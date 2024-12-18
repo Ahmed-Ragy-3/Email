@@ -1,7 +1,5 @@
 package email.backend.services;
 
-// import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
@@ -13,7 +11,6 @@ import email.backend.databaseAccess.MailboxRepository;
 import email.backend.tables.Mail;
 import email.backend.tables.Mailbox;
 import email.backend.tables.User;
-// import jakarta.transaction.Transactional;
 
 @Service
 public class MailSenderProxy {
@@ -53,8 +50,6 @@ public class MailSenderProxy {
 
    @Autowired
    private ContactRepository contactRepository;
-   
-
 
    public Mail sendMail(User user, MailDTO mailDto) {
 
@@ -64,6 +59,7 @@ public class MailSenderProxy {
       } else {
          mail = mailRepository.findById(mailDto.getId()).get();
          user.getMailboxes().get(MailboxService.DRAFTS_INDEX).getMails().remove(mail);
+         mailboxRepository.save(user.getMailboxes().get(MailboxService.DRAFTS_INDEX)); // i added this
       }
 
       sendMail(mail);

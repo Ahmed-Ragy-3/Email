@@ -125,11 +125,11 @@ public class MailService {
       mailRepository.deleteById(mailId);
    }
 
-   public void sendMails(Mail mail) {
-      // MailSenderProxy mailSenderProxy;
+   // public void sendMails(Mail mail) {
+   //    // MailSenderProxy mailSenderProxy;
 
-      mailRepository.save(mail);
-   }
+   //    mailRepository.save(mail);
+   // }
 
    @Scheduled(cron = "0 0 0 * * ?") // Runs daily at midnight
    public void deleteTrashMails() {
@@ -172,28 +172,32 @@ public class MailService {
       return contact.map(c -> mailboxService.getMailbox(user, c.getContactName())).orElse(null);
    }
 
-   // @Transactional
    public void sendToDatabase(Mail mail) {      // Gate 3
       
       Mailbox friendMailbox;
       User sender = mail.getSender();
       MailDTO mailDto = new MailDTO(mail);
 
-      String receiverMailboxName = "";
+      boolean inSent = false;
 
+      String receiverMailboxName = "";
+      
+      
       for (User receiver : mail.getReceivers()) {
          friendMailbox = getFriendZone(sender, receiver);
-
+         
          if(friendMailbox != null) {
             friendMailbox.getMails().add(mail);
             mailboxRepository.save(friendMailbox); // /////////
-         } else {
+         } else if (!inSent) {
+            
             mailboxService.addTo(sender.getMailboxes().get(MailboxService.SENT_INDEX), mail);
             mailboxRepository.save(sender.getMailboxes().get(MailboxService.SENT_INDEX)); ////////////
+            inSent = true;
          }
-
+         
          friendMailbox = getFriendZone(receiver, sender);
-
+         
          if(friendMailbox != null) {
             friendMailbox.getMails().add(mail);
             mailboxRepository.save(friendMailbox); //////////////

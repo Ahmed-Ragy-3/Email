@@ -67,7 +67,7 @@ public class MailDTO {
       for (String userAddress : this.getReceiversAddresses()) {
          receivers.add(userService.getUserFromAddress(userAddress));
       }
-      System.out.println(this.content + "===========================");
+      // System.out.println(this.content + "===========================");
 
       return Mail.builder()
             .content(this.content)

@@ -18,6 +18,7 @@ import email.backend.tables.Mail;
 import email.backend.tables.Mailbox;
 import email.backend.tables.User;
 import jakarta.transaction.Transactional;
+// import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -37,19 +38,27 @@ public class MailboxService {
    @Autowired
    private final MailboxRepository mailboxRepository;
 
+   @Transactional // i added those for now to work
+   // schedueling still works fine 
    public void addTo(Mailbox mailbox, Mail mail) {
       mailbox.getMails().add(mail);
    }
-
+   
+   @Transactional // i added those for now to work
+   // schedueling still works fine 
    public void copyTo(Mailbox mailbox, Mail mail) {
       addTo(mailbox, mail);
    }
    
+   @Transactional // i added those for now to work
+   // schedueling still works fine 
    public void moveTo(Mailbox from, Mailbox to, Mail mail) {
       copyTo(to, mail);
       deleteFrom(from, mail);
    }
    
+   @Transactional // i added those for now to work
+   // schedueling still works fine 
    public void deleteFrom(Mailbox mailbox, Mail mail) {
       mailbox.getMails().remove(mail);
    }
