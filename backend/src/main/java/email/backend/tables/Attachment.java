@@ -32,7 +32,7 @@ public class Attachment {
    private String type;
 
    @ManyToOne
-   @JoinColumn(name = "mail_id", nullable = false)
+   @JoinColumn(name = "mail_id", nullable = true)
    @JsonIgnore
    private Mail mail;
 }

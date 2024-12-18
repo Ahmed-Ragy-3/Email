@@ -190,8 +190,16 @@ public class MailService {
 
    private Mailbox getFriendZone(User user, User user2) {
       // Friend zone logic
-      Optional<Contact> contact = contactRepository.findByUserAndContactUser(user, user2);
-      return contact.map(c -> mailboxService.getMailbox(user, c.getContactName())).orElse(null);
+      Optional<Contact> contact = contactRepository.findByUserAndContactUser(user, user2); 
+      if(contact.isPresent()) {
+         for (Mailbox mailbox : user.getMailboxes()) {
+            if(mailbox.getName().equalsIgnoreCase(contact.get().getContactName())) {
+               return mailbox;
+            }
+         }
+      }
+      // return contact.map(c -> mailboxService.getMailbox(user, c.getContactName())).orElse(null);
+      return null;
    }
 
    public void sendToDatabase(Mail mail) {      // Gate 3
@@ -209,12 +217,12 @@ public class MailService {
          
          if(friendMailbox != null) {
             friendMailbox.getMails().add(mail);
-            mailboxRepository.save(friendMailbox); // /////////
-          } 
-         else if (!inSent) {
+            mailboxRepository.save(friendMailbox);
+         
+         } else if (!inSent) {
             
             mailboxService.addTo(sender.getMailboxes().get(MailboxService.SENT_INDEX), mail);
-            mailboxRepository.save(sender.getMailboxes().get(MailboxService.SENT_INDEX)); ////////////
+            mailboxRepository.save(sender.getMailboxes().get(MailboxService.SENT_INDEX));
             inSent = true;
          }
          
@@ -222,10 +230,10 @@ public class MailService {
          
          if(friendMailbox != null) {
             friendMailbox.getMails().add(mail);
-            mailboxRepository.save(friendMailbox); //////////////
+            mailboxRepository.save(friendMailbox);
             receiverMailboxName = friendMailbox.getName();
-         } 
-         else {
+         
+         } else {
             mailboxService.addTo(receiver.getMailboxes().get(MailboxService.INBOX_INDEX), mail);
             mailboxRepository.save(receiver.getMailboxes().get(MailboxService.INBOX_INDEX)); //////////////
             receiverMailboxName = receiver.getMailboxes().get(MailboxService.INBOX_INDEX).getName();

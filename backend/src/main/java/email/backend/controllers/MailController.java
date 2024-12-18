@@ -23,6 +23,7 @@ import email.backend.services.MailSenderProxy;
 import email.backend.services.MailService;
 import email.backend.services.MailboxService;
 import email.backend.services.UserService;
+import email.backend.tables.Attachment;
 import email.backend.tables.Mail;
 
 @RestController
@@ -78,7 +79,10 @@ public class MailController {
       @RequestBody AttachedMailDTO attachedMailDto,
       @RequestHeader("Authorization") String token
    ) {
-      System.out.println(attachedMailDto.getAttachments());
+      // List<Attachment> attachments = attachedMailDto.getAttachments();
+      // for (Attachment attachment : attachments) {
+      //    System.out.println(attachment.getId()  + attachment.getName());
+      // }
       try {
          MailDTO mailDto = attachedMailDto.getMailDto();
          
