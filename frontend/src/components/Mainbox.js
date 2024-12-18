@@ -12,8 +12,10 @@ import Scheduled from "../pages/Scheduled";
 import EmailList from "./EmailList";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAddressBook, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faUserGroup } from "@fortawesome/free-solid-svg-icons/faUserGroup";
 
-function Mainbox({ folders, searchQuery, setFolders, contacts }) {
+function Mainbox({ folders, searchQuery, setFolders, contacts, setContacts }) {
+  console.log(contacts)
   const [showContactbar, setShowContactbar] = useState(false);
   const [isButtonClicked, setIsButtonClicked] = useState(false);
 
@@ -25,15 +27,31 @@ function Mainbox({ folders, searchQuery, setFolders, contacts }) {
   {
     try {
       let token = localStorage.getItem("token");
-    
-    let response = await axios.delete("http://localhost:8080/user/contact/delete", {
-      headers: {
-        Authorization: `Bearer ${token}`, // Pass the token in the Authorization header
-      },
-      data: {
-        id: contact.id, // Pass the contact ID in the request body
-      },
-    });
+      console.log("my token is ",token)
+      let response = await axios.post(
+        "http://localhost:8080/user/contact/delete",
+        {
+          name: contact.name, // This is the body of the request
+          emailAddress: contact.emailAddress, // This is the body of the request
+        },
+        {
+          headers: {
+            Authorization: `${token}`, // Pass the token in the Authorization header
+          },
+        }
+      );
+      const getContacts = async()=> {
+        try {
+          const response = await axios.get("http://localhost:8080/user/contacts", {
+            headers: { Authorization: token },
+          });
+          console.log(response);
+          setContacts(response.data); // Update the folders state here
+        } catch (error) {
+          console.error("Error fetching emails:", error);
+        }
+      }
+      getContacts()
     console.log(response)
     } catch (error) {
       console.log(error)
@@ -209,7 +227,39 @@ function Mainbox({ folders, searchQuery, setFolders, contacts }) {
   const uniqueSubjects = [...new Set(emails.map((email) => email.subject))];
   const [paginationNumber, setpaginationNumber] = useState(5);
   const uniqueImportance = ["DELAYABLE", "NORMAL", "IMPORTANT", "URGENT"]; // Unique importance options
+  const addContact = async () => {
+    let name = prompt("Select a contact name")
+    let emailAddress = prompt("Select a contact email address")
+    let token = localStorage.getItem('token')
+    try {
+      let response = await axios.put("http://localhost:8080/user/contact/add" , {
+        name: name, // This is the body of the request
+        emailAddress: emailAddress, // This is the body of the request
+      },
+      {
+        headers: {
+          Authorization: `${token}`, // Pass the token in the Authorization header
+        },
+      }
+      )
+      console.log(response)
+      const getContacts = async()=> {
+        try {
+          const response = await axios.get("http://localhost:8080/user/contacts", {
+            headers: { Authorization: token },
+          });
+          console.log(response);
+          setContacts(response.data); // Update the folders state here
+        } catch (error) {
+          console.error("Error fetching emails:", error);
+        }
+      }
+      getContacts()
 
+    } catch (error) {
+
+    }
+  }
   return (
     <div
       id="main-box"
@@ -382,8 +432,10 @@ function Mainbox({ folders, searchQuery, setFolders, contacts }) {
 
           {/* Contact Cards */}
           <div className="p-4 space-y-4 overflow-y-auto h-[calc(100%-50px)]">
-            <div>
-              <button>add contact</button>
+            <div className="text-white hover:bg-slate-800 px-4 py-4 rounded-2xl active:scale-95" onClick={addContact}>
+              <button>
+              <FontAwesomeIcon icon={faUserGroup} /> Add a Friend
+              </button>
             </div>
             {contacts.map((contact, index) => (
               <div

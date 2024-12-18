@@ -154,7 +154,8 @@ function Sidebar({ client, updateFolders, mainFolders , contacts }) {
         data,
         {
           headers: {
-            Authorization: `${token}`, // Replace `token` with your actual token variable
+            Authorization: `${token}`,
+            "Content-Type": "application/json" // Replace `token` with your actual token variable
           },
         }
       );

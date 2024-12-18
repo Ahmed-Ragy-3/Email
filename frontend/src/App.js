@@ -137,6 +137,7 @@ const Layout = ({ emails }) => {
                 searchQuery={searchQuery}
                 setFolders = {setFolders}
                 contacts = {contacts}
+                setContacts={setContacts}
               />
             }
           ></Route>
