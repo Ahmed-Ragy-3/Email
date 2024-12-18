@@ -8,11 +8,12 @@ import {
   faCircleExclamation,
   faFile,
   faPaperPlane,
+  faClock,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Compose from "../pages/Compose";
 
-function Sidebar({client}) {
+function Sidebar({client , setFolders}) {
   console.log("client is ",client)
   const location = useLocation(); // Get the current location
   const [showComposeModal, setShowComposeModal] = useState(false); // Control modal visibility
@@ -25,6 +26,7 @@ function Sidebar({client}) {
     { id: "spam", label: "Spam", icon: faCircleExclamation, path: "/spam" },
     { id: "drafts", label: "Drafts", icon: faFile, path: "/drafts" },
     { id: "sent", label: "Sent", icon: faPaperPlane, path: "/sent" },
+    { id: "scheduled", label: "Scheduled", icon: faClock, path: "/scheduled" },
   ];
   
   // Construct the correct path for the "Compose" page based on the current location
@@ -63,7 +65,7 @@ function Sidebar({client}) {
             <button
               className={`p-9 h-16 w-full font-poppins font-medium flex items-center justify-start space-x-3 transform hover:scale-105 active:scale-105 transition duration-200 ease-in-out ${
                 location.pathname === button.path
-                  ? "bg-[#135D66] text-white shadow-inner-tb scale-[105%]"
+                  ? "bg-[#2f4562] text-white shadow-inner-tb scale-[105%]"
                   : "bg-transparent shadow-none text-white"
               }`}
             >
@@ -78,7 +80,7 @@ function Sidebar({client}) {
       </div>
       {/* Modal for composing an email, passed as a component */}
       {showComposeModal && (
-        <Compose closeModal={closeModal} client = {client} /> // Pass closeModal as a prop
+        <Compose closeModal={closeModal} client = {client} setFolders = {setFolders} /> // Pass closeModal as a prop
       )}
 
     </div>

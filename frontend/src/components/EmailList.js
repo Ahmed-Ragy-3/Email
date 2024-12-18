@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function EmailList({ emails , emailsPerPage}) {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   
+  
 
   // Calculate total pages
   let totalPages = Math.ceil(emails.length / emailsPerPage);
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [totalPages])
   if (emails.length == 0)
   {
     totalPages =1

@@ -8,6 +8,7 @@ import Trash from "../pages/Trash";
 import Drafts from "../pages/Drafts";
 import FullEmailView from "./FullEmailView";
 import axios from "axios";
+import Scheduled from "../pages/Scheduled";
 
 function Mainbox({ folders, searchQuery }) {
   console.log("folders in mainbox are ", folders);
@@ -29,6 +30,8 @@ function Mainbox({ folders, searchQuery }) {
     newmails = folders[5]?.mails || [];
   } else if (path === "/spam") {
     newmails = folders[6]?.mails || [];
+  } else if (path === "/scheduled") {
+    newmails = folders[7]?.mails || [];
   }
   let emails = newmails;
   console.log(emails);
@@ -56,9 +59,13 @@ function Mainbox({ folders, searchQuery }) {
   const parseCustomDate = (dateString) => {
     // Example input: "17 / 12 / 2024 | 2: 18"
     const [datePart, timePart] = dateString.split(" | ");
+    if (!timePart) {
+      console.error("Invalid date string: ", dateString);
+      return new Date(); // Return the current date if timePart is missing
+    }
     const [day, month, year] = datePart.split(" / ").map(Number);
     const [hour, minute] = timePart.split(":").map((val) => Number(val.trim()));
-  
+
     // Convert to valid ISO string
     return new Date(year, month - 1, day, hour, minute);
   };
@@ -66,7 +73,7 @@ function Mainbox({ folders, searchQuery }) {
   const sortByDate = (a, b) => {
     const dateA = parseCustomDate(a.dateString);
     const dateB = parseCustomDate(b.dateString);
-    console.log(dateA , dateB)
+    console.log(dateA, dateB);
     return isDescending ? dateB - dateA : dateA - dateB;
   };
 
@@ -96,6 +103,7 @@ function Mainbox({ folders, searchQuery }) {
     setFilterStartDate("");
     setFilterEndDate("");
     setFilterImportance(""); // Clear importance filter
+    setpaginationNumber(5);
   };
 
   // Filtered and sorted emails
@@ -103,11 +111,11 @@ function Mainbox({ folders, searchQuery }) {
     return emails
       .filter((email) => {
         // Function to remove HTML tags from content
-        const removeHTMLTags = (text) => text.replace(/<[^>]*>/g, '');
-  
+        const removeHTMLTags = (text) => text.replace(/<[^>]*>/g, "");
+
         // Remove HTML tags from email content for search comparison
         const plainContent = removeHTMLTags(email.content).toLowerCase();
-  
+
         const senderMatch = filterSender
           ? email.senderAddress === filterSender
           : true;
@@ -123,18 +131,25 @@ function Mainbox({ folders, searchQuery }) {
         const importanceMatch = filterImportance
           ? email.importance === filterImportance
           : true;
-  
+
         // Modify the search match logic to also use plainContent (without HTML tags)
         const searchMatch = searchQuery
           ? email.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
             email.senderAddress
               .toLowerCase()
               .includes(searchQuery.toLowerCase()) ||
-            plainContent.includes(searchQuery.toLowerCase()) ||  // Search within plain text content
+            plainContent.includes(searchQuery.toLowerCase()) || // Search within plain text content
             email.dateString.toLowerCase().includes(searchQuery.toLowerCase())
           : true;
-  
-        return senderMatch && subjectMatch && startDateMatch && endDateMatch && importanceMatch && searchMatch;
+
+        return (
+          senderMatch &&
+          subjectMatch &&
+          startDateMatch &&
+          endDateMatch &&
+          importanceMatch &&
+          searchMatch
+        );
       })
       .sort(
         sortBy === "subject"
@@ -157,47 +172,55 @@ function Mainbox({ folders, searchQuery }) {
     searchQuery,
   ]);
 
-  const uniqueSenders = [...new Set(emails.map((email) => email.senderAddress))];
+  const uniqueSenders = [
+    ...new Set(emails.map((email) => email.senderAddress)),
+  ];
   const uniqueSubjects = [...new Set(emails.map((email) => email.subject))];
-  const [paginationNumber, setpaginationNumber] = useState(5)
+  const [paginationNumber, setpaginationNumber] = useState(5);
   const uniqueImportance = ["DELAYABLE", "NORMAL", "IMPORTANT", "URGENT"]; // Unique importance options
   return (
     <div
       id="main-box"
-      className="h-full basis-[89%] px-6 py-6 bg-[#135D66] overflow-auto rounded-3xl shadow-inner shadow-gray-800 pb-[5%]"
+      className="h-full basis-[89%] px-6 py-6 bg-[#2f4562] overflow-auto rounded-3xl shadow-inner shadow-gray-800 pb-[5%]"
     >
       {/* Sorting options */}
       <div className="mb-4 flex items-center">
-  <label htmlFor="sort" className="text-white mr-2">
-    Sort By
-  </label>
-  <select
-    id="sort"
-    value={sortBy}
-    onChange={handleSort}
-    className="p-2 bg-[#135D66] text-white rounded-md hover:bg-[#0A4D5A]"
-  >
-    <option value="dateString" className="bg-[#135D66] hover:bg-[#0A4D5A]">
-      Date
-    </option>
-    <option value="subject" className="bg-[#135D66] hover:bg-[#0A4D5A]">
-      Subject
-    </option>
-    <option value="sender" className="bg-[#135D66] hover:bg-[#0A4D5A]">
-      Sender
-    </option>
-    <option value="importance" className="bg-[#135D66] hover:bg-[#0A4D5A]">
-      Importance
-    </option>
-  </select>
+        <label htmlFor="sort" className="text-white mr-2">
+          Sort By
+        </label>
+        <select
+          id="sort"
+          value={sortBy}
+          onChange={handleSort}
+          className="p-2 bg-[#135D66] text-white rounded-md hover:bg-[#0A4D5A]"
+        >
+          <option
+            value="dateString"
+            className="bg-[#135D66] hover:bg-[#0A4D5A]"
+          >
+            Date
+          </option>
+          <option value="subject" className="bg-[#135D66] hover:bg-[#0A4D5A]">
+            Subject
+          </option>
+          <option value="sender" className="bg-[#135D66] hover:bg-[#0A4D5A]">
+            Sender
+          </option>
+          <option
+            value="importance"
+            className="bg-[#135D66] hover:bg-[#0A4D5A]"
+          >
+            Importance
+          </option>
+        </select>
 
-  <button
-    onClick={toggleSortOrder}
-    className="ml-4 p-2 bg-[#135D66] text-white rounded-md hover:bg-[#0A4D5A]"
-  >
-    {isDescending ? "Descending" : "Ascending"}
-  </button>
-</div>
+        <button
+          onClick={toggleSortOrder}
+          className="ml-4 p-2 bg-[#135D66] text-white rounded-md hover:bg-[#0A4D5A]"
+        >
+          {isDescending ? "Descending" : "Ascending"}
+        </button>
+      </div>
 
       {/* Filter options */}
       <div className="mb-4 flex items-center space-x-4">
@@ -278,16 +301,22 @@ function Mainbox({ folders, searchQuery }) {
           </select>
         </div>
         <div>
-          <select name="pagination-select" value={paginationNumber} id="" className="p-2 bg-[#135D66] text-white rounded-md hover:bg-[#0A4D5A]" onChange={(e)=>{
-              setpaginationNumber(Number(e.target.value))
-          }}>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="20">20</option>
+          <select
+            name="pagination-select"
+            value={paginationNumber}
+            id=""
+            className="p-2 bg-[#135D66] text-white rounded-md hover:bg-[#0A4D5A]"
+            onChange={(e) => {
+              setpaginationNumber(Number(e.target.value));
+            }}
+          >
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
           </select>
         </div>
         <button
@@ -299,12 +328,48 @@ function Mainbox({ folders, searchQuery }) {
       </div>
 
       <Routes>
-        <Route path="/" element={<Inbox emails={filteredEmails} pagination = {paginationNumber}/>} />
-        <Route path="/sent" element={<Sent emails={filteredEmails}  pagination = {paginationNumber}/>} />
-        <Route path="/spam" element={<Spam emails={filteredEmails}  pagination = {paginationNumber}/>} />
-        <Route path="/drafts" element={<Drafts emails={filteredEmails}  pagination = {paginationNumber}/>} />
-        <Route path="/starred" element={<Starred emails={filteredEmails}  pagination = {paginationNumber}/>} />
-        <Route path="/trash" element={<Trash emails={filteredEmails}  pagination = {paginationNumber}/>} />
+        <Route
+          path="/"
+          element={
+            <Inbox emails={filteredEmails} pagination={paginationNumber} />
+          }
+        />
+        <Route
+          path="/sent"
+          element={
+            <Sent emails={filteredEmails} pagination={paginationNumber} />
+          }
+        />
+        <Route
+          path="/spam"
+          element={
+            <Spam emails={filteredEmails} pagination={paginationNumber} />
+          }
+        />
+        <Route
+          path="/drafts"
+          element={
+            <Drafts emails={filteredEmails} pagination={paginationNumber} />
+          }
+        />
+        <Route
+          path="/starred"
+          element={
+            <Starred emails={filteredEmails} pagination={paginationNumber} />
+          }
+        />
+        <Route
+          path="/trash"
+          element={
+            <Trash emails={filteredEmails} pagination={paginationNumber} />
+          }
+        />
+        <Route
+          path="/scheduled"
+          element={
+            <Scheduled emails={filteredEmails} pagination={paginationNumber} />
+          }
+        />
       </Routes>
     </div>
   );

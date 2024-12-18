@@ -1,10 +1,20 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFile, faPaperPlane, faTrash, faPalette } from "@fortawesome/free-solid-svg-icons";
+import {
+  faFile,
+  faPaperPlane,
+  faTrash,
+  faPalette,
+} from "@fortawesome/free-solid-svg-icons";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useFolders } from "../components/FoldersContext";
+import { folders } from "fontawesome";
 
-function Compose({ closeModal , client}) {
+function Compose({ closeModal, client , setFolders }) {
+  console.log(folders)
+  console.log(folders)
   const [attachments, setAttachments] = useState([]);
   const [attachmentURLs, setAttachmentURLs] = useState([]);
   const [isBold, setIsBold] = useState(false);
@@ -13,12 +23,19 @@ function Compose({ closeModal , client}) {
   const [textColor, setTextColor] = useState("#000000"); // Default black color
   const [showColorPicker, setShowColorPicker] = useState(false); // Toggle for color picker visibility
   const editorRef = useRef(null); // Ref for the contenteditable div
-
+  const navigate = useNavigate();
   const [contactInput, setContactInput] = useState("");
   const [selectedContacts, setSelectedContacts] = useState([]);
   const [filteredContacts, setFilteredContacts] = useState([]);
 
-  const contacts = ["Alice Smith", "Bob Johnson", "Charlie Brown", "Diana Prince", "Eve Adams", "Frank Castle"];
+  const contacts = [
+    "Alice Smith",
+    "Bob Johnson",
+    "Charlie Brown",
+    "Diana Prince",
+    "Eve Adams",
+    "Frank Castle",
+  ];
   const handleContactInput = (e) => {
     const value = e.target.value;
     setContactInput(value);
@@ -39,42 +56,96 @@ function Compose({ closeModal , client}) {
     setContactInput("");
     setFilteredContacts([]);
   };
-  
+
   const removeContact = (contact) => {
     setSelectedContacts((prev) => prev.filter((c) => c !== contact));
   };
 
-  const upload = async ()=>{
-    let e = document.getElementById("text-field")
-    let subject_field = document.getElementById("subject")
-    let time_options = document.getElementById("time-options")
-    let importance = document.getElementById("importance")
-    let token = localStorage.getItem('token')
-    let decodedtoken = jwtDecode(token)
+  const upload = async () => {
+    let e = document.getElementById("text-field");
+    let subject_field = document.getElementById("subject");
+    let time_options = document.getElementById("time-options");
+    let importance = document.getElementById("importance");
+    let token = localStorage.getItem("token");
+    let decodedtoken = jwtDecode(token);
     let email = decodedtoken.email;
-    console.log(token)
+    console.log(token);
     let data_sent = {
-      "senderAddress": email,
-      "receiversAddresses": selectedContacts,
-      "content": e.innerHTML,
-      "subject": subject_field.value,
-      "importance": importance.value,
+      senderAddress: email,
+      receiversAddresses: selectedContacts,
+      content: e.innerHTML,
+      subject: subject_field.value,
+      importance: importance.value,
       // "attachments": attachments,
-      "dateString": time_options.value
-  }
-    console.log(data_sent)
-    let response = await axios.post(
-      "http://localhost:8080/mail/send",
-      data_sent,  // Send the data in the request body
-      {
-        headers: {
-          'Authorization': token,  // Add the token to the Authorization header
-          'Content-Type': 'application/json'  // Ensure the content type is JSON
+      dateString: time_options.value,
+    };
+    console.log(data_sent);
+    console.log("boolean" , data_sent.dateString == "now")
+    try {
+      let response = await axios.post(
+        "http://localhost:8080/mail/send",
+        data_sent, // Send the data in the request body
+        {
+          headers: {
+            Authorization: token, // Add the token to the Authorization header
+            "Content-Type": "application/json", // Ensure the content type is JSON
+          },
         }
+      );
+      let now = new Date();
+      let formattedDate = now.toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true, // Set to `false` for 24-hour format
+      });
+      console.log(response);
+      let dest;
+      console.log("dat ",data_sent.dateString)
+      if (data_sent.dateString == 'now')
+      {
+        dest = 2
       }
-    );
-    console.log(response)
+      else
+      {
+        dest = 5
+      }
+      data_sent.dataString = formattedDate.replace(',' , '|')
+      
+      setFolders((prevFolders) => {
+        if (!prevFolders || prevFolders.length === 0) {
+          console.error("Folders are empty or undefined");
+          return prevFolders; // Early return to prevent errors
+        }
+      
+        // Ensure `mails` exists
+        const updatedFolders = [...prevFolders];
+        const firstFolder = { ...updatedFolders[dest] };
+        firstFolder.mails = [...(firstFolder.mails || []), data_sent]; // Add newMail immutably
+        
+        updatedFolders[dest] = firstFolder;
+        return updatedFolders;
+      });
+      closeModal();
+    } catch (error) {
+      alert("An error has occured")
+    }
+    
+    // navigate("/");
+    
   };
+  useEffect(() => {
+    
+    console.log("folders are ", folders)
+    
+  }, [folders])
+  
+  
+  
+  
+  
   // Handle file uploads
   const handleFileUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -86,16 +157,15 @@ function Compose({ closeModal , client}) {
 
     e.target.value = ""; // Clear the input value after upload
   };
-  const addEmail =()=>
-  {
-    let contact = contactInput
-    console.log(contact)
+  const addEmail = () => {
+    let contact = contactInput;
+    console.log(contact);
     if (!selectedContacts.includes(contact)) {
       setSelectedContacts((prev) => [...prev, contact]);
     }
     setContactInput("");
     setFilteredContacts([]);
-  }
+  };
   // Remove a specific attachment
   const removeAttachment = (index) => {
     // Clean up the object URL
@@ -170,14 +240,11 @@ function Compose({ closeModal , client}) {
             id="to"
             value={contactInput}
             onChange={handleContactInput}
-            onKeyDown={(e)=>
-            {
-              if(e.key == "Enter")
-              {
-                addEmail()
+            onKeyDown={(e) => {
+              if (e.key == "Enter") {
+                addEmail();
               }
-            }
-            }
+            }}
             className="flex-grow p-2 outline-none mt-2"
             placeholder="Search or add a contact"
           />
@@ -362,21 +429,12 @@ function Compose({ closeModal , client}) {
             </button>
             {showColorPicker && (
               <div className="absolute mt-2 bg-white border p-2 rounded-lg shadow-lg z-50">
-                <div
-                  className="grid grid-cols-4 gap-2"
-                  style={{ gridTemplateColumns: "repeat(4, 1fr)" }}
-                >
-                  {["#000000", "#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF", "#00FFFF", "#FFFFFF"].map(
-                    (color) => (
-                      <button
-                        key={color}
-                        onClick={() => changeTextColor(color)}
-                        style={{ backgroundColor: color }}
-                        className={`w-8 h-8 border rounded-full`}
-                      />
-                    )
-                  )}
-                </div>
+                <input
+                  type="color"
+                  value={textColor} // Bind the color input to the state
+                  onChange={(e) => changeTextColor(e.target.value)} // Update state with the selected color
+                  className="w-12 h-12 border-0 rounded-full cursor-pointer"
+                />
               </div>
             )}
           </div>
@@ -384,11 +442,13 @@ function Compose({ closeModal , client}) {
           {/* Send and Save Buttons */}
           <div className="flex space-x-2">
             <button className="flex items-center space-x-2 px-4 py-2 bg-[#5d7fd7] text-white rounded-full hover:bg-[#415a98] active:scale-95">
-              <FontAwesomeIcon icon={faFile} /> 
+              <FontAwesomeIcon icon={faFile} />
               <span>Save to drafts</span>
             </button>
-            <button className="flex items-center space-x-2 px-4 py-2 bg-[#4841ff] text-white rounded-full hover:bg-[#2e2aa4] active:scale-95"
-            onClick={upload}>
+            <button
+              className="flex items-center space-x-2 px-4 py-2 bg-[#4841ff] text-white rounded-full hover:bg-[#2e2aa4] active:scale-95"
+              onClick={upload}
+            >
               <FontAwesomeIcon icon={faPaperPlane} />
               <span>Send</span>
             </button>
