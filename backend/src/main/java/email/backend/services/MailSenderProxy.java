@@ -61,7 +61,9 @@ public class MailSenderProxy {
          user.getMailboxes().get(MailboxService.DRAFTS_INDEX).getMails().remove(mail);
          mailboxRepository.save(user.getMailboxes().get(MailboxService.DRAFTS_INDEX)); // i added this
       }
-
+      
+      System.out.println(mail.getId());
+      mailRepository.save(mail);
       sendMail(mail);
       mailRepository.save(mail);
       return mail;
