@@ -1,11 +1,11 @@
 1 - controllers
-2 - contacts table
+2 - contacts table done
 3 - trash restore
-4 - scheduled mails handling
+4 - scheduled mails handling done
 5 - caching proxy
 6 - Attachments
-7 - pagination
-8 - web sockets
+7 - pagination 
+8 - web sockets done
 
 user:
    id 

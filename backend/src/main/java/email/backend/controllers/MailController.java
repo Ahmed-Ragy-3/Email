@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import email.backend.DTO.MailDTO;
 import email.backend.DTO.MailboxDTO;
 import email.backend.services.MailSenderProxy;
-// import email.backend.databaseAccess.MailRepository;
 import email.backend.services.MailService;
 import email.backend.services.MailboxService;
 import email.backend.tables.Mail;
@@ -42,17 +42,37 @@ public class MailController {
    private MailboxService mailboxService;
    
    @PutMapping("/create")
-   public MailDTO createMail(@RequestBody MailDTO maildDto,
-                          @RequestHeader("Authorization") String token) {
-      // System.out.println("entered request");
-      Mail mail = maildDto.toMail(userService.getUser(token), userService, mailService);
-      mailService.createMailToDrafts(mail);
-      return new MailDTO(mail);
+   public ResponseEntity<?> createDraftMail(@RequestBody MailDTO maildDto, @RequestHeader("Authorization") String token) {
+      try {
+         MailDTO dto = mailService.createDraftMail(maildDto, userService.getUser(token));
+         return ResponseEntity
+               .status(HttpStatus.ACCEPTED)
+               .body(dto);
+      
+      } catch (Exception e) {
+         return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(e.getMessage());
+      }
+   }
+
+   @PostMapping("/edit")
+   public ResponseEntity<?> editDraftMail(@RequestBody MailDTO maildDto, @RequestHeader("Authorization") String token) {
+      try {
+         MailDTO dto = mailService.editDraftMail(maildDto, userService.getUser(token));
+         return ResponseEntity
+               .status(HttpStatus.ACCEPTED)
+               .body(dto);
+      
+      } catch (Exception e) {
+         return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(e.getMessage());
+      }
    }
 
    @PostMapping("/send")
-   public ResponseEntity<?> sendMail(@RequestBody MailDTO mailDto) {
-      System.out.println(mailDto.getContent());
+   public ResponseEntity<?> sendMail(@RequestBody MailDTO mailDto, @RequestHeader("Authorization") String token) {
       try {
          Mail mail = mailSenderProxy.sendMail(userService.getUserFromAddress(mailDto.getSenderAddress()), mailDto);
          return ResponseEntity
@@ -90,16 +110,17 @@ public class MailController {
          return email;
    }
 
-   @DeleteMapping("/moveToTrash")
-   public ResponseEntity<?> moveToTrash( @RequestHeader("Authorization") String token, 
-                                    @RequestBody MailDTO mailDto,
-                                    @RequestBody MailboxDTO FromMailboxDto) {
+   @DeleteMapping("/moveToTrash/{fromMailboxId}")
+   public ResponseEntity<?> moveToTrash(  @RequestHeader("Authorization") String token, 
+                                          @RequestBody MailDTO mailDto,
+                                          @PathVariable Long fromMailboxId) {
       try {
-         mailboxService.moveToTrash(  mailboxService.getMailbox(FromMailboxDto.getId()),
-                                      mailService.getMailById(mailDto.getId()));
+         mailboxService.moveToTrash(  mailboxService.getMailbox(fromMailboxId),
+                                      mailService.getMailById(mailDto.getId()),
+                                      userService.getUser(token));
          return ResponseEntity
                .status(HttpStatus.ACCEPTED)
-               .body("Move from" + FromMailboxDto.getName() + " to trash");
+               .body("Moved to trash");
       } catch (Exception e) {
          return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
@@ -111,7 +132,7 @@ public class MailController {
    public ResponseEntity<?> delete( @RequestHeader("Authorization") String token, 
                                     @RequestBody MailDTO mailDto) {
       try {
-         mailboxService.delete(mailService.getMailById(mailDto.getId()));
+         mailboxService.deleteFromTrash(mailService.getMailById(mailDto.getId()), userService.getUser(token));
          return ResponseEntity
                .status(HttpStatus.ACCEPTED)
                .body("Deleted the mail permenantly");
@@ -122,18 +143,20 @@ public class MailController {
       }
    }
   
-   @PostMapping("/moveTo")
-      public ResponseEntity<?> moveMailToMailbox( @RequestHeader("Authorization") String token, 
+   @PostMapping("/moveTo/{fromMailboxId}/{toMailboxId}")
+      public ResponseEntity<?> moveMailToMailbox( 
+                                    @RequestHeader("Authorization") String token,
                                     @RequestBody MailDTO mailDto,
-                                    @RequestBody MailboxDTO FromMailboxDto,
-                                    @RequestBody MailboxDTO ToMailboxDto) {
+                                    @PathVariable Long fromMailboxId,
+                                    @PathVariable Long toMailboxId) {
       try {
-         mailboxService.moveTo(  mailboxService.getMailbox(FromMailboxDto.getId()),
-                                 mailboxService.getMailbox(ToMailboxDto.getId()),
-                                 mailService.getMailById(mailDto.getId()));
+         mailboxService.moveTo(  mailboxService.getMailbox(fromMailboxId),
+                                 mailboxService.getMailbox(toMailboxId),
+                                 mailService.getMailById(mailDto.getId()),
+                                 userService.getUser(token));
          return ResponseEntity
                .status(HttpStatus.ACCEPTED)
-               .body("Move from" + FromMailboxDto.getName() + " to " + ToMailboxDto.getName());
+               .body("Moved Successfully");
       } catch (Exception e) {
          return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)

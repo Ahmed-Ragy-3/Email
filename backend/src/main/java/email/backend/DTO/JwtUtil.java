@@ -23,8 +23,8 @@ public class JwtUtil {
       claims.put("email", userDto.getEmailAddress());
       // claims.put("password", userDto.getPassword());
 
-      System.out.println("user dto id : " + userDto.getId());
-      System.out.println("User dto address : " + userDto.getEmailAddress());
+      // System.out.println("user dto id : " + userDto.getId());
+      // System.out.println("User dto address : " + userDto.getEmailAddress());
       
       return Jwts.builder()
             .setClaims(claims)
@@ -44,11 +44,11 @@ public class JwtUtil {
    }
 
    public static UserDTO getUserFromToken(String token) {
-      System.out.println("entered get user form token in jwt file");
+      // System.out.println("entered get user form token in jwt file");
       token = token.replaceAll("Bearer ", "");
       System.out.println(token);
       Claims claims = extractClaims(token);
-      System.out.println("entered get user form token in jwt file 2");
+      // System.out.println("entered get user form token in jwt file 2");
 
       UserDTO user = new UserDTO();
       user.setId(Long.parseLong(claims.get("id").toString()));

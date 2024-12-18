@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -34,7 +35,7 @@ public class MailboxController {
                                           @RequestHeader("Authorization") String token) {    
                                              System.out.println("here");                       
       try {
-         Mailbox mailbox = mailboxService.createMailbox(userService.getUser(JwtUtil.getUserFromToken(token)), mailboxDto.getName());
+         Mailbox mailbox = mailboxService.createMailbox(userService.getUser(token), mailboxDto.getName());
          mailboxDto.setId(mailbox.getId());
          return ResponseEntity
             .status(HttpStatus.ACCEPTED)
@@ -45,5 +46,39 @@ public class MailboxController {
             .body(e.getMessage());
       }
    }
-   
+
+   @PostMapping("/edit")
+   public ResponseEntity<?> editMailbox(@RequestBody MailboxDTO mailboxDto,
+                                          @RequestHeader("Authorization") String token) {                           
+      try {
+         mailboxService.editMailbox(userService.getUser(token), mailboxDto);
+         return ResponseEntity
+            .status(HttpStatus.ACCEPTED)
+            .body(mailboxDto);
+      } catch (Exception e) {
+         return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(e.getMessage());
+      }
+   }
+
+   @PostMapping("/delete")
+   public ResponseEntity<?> deleteMailbox(@RequestBody MailboxDTO mailboxDto,
+                                          @RequestHeader("Authorization") String token) {  
+                                             System.out.println("name : "+mailboxDto.getName());                         
+      try {
+         System.out.println("in controller");
+         mailboxService.deleteMailbox(userService.getUser(token), mailboxDto);
+         System.out.println("in controller 2");
+         return ResponseEntity
+         .status(HttpStatus.ACCEPTED)
+         .body("Mailbox Deleted Successfully");
+      } catch (Exception e) {
+         System.out.println("in controller 4");
+         System.out.println(e.getMessage());
+         return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(e.getMessage());
+      }
+   }
 }

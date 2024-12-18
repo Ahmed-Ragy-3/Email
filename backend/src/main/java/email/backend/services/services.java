@@ -121,15 +121,6 @@ public class services {
       // return updated mail
    }
 
-   public void createReply() {
-      // takes mail
-
-      // create new mail and set its parent, sender 
-      // add the created mail to replies of parent mail
-
-      // return created reply
-   }
-
    // contact 
    public void newContact() {
       // takes user, contact emailAddress, Contact name

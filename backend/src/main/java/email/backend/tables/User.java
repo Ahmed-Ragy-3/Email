@@ -39,6 +39,7 @@ public class User {
    private List<Mailbox> mailboxes = new ArrayList<>();
 
    @JsonIgnore
+   // @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
    private List<Contact> contacts = new ArrayList<>(); 
 
