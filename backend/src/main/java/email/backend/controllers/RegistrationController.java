@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import email.backend.DTO.JwtUtil;
 import email.backend.DTO.UserDTO;
-import email.backend.services.UserService;
 import email.backend.tables.User;
+import email.backend.services.UserService;
 
 @RestController
 @CrossOrigin("http://localhost:3000/")

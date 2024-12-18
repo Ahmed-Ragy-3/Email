@@ -37,27 +37,30 @@ public class MailboxService {
    @Autowired
    private final MailboxRepository mailboxRepository;
 
-   @Transactional
    public void addTo(Mailbox mailbox, Mail mail) {
       mailbox.getMails().add(mail);
-      mailboxRepository.save(mailbox);
    }
 
-   @Transactional
-   public void copyTo(Mail mail, Mailbox mailbox) {
+   public void copyTo(Mailbox mailbox, Mail mail) {
       addTo(mailbox, mail);
    }
    
-   @Transactional
    public void moveTo(Mailbox from, Mailbox to, Mail mail) {
-      copyTo(mail, to);
+      copyTo(to, mail);
       deleteFrom(from, mail);
    }
    
-   // @Transactional
    public void deleteFrom(Mailbox mailbox, Mail mail) {
       mailbox.getMails().remove(mail);
-      mailboxRepository.save(mailbox);
+   }
+
+   public void moveToTrash(Mailbox mailbox, Mail mail) {
+      deleteFrom(mailbox, mail);
+      addTo(getMailbox(mail.getSender(), TRASH_INDEX), mail);
+   }
+   
+   public void delete(Mail mail) { // delete from trash only
+      deleteFrom(getMailbox(mail.getSender(), TRASH_INDEX), mail);
    }
 
    public Mailbox getMailbox(Long mailboxId) {

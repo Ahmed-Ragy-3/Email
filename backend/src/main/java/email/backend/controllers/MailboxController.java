@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import email.backend.DTO.JwtUtil;
 import email.backend.DTO.MailboxDTO;
 import email.backend.services.MailboxService;
-import email.backend.services.UserService;
 import email.backend.tables.Mailbox;
+import email.backend.services.UserService;
 
 
 @RestController

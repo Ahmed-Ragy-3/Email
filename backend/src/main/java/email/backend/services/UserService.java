@@ -13,6 +13,7 @@ import email.backend.DTO.JwtUtil;
 import email.backend.DTO.UserDTO;
 import email.backend.databaseAccess.ContactRepository;
 import email.backend.databaseAccess.UserRepository;
+import email.backend.services.MailboxService;
 import email.backend.tables.Contact;
 import email.backend.tables.User;
 import jakarta.transaction.Transactional;
@@ -175,6 +176,10 @@ public class UserService {
       System.out.println("entered get user by dto");
       Optional<User> user = userRepository.findById(userDto.getId());
       return user.isPresent() ? user.get() : null;
+   }
+
+   public List<User> getAllUsers() {
+      return userRepository.findAll();
    }
 
    // @Transactional

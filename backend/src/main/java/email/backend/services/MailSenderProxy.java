@@ -1,21 +1,19 @@
 package email.backend.services;
 
-import java.util.Optional;
+// import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
 import email.backend.DTO.MailDTO;
-import email.backend.DTO.WebSocketMsgDTO;
-// import email.backend.DTO.WebsocketMsgDTO;
-import email.backend.controllers.EmailWebSocketController;
 import email.backend.databaseAccess.ContactRepository;
-import email.backend.tables.Contact;
+import email.backend.databaseAccess.MailRepository;
+import email.backend.databaseAccess.MailboxRepository;
 import email.backend.tables.Mail;
 import email.backend.tables.Mailbox;
 import email.backend.tables.User;
-import jakarta.transaction.Transactional;
+// import jakarta.transaction.Transactional;
 
 @Service
 public class MailSenderProxy {
@@ -40,13 +38,39 @@ public class MailSenderProxy {
 
    @Autowired
    private MailboxService mailboxService;
+   
+   @Autowired
+   private MailService mailService;
+
+   @Autowired
+   private MailRepository mailRepository;
+   
+   @Autowired
+   private MailboxRepository mailboxRepository;
+
+   @Autowired
+   private UserService userService;
 
    @Autowired
    private ContactRepository contactRepository;
-
-   @Autowired
-   private EmailWebSocketController socketSender;
    
+
+
+   public Mail sendMail(User user, MailDTO mailDto) {
+
+      Mail mail;
+      if(mailDto.getId() == null) {
+         mail = mailDto.toMail(user, userService, mailService);
+      } else {
+         mail = mailRepository.findById(mailDto.getId()).get();
+         user.getMailboxes().get(MailboxService.DRAFTS_INDEX).getMails().remove(mail);
+      }
+
+      sendMail(mail);
+      mailRepository.save(mail);
+      return mail;
+   }
+
 
    public boolean isScheduled(Mail mail) {
       return mail.getDate().future();
@@ -57,21 +81,11 @@ public class MailSenderProxy {
     * @param user2 is
     * returns true if user has a friend zone mailbox containing user2
     */
-   public Mailbox getFriendZone(User user, User user2) {
-      // List<Mailbox> mailboxes = user.getMailboxes();
-
-      Optional<Contact> contact = contactRepository.findByUserAndContactUser(user, user2);
-
-      if(contact.isPresent()) {
-         // for (Mailbox mailbox : mailboxes) {
-         //    if(mailbox.getName().equals(contact.get().getContactName()))
-         //       return mailbox;
-         // }
-         return mailboxService.getMailbox(user, contact.get().getContactName());
-      }
-
-      return null;
-   }
+   // private Mailbox getFriendZone(User user, User user2) {
+   //    // Friend zone logic
+   //    Optional<Contact> contact = contactRepository.findByUserAndContactUser(user, user2);
+   //    return contact.map(c -> mailboxService.getMailbox(user, c.getContactName())).orElse(null);
+   // }
 
    private boolean isReady(Mail mail) throws IllegalArgumentException {
       if(mail.getSender() == null) {
@@ -101,62 +115,35 @@ public class MailSenderProxy {
       if(isScheduled(mail)) {
          // sent to scheduled folder
          mailboxService.addTo(mailboxService.getMailbox(mail.getSender(), MailboxService.SCHEDULED_INDEX), mail);
-         return handleScheduling(mail);
+
+         handleScheduling(mail);
+         return mail;
       }
-      sendToDatabase(mail);
-
+      
+      mailService.sendToDatabase(mail);
       return mail;
    }
-
-   private Mail handleScheduling(Mail mail) {    // Gate 2
-      
-      Runnable task = () -> {
-         mailboxService.deleteFrom(mailboxService.getMailbox(mail.getSender(), MailboxService.SCHEDULED_INDEX), mail);
-         sendToDatabase(mail);
-      };
-
-      taskScheduler.schedule(task, mail.getDate().toInstant());
-    
-      return mail;
-   }
-
-   // @Transactional
-   private void sendToDatabase(Mail mail) {      // Gate 3
-      
-      Mailbox friendMailbox;
-      User sender = mail.getSender();
-      MailDTO mailDto = new MailDTO(mail);
-
-      String receiverMailboxName = "";
-
-      for (User receiver : mail.getReceivers()) {
-         friendMailbox = getFriendZone(sender, receiver);
-
-         if(friendMailbox != null) {
-            friendMailbox.getMails().add(mail);
-         } else {
-            mailboxService.addTo(sender.getMailboxes().get(MailboxService.SENT_INDEX), mail);
-         }
-
-         friendMailbox = getFriendZone(receiver, sender);
-
-         if(friendMailbox != null) {
-            friendMailbox.getMails().add(mail);
-            receiverMailboxName = friendMailbox.getName();
-         } else {
-            mailboxService.addTo(receiver.getMailboxes().get(MailboxService.INBOX_INDEX), mail);
-            receiverMailboxName = receiver.getMailboxes().get(MailboxService.INBOX_INDEX).getName();
-         }
-         
-         try {
-            for (String recieverAddress : mailDto.getReceiversAddresses()) {
-               socketSender.sendEmail(new WebSocketMsgDTO(new MailDTO(mail), receiverMailboxName),
-               recieverAddress, mailDto.getSenderAddress());
+   
+   private Mail handleScheduling(Mail mail) {
+      Runnable task = new Runnable() {
+         @Override
+         public void run() {
+            try {
+               Mailbox mailbox = mailboxService.getMailbox(mail.getSender(), MailboxService.SCHEDULED_INDEX);
+               mailboxService.deleteFrom(mailbox, mail);
+               mailboxRepository.save(mailbox);
+               mailService.sendToDatabase(mail); // Delegating transactional work to MailService
+               System.out.println("Scheduled task executed: " + mail.getContent());
+            } catch (Exception e) {
+               System.out.println("Error during scheduled mail processing: " + e.getMessage());
             }
-         } catch(Exception e) {
-            System.out.println("Error in sending websocket message");
-            System.out.println(e.getMessage());
          }
-      }
-   }
+      };
+      taskScheduler.schedule(task, mail.getDate().toInstant());
+      
+      return mail;
+  }
+  
+
+
 }
