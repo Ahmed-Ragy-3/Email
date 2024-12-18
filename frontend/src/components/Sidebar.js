@@ -243,7 +243,7 @@ function Sidebar({ client, updateFolders, mainFolders }) {
                   <div
                     key={index}
                     
-                    className={`folder-item flex justify-between p-9 h-16 w-full font-poppins font-medium flex items-center justify-start space-x-3 transform hover:scale-105 active:scale-105 transition duration-200 ease-in-out ${
+                    className={`folder-item p-9 h-16 w-full font-poppins font-medium flex items-center justify-start space-x-3 transform hover:scale-105 active:scale-105 transition duration-200 ease-in-out ${
                       location.pathname === folderPath
                         ? "bg-[#2f4562] text-white shadow-inner-tb scale-[105%]"
                         : "bg-transparent shadow-none text-white"
