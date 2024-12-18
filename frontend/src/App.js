@@ -28,6 +28,7 @@ const Layout = ({ emails }) => {
   const [stompClient, setStompClient] = useState(null);
   const [folders, setFolders] = useState([]); // Initialize state as empty array
   const [userName, setUserName] = useState();
+  console.log(setFolders)
   const navigate = useNavigate();
   function playNotificationSound() {
     const audio = new Audio("/files/notif.mp3"); // Path to the notif.mp3 file inside the 'files' folder

@@ -13,6 +13,7 @@ import { useFolders } from "../components/FoldersContext";
 import { folders } from "fontawesome";
 
 function Compose({ closeModal, client , setFolders }) {
+  console.log("compose " , setFolders)
   const [attachments, setAttachments] = useState([]);
   const [attachmentURLs, setAttachmentURLs] = useState([]);
   const [isBold, setIsBold] = useState(false);

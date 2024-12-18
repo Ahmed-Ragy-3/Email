@@ -20,6 +20,7 @@ import { RemoveScrollBar } from "react-remove-scroll-bar"; // Import the package
 
 function Sidebar({ client , updateFolders}) {
   const location = useLocation();
+  console.log("side : ", updateFolders)
   const [showComposeModal, setShowComposeModal] = useState(false);
   const [activeButton, setActiveButton] = useState("");
   const [showFolders, setShowFolders] = useState(false);
@@ -159,7 +160,7 @@ function Sidebar({ client , updateFolders}) {
         <Compose closeModal={closeModal} client={client} setFolders={updateFolders} /> // Pass closeModal as a prop
       )}
 
-      {showComposeModal && <Compose closeModal={closeModal} client={client} />}
+      {showComposeModal && <Compose closeModal={closeModal} client={client} setFolders={updateFolders}/>}
     </div>
   );
 }
