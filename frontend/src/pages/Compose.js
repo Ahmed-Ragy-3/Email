@@ -176,7 +176,7 @@ function Compose({ closeModal, client , setFolders }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto">
       <div className="bg-white p-6 rounded-2xl w-3/5 h-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
