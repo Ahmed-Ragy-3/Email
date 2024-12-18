@@ -48,7 +48,7 @@ const Layout = ({ emails }) => {
 
     const socket = new SockJS("http://localhost:8080/ws");
     const client = Stomp.over(socket);
-    
+
     client.connect({}, () => {
       console.log("Connected to WebSocket server");
       client.subscribe(`/topic/emails/${email}`, (msg) => {
@@ -108,7 +108,7 @@ const Layout = ({ emails }) => {
     <div className="h-screen overflow-clip bg-[#223047]">
         <Navbar setSearchQuery={setSearchQuery} username={userName}/>
       <div className="h-full flex">
-        <Sidebar emails={emails} client={stompClient} setFolders={setFolders} />
+        <Sidebar emails={emails} client={stompClient} updateFolders={setFolders} />
         <Routes>
           <Route
             path="/email/:id"

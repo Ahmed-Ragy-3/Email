@@ -18,7 +18,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Compose from "../pages/Compose";
 import { RemoveScrollBar } from "react-remove-scroll-bar"; // Import the package
 
-function Sidebar({ client }) {
+function Sidebar({ client , updateFolders}) {
   const location = useLocation();
   const [showComposeModal, setShowComposeModal] = useState(false);
   const [activeButton, setActiveButton] = useState("");
@@ -156,7 +156,7 @@ function Sidebar({ client }) {
       </div>
       {/* Modal for composing an email, passed as a component */}
       {showComposeModal && (
-        <Compose closeModal={closeModal} client = {client} setFolders = {setFolders} /> // Pass closeModal as a prop
+        <Compose closeModal={closeModal} client={client} setFolders={updateFolders} /> // Pass closeModal as a prop
       )}
 
       {showComposeModal && <Compose closeModal={closeModal} client={client} />}
