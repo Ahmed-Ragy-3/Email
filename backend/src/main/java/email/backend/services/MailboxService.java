@@ -86,7 +86,8 @@ public class MailboxService {
       System.out.println(mailbox.getId());
       System.out.println(mail.getId());
       System.out.println(user.getName());
-      if (mailbox.getOwner() == user) {
+      
+      if (mailbox.getOwner().equals(user)) {
          moveTo(mailbox, getMailbox(mail.getSender(), TRASH_INDEX), mail, user);
       } else {
          throw new IllegalArgumentException("The from mailbox don't belong to given user");

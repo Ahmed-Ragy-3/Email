@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,8 +22,8 @@ import email.backend.DTO.MailboxDTO;
 import email.backend.services.MailSenderProxy;
 import email.backend.services.MailService;
 import email.backend.services.MailboxService;
-import email.backend.tables.Mail;
 import email.backend.services.UserService;
+import email.backend.tables.Mail;
 
 @RestController
 @CrossOrigin("*")
@@ -121,7 +120,7 @@ public class MailController {
       return new AttachedMailDTO(mail);
    }
 
-   @DeleteMapping("/moveToTrash/{fromMailboxId}")
+   @PostMapping("/moveToTrash/{fromMailboxId}")
    public ResponseEntity<?> moveToTrash(
       @RequestHeader("Authorization") String token, 
       @RequestBody MailDTO mailDto,
@@ -144,7 +143,7 @@ public class MailController {
       }
    }
 
-   @DeleteMapping("/delete")
+   @PostMapping("/delete")
    public ResponseEntity<?> delete( @RequestHeader("Authorization") String token, 
                                     @RequestBody MailDTO mailDto) {
       try {
