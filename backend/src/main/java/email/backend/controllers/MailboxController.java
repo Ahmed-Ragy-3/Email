@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -30,7 +31,8 @@ public class MailboxController {
    
    @PutMapping("/add")
    public ResponseEntity<?> createMailbox(@RequestBody MailboxDTO mailboxDto,
-                                          @RequestHeader("Authorization") String token) {                           
+                                          @RequestHeader("Authorization") String token) {    
+                                             System.out.println("here");                       
       try {
          Mailbox mailbox = mailboxService.createMailbox(userService.getUser(JwtUtil.getUserFromToken(token)), mailboxDto.getName());
          mailboxDto.setId(mailbox.getId());
@@ -43,4 +45,5 @@ public class MailboxController {
             .body(e.getMessage());
       }
    }
+   
 }

@@ -52,7 +52,7 @@ public class MailSenderProxy {
    private ContactRepository contactRepository;
 
    public Mail sendMail(User user, MailDTO mailDto) {
-
+      
       Mail mail;
       if(mailDto.getId() == null) {
          mail = mailDto.toMail(user, userService, mailService);
@@ -87,7 +87,6 @@ public class MailSenderProxy {
       if(mail.getSender() == null) {
          throw new IllegalArgumentException("Invalid Sender Email Address");
       }
-
       int count = 1;
       for (User reciever : mail.getReceivers()) {
          if(reciever == null) {
