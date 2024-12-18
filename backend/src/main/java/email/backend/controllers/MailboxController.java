@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import email.backend.DTO.JwtUtil;
 import email.backend.DTO.MailboxDTO;
 import email.backend.services.MailboxService;
 import email.backend.tables.Mailbox;
@@ -32,15 +30,16 @@ public class MailboxController {
    
    @PutMapping("/add")
    public ResponseEntity<?> createMailbox(@RequestBody MailboxDTO mailboxDto,
-                                          @RequestHeader("Authorization") String token) {    
-                                             System.out.println("here");                       
+                                          @RequestHeader("Authorization") String token) {                           
       try {
+         System.out.println(mailboxDto.getName());
          Mailbox mailbox = mailboxService.createMailbox(userService.getUser(token), mailboxDto.getName());
          mailboxDto.setId(mailbox.getId());
          return ResponseEntity
             .status(HttpStatus.ACCEPTED)
             .body(mailboxDto);
       } catch (Exception e) {
+         System.out.println(e.getMessage());
          return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
             .body(e.getMessage());
@@ -49,7 +48,7 @@ public class MailboxController {
 
    @PostMapping("/edit")
    public ResponseEntity<?> editMailbox(@RequestBody MailboxDTO mailboxDto,
-                                          @RequestHeader("Authorization") String token) {                           
+                                       @RequestHeader("Authorization") String token) {                           
       try {
          mailboxService.editMailbox(userService.getUser(token), mailboxDto);
          return ResponseEntity

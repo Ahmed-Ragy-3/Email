@@ -47,8 +47,8 @@ public class Mail {
    @Embedded
    private Date date;
 
+   // @JsonIgnore
    @OneToMany(mappedBy = "mail", fetch = FetchType.LAZY, orphanRemoval = true)
-   @JsonIgnore
    private List<Attachment> attachments;
 
    @ManyToMany

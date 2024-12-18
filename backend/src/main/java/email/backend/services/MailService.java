@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import ch.qos.logback.core.pattern.parser.OptionTokenizer;
+import email.backend.DTO.AttachedMailDTO;
 import email.backend.DTO.MailDTO;
 import email.backend.DTO.MailboxDTO;
 import email.backend.DTO.WebSocketMsgDTO;
@@ -23,6 +24,7 @@ import email.backend.databaseAccess.MailRepository;
 import email.backend.databaseAccess.MailboxRepository;
 import email.backend.databaseAccess.UserRepository;
 import email.backend.databaseAccess.ContactRepository;
+import email.backend.tables.Attachment;
 import email.backend.tables.Contact;
 import email.backend.tables.Mail;
 import email.backend.tables.Mailbox;
@@ -64,8 +66,8 @@ public class MailService {
     * @param Mail mail 
     */
    @Transactional
-   public MailDTO createDraftMail(MailDTO mailDto, User user) {
-      Mail mail = mailDto.toMail(user, userService, this);
+   public AttachedMailDTO createDraftMail(AttachedMailDTO attachedMailDto, User user) {
+      Mail mail = attachedMailDto.toMail(user, userService, this);
 
       mail = mailRepository.save(mail);
 
@@ -77,9 +79,9 @@ public class MailService {
       
       userRepository.save(user);
       
-      mailDto.setId(mail.getId());
+      attachedMailDto.getMailDto().setId(mail.getId());
 
-      return mailDto;
+      return attachedMailDto;
    }
 
    @Transactional
@@ -239,6 +241,13 @@ public class MailService {
             System.out.println(e.getMessage());
          }
       }
+   }
+
+   public Mail setAttachments(Mail mail, List<Attachment> attachments) {
+      // mail.getAttachments()
+      mail.setAttachments(attachments);
+      mailRepository.save(mail);
+      return mail;
    }
 
 
