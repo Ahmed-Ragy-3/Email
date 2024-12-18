@@ -147,7 +147,7 @@ function EmailList({ emails, emailsPerPage, setFolders, folders, contacts }) {
           <div className="relative">
             <button
               onClick={() => setShowFolderDropdown((prev) => !prev)}
-              className="flex items-center text-[16px] px-4 py-2 bg-[#bf6360] rounded-2xl hover:scale-105 text-white hover:bg-[#a55755] active:bg-[#8e4b48] transform transition duration-200 ease-in-out shadow-gray-900"
+              className="flex items-center text-[16px] px-4 py-2 bg-[#bf6360] rounded-2xl hover:scale-105 text-white hover:bg-[#a55755] active:bg-[#8e4b48] transform transition duration-200 ease-in-out shadow-md shadow-gray-800"
             >
               <FontAwesomeIcon icon={faFolder} className="text-xl" />
               <span className="ml-2 font-Poppins font-semibold">Move to Folder</span>
@@ -156,7 +156,7 @@ function EmailList({ emails, emailsPerPage, setFolders, folders, contacts }) {
               <div className="absolute top-8 rounded-2xl w-full bg-gray-700 p-2 shadow">
                 {/* Filter folders to exclude Starred and Trash */}
                 {folders
-                  .filter((folder) => folder.name !== "Starred" && folder.name !== "Trash")
+                  .filter((folder) => folder.name !== "Starred" && folder.name !== "Trash" && folder.name !== "Drafts" && folder.name !== "Scheduled")
                   .map((folder) => (
                     <button
                       key={folder.name}
@@ -170,7 +170,7 @@ function EmailList({ emails, emailsPerPage, setFolders, folders, contacts }) {
             )}
           </div>
           {/* Delete Emails */}
-          <button onClick={handleDeleteEmails} className="flex items-center text-[16px] px-4 py-2 bg-[#bf6360] rounded-2xl hover:scale-105 text-white hover:bg-[#a55755] active:bg-[#8e4b48] transform transition duration-200 ease-in-out shadow-gray-900">
+          <button onClick={handleDeleteEmails} className="flex items-center text-[16px] px-4 py-2 bg-[#bf6360] rounded-2xl hover:scale-105 text-white hover:bg-[#a55755] active:bg-[#8e4b48] transform transition duration-200 ease-in-out shadow-md shadow-gray-800">
             <FontAwesomeIcon icon={faTrash} className="text-xl" />
             <span className="ml-2 font-Poppins font-semibold">Delete</span>
           </button>

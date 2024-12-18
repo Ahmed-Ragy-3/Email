@@ -267,14 +267,14 @@ function Mainbox({ folders, searchQuery, setFolders, contacts, setContacts }) {
     >
       {/* Sorting options */}
       <div className="mb-4 flex items-center">
-        <label htmlFor="sort" className="text-white mr-2">
+        <label htmlFor="sort" className="text-white mr-2 font-semibold">
           Sort By
         </label>
         <select
           id="sort"
           value={sortBy}
           onChange={handleSort}
-          className="p-2 bg-[#2a3f59] text-white hover:bg-[#203045] rounded-full"
+          className="p-2 bg-transparent text-white hover:bg-[#2a3f59] active:bg-[#203045] rounded-full border border-white"
         >
           <option
             value="dateString"
@@ -298,7 +298,7 @@ function Mainbox({ folders, searchQuery, setFolders, contacts, setContacts }) {
 
         <button
           onClick={toggleSortOrder}
-          className="ml-4 p-2 bg-[#2a3f59] text-white hover:bg-[#203045] rounded-full"
+          className="ml-4 p-2 bg-transparent text-white hover:bg-[#2a3f59] active:bg-[#203045] rounded-full border border-white"
         >
           {isDescending ? "Descending" : "Ascending"}
         </button>
@@ -309,7 +309,7 @@ function Mainbox({ folders, searchQuery, setFolders, contacts, setContacts }) {
         {/* First Inner Div */}
         <div className="flex space-x-10">
           <div>
-            <label htmlFor="sender" className="block text-white mb-1">
+            <label htmlFor="sender" className="block text-white font-semibold mb-1">
               Sender
             </label>
             <div className="flex items-center">
@@ -317,7 +317,7 @@ function Mainbox({ folders, searchQuery, setFolders, contacts, setContacts }) {
                 id="sender"
                 value={filterSender}
                 onChange={(e) => setFilterSender(e.target.value)}
-                className="p-2 bg-[#2a3f59] text-white hover:bg-[#203045] rounded-full"
+                className="p-2 bg-transparent text-white hover:bg-[#2a3f59] active:bg-[#203045] rounded-full border border-white"
               >
                 <option value="">All Senders</option>
                 {uniqueSenders.map((sender, index) => (
@@ -330,7 +330,7 @@ function Mainbox({ folders, searchQuery, setFolders, contacts, setContacts }) {
           </div>
 
           <div>
-            <label htmlFor="start-date" className="block text-white mb-1">
+            <label htmlFor="start-date" className="block text-white font-semibold mb-1">
               Date Range
             </label>
             <div className="flex items-center">
@@ -339,7 +339,7 @@ function Mainbox({ folders, searchQuery, setFolders, contacts, setContacts }) {
                 id="start-date"
                 value={filterStartDate}
                 onChange={(e) => setFilterStartDate(e.target.value)}
-                className="p-2 bg-[#2a3f59] text-white hover:bg-[#203045] rounded-full"
+                className="p-2 bg-transparent text-white hover:bg-[#2a3f59] active:bg-[#203045] rounded-full border border-white"
               />
               <span className="mx-2 text-white">to</span>
               <input
@@ -347,13 +347,13 @@ function Mainbox({ folders, searchQuery, setFolders, contacts, setContacts }) {
                 id="end-date"
                 value={filterEndDate}
                 onChange={(e) => setFilterEndDate(e.target.value)}
-                className="p-2 bg-[#2a3f59] text-white hover:bg-[#203045] rounded-full"
+                className="p-2 bg-transparent text-white hover:bg-[#2a3f59] active:bg-[#203045] rounded-full border border-white"
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="subject" className="block text-white mb-1">
+            <label htmlFor="subject" className="block text-white font-semibold mb-1">
               Subject
             </label>
             <div className="flex items-center">
@@ -361,7 +361,7 @@ function Mainbox({ folders, searchQuery, setFolders, contacts, setContacts }) {
                 id="subject"
                 value={filterSubject}
                 onChange={(e) => setFilterSubject(e.target.value)}
-                className="p-2 bg-[#2a3f59] text-white hover:bg-[#203045] rounded-full"
+                className="p-2 bg-transparent text-white hover:bg-[#2a3f59] active:bg-[#203045] rounded-full border border-white"
               >
                 <option value="">All Subjects</option>
                 {uniqueSubjects.map((subject, index) => (
@@ -374,7 +374,7 @@ function Mainbox({ folders, searchQuery, setFolders, contacts, setContacts }) {
           </div>
 
           <div>
-            <label htmlFor="importance" className="block text-white mb-1">
+            <label htmlFor="importance" className="block text-white font-semibold mb-1">
               Importance
             </label>
             <div className="flex items-center">
@@ -382,7 +382,7 @@ function Mainbox({ folders, searchQuery, setFolders, contacts, setContacts }) {
                 id="importance"
                 value={filterImportance}
                 onChange={(e) => setFilterImportance(e.target.value)}
-                className="p-2 bg-[#2a3f59] text-white hover:bg-[#203045] rounded-full"
+                className="p-2 bg-transparent text-white hover:bg-[#2a3f59] active:bg-[#203045] rounded-full border border-white"
               >
                 <option value="">All Importance</option>
                 {uniqueImportance.map((importance, index) => (
@@ -402,7 +402,7 @@ function Mainbox({ folders, searchQuery, setFolders, contacts, setContacts }) {
               name="pagination-select"
               value={paginationNumber}
               id=""
-              className="p-3 bg-[#2a3f59] text-white font-semibold hover:bg-[#203045] rounded-2xl text-[16px]"
+              className="p-3 bg-[#2a3f59] text-white font-semibold hover:bg-[#203045] rounded-2xl text-[16px]  shadow-inner shadow-gray-800"
               onChange={(e) => {
                 setpaginationNumber(Number(e.target.value));
               }}
@@ -418,7 +418,7 @@ function Mainbox({ folders, searchQuery, setFolders, contacts, setContacts }) {
           </div>
           <button
             onClick={clearFilters}
-            className="p-3 bg-[#bf6360] hover:bg-[#a55755] active:bg-[#8e4b48] hover:scale-105 transform transition duration-200 ease-in-out shadow-gray-900 text-white font-semibold rounded-2xl text-[16px]"
+            className="p-3 bg-[#bf6360] hover:bg-[#a55755] active:bg-[#8e4b48] hover:scale-105 transform transition duration-200 ease-in-out shadow-md shadow-gray-800 text-white font-semibold rounded-2xl text-[16px]"
           >
             Clear Filters
           </button>
@@ -480,7 +480,7 @@ function Mainbox({ folders, searchQuery, setFolders, contacts, setContacts }) {
         {/* Floating Button */}
         <button
           onClick={toggleContactbar}
-          className={`contact-button fixed bottom-8 transition-all duration-300 ease-in-out ${
+          className={`contact-button fixed bottom-8 shadow-md shadow-gray-800 transition-all duration-300 ease-in-out ${
             isButtonClicked
               ? "bg-[#8e4b48] left-[calc(95%-256px)] " // Moves button left when clicked
               : "bg-[#2a3f59] right-8" // Initial position of the button
