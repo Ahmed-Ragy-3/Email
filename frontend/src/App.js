@@ -84,7 +84,7 @@ const Layout = ({emails}) => {
   }, []); // Empty dependency array ensures this only runs once on mount
   
   return (
-    <div className="h-screen overflow-clip bg-[#003C43]">
+    <div className="h-screen overflow-clip bg-[#223047]">
         <Navbar setSearchQuery={setSearchQuery} username={userName}/>
       <div className="h-full flex">
         <Sidebar emails={emails} client = {stompClient} folders={folders}/>

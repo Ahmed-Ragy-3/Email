@@ -164,7 +164,7 @@ function Mainbox({ folders, searchQuery }) {
   return (
     <div
       id="main-box"
-      className="h-full basis-[89%] px-6 py-6 bg-[#135D66] overflow-auto rounded-3xl shadow-inner shadow-gray-800 pb-[5%]"
+      className="h-full basis-[89%] px-6 py-6 bg-[#2f4562] overflow-auto rounded-3xl shadow-inner shadow-gray-800 pb-[5%]"
     >
       {/* Sorting options */}
       <div className="mb-4 flex items-center">
@@ -175,25 +175,25 @@ function Mainbox({ folders, searchQuery }) {
     id="sort"
     value={sortBy}
     onChange={handleSort}
-    className="p-2 bg-[#135D66] text-white rounded-md hover:bg-[#0A4D5A]"
+    className="p-2 bg-[#824e4e] text-white rounded-md hover:bg-[#714848]"
   >
-    <option value="dateString" className="bg-[#135D66] hover:bg-[#0A4D5A]">
+    <option value="dateString" className="bg-[#824e4e] hover:bg-[#714848]">
       Date
     </option>
-    <option value="subject" className="bg-[#135D66] hover:bg-[#0A4D5A]">
+    <option value="subject" className="bg-[#824e4e] hover:bg-[#714848]">
       Subject
     </option>
-    <option value="sender" className="bg-[#135D66] hover:bg-[#0A4D5A]">
+    <option value="sender" className="bg-[#824e4e] hover:bg-[#714848]">
       Sender
     </option>
-    <option value="importance" className="bg-[#135D66] hover:bg-[#0A4D5A]">
+    <option value="importance" className="bg-[#824e4e] hover:bg-[#714848]">
       Importance
     </option>
   </select>
 
   <button
     onClick={toggleSortOrder}
-    className="ml-4 p-2 bg-[#135D66] text-white rounded-md hover:bg-[#0A4D5A]"
+    className="ml-4 p-2 bg-[#824e4e] text-white rounded-md hover:bg-[#714848]"
   >
     {isDescending ? "Descending" : "Ascending"}
   </button>
@@ -209,7 +209,7 @@ function Mainbox({ folders, searchQuery }) {
             id="sender"
             value={filterSender}
             onChange={(e) => setFilterSender(e.target.value)}
-            className="p-2 bg-[#135D66] text-white rounded-md hover:bg-[#0A4D5A]"
+            className="p-2 bg-[#824e4e] text-white rounded-md hover:bg-[#714848]"
           >
             <option value="">All Senders</option>
             {uniqueSenders.map((sender, index) => (
@@ -229,7 +229,7 @@ function Mainbox({ folders, searchQuery }) {
             id="start-date"
             value={filterStartDate}
             onChange={(e) => setFilterStartDate(e.target.value)}
-            className="p-2 bg-[#135D66] text-white rounded-md hover:bg-[#0A4D5A]"
+            className="p-2 bg-[#824e4e] text-white rounded-md hover:bg-[#714848]"
           />
           <span className="mx-2 text-white">to</span>
           <input
@@ -237,7 +237,7 @@ function Mainbox({ folders, searchQuery }) {
             id="end-date"
             value={filterEndDate}
             onChange={(e) => setFilterEndDate(e.target.value)}
-            className="p-2 bg-[#135D66] text-white rounded-md hover:bg-[#0A4D5A]"
+            className="p-2 bg-[#824e4e] text-white rounded-md hover:bg-[#714848]"
           />
         </div>
 
@@ -249,7 +249,7 @@ function Mainbox({ folders, searchQuery }) {
             id="subject"
             value={filterSubject}
             onChange={(e) => setFilterSubject(e.target.value)}
-            className="p-2 bg-[#135D66] text-white rounded-md hover:bg-[#0A4D5A]"
+            className="p-2 bg-[#824e4e] text-white rounded-md hover:bg-[#714848]"
           >
             <option value="">All Subjects</option>
             {uniqueSubjects.map((subject, index) => (
@@ -267,7 +267,7 @@ function Mainbox({ folders, searchQuery }) {
             id="importance"
             value={filterImportance}
             onChange={(e) => setFilterImportance(e.target.value)}
-            className="p-2 bg-[#135D66] text-white rounded-md hover:bg-[#0A4D5A]"
+            className="p-2 bg-[#824e4e] text-white rounded-md hover:bg-[#714848]"
           >
             <option value="">All Importance</option>
             {uniqueImportance.map((importance, index) => (
@@ -278,7 +278,7 @@ function Mainbox({ folders, searchQuery }) {
           </select>
         </div>
         <div>
-          <select name="pagination-select" value={paginationNumber} id="" className="p-2 bg-[#135D66] text-white rounded-md hover:bg-[#0A4D5A]" onChange={(e)=>{
+          <select name="pagination-select" value={paginationNumber} id="" className="p-2 bg-[#824e4e] text-white rounded-md hover:bg-[#714848]" onChange={(e)=>{
               setpaginationNumber(Number(e.target.value))
           }}>
               <option value="1">1</option>
@@ -292,7 +292,7 @@ function Mainbox({ folders, searchQuery }) {
         </div>
         <button
           onClick={clearFilters}
-          className="p-2 bg-transparent hover:bg-[#0A4D5A] text-white border-2 rounded-3xl"
+          className="p-2 bg-transparent hover:bg-[#714848] text-white border-2 rounded-3xl"
         >
           Clear Filters
         </button>

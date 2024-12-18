@@ -3,7 +3,7 @@ import EmailList from "../components/EmailList";
 const Spam = ({emails, pagination}) => {
 
   // Filter emails to only include those in the "inbox" folder
-  const spamEmails = spamEmails
+  const spamEmails = emails
 
 
   return (
