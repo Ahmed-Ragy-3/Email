@@ -54,7 +54,6 @@ public class MailSenderProxy {
    public Mail sendMail(User user, MailDTO mailDto) {
       
       Mail mail;
-      System.out.println(mailDto.getContent());
       if(mailDto.getId() == null) {
          mail = mailDto.toMail(user, userService, mailService);
       } else {
@@ -107,7 +106,6 @@ public class MailSenderProxy {
       if(!isReady(mail)) {
          return null;
       }
-      
       if(isScheduled(mail)) {
          // sent to scheduled folder
          mailboxService.addTo(mailboxService.getMailbox(mail.getSender(), MailboxService.SCHEDULED_INDEX), mail);

@@ -197,11 +197,10 @@ public class MailService {
       Mailbox friendMailbox;
       User sender = mail.getSender();
       MailDTO mailDto = new MailDTO(mail);
-
       boolean inSent = false;
 
       String receiverMailboxName = "";
-      
+      System.out.println(mail.getContent());
       
       for (User receiver : mail.getReceivers()) {
          friendMailbox = getFriendZone(sender, receiver);
@@ -209,7 +208,8 @@ public class MailService {
          if(friendMailbox != null) {
             friendMailbox.getMails().add(mail);
             mailboxRepository.save(friendMailbox); // /////////
-         } else if (!inSent) {
+          } 
+         else if (!inSent) {
             
             mailboxService.addTo(sender.getMailboxes().get(MailboxService.SENT_INDEX), mail);
             mailboxRepository.save(sender.getMailboxes().get(MailboxService.SENT_INDEX)); ////////////
@@ -222,7 +222,8 @@ public class MailService {
             friendMailbox.getMails().add(mail);
             mailboxRepository.save(friendMailbox); //////////////
             receiverMailboxName = friendMailbox.getName();
-         } else {
+         } 
+         else {
             mailboxService.addTo(receiver.getMailboxes().get(MailboxService.INBOX_INDEX), mail);
             mailboxRepository.save(receiver.getMailboxes().get(MailboxService.INBOX_INDEX)); //////////////
             receiverMailboxName = receiver.getMailboxes().get(MailboxService.INBOX_INDEX).getName();
