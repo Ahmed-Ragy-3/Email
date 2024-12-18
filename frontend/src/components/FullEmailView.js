@@ -43,7 +43,7 @@ function FullEmailView({  }) {
   return (
     <div
       id="main-box"
-      className="h-full basis-[89%] px-6 py-6 space-y-4 bg-[#2f4562] overflow-auto rounded-3xl shadow-inner shadow-gray-800 pb-[5%] text-white"
+      className="h-full basis-[89%] px-6 py-6 bg-[#2f4562] overflow-auto rounded-3xl shadow-inner shadow-gray-800 pb-[5%] text-white"
     >
       <button
         onClick={handleGoBack}

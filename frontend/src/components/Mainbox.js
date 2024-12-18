@@ -10,9 +10,36 @@ import FullEmailView from "./FullEmailView";
 import axios from "axios";
 import Scheduled from "../pages/Scheduled";
 import EmailList from "./EmailList";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAddressBook, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 
-function Mainbox({ folders, searchQuery, setFolders , contacts }) {
-  // console.log("folders in mainbox are ", folders);
+function Mainbox({ folders, searchQuery, setFolders, contacts }) {
+  const [showContactbar, setShowContactbar] = useState(false);
+  const [isButtonClicked, setIsButtonClicked] = useState(false);
+
+  const toggleContactbar = () => {
+    setShowContactbar(!showContactbar);
+    setIsButtonClicked(!isButtonClicked); // Toggle button state for color and position
+  };
+  const deleteContact = async (contact) =>
+  {
+    try {
+      let token = localStorage.getItem("token");
+    
+    let response = await axios.delete("http://localhost:8080/user/contact/delete", {
+      headers: {
+        Authorization: `Bearer ${token}`, // Pass the token in the Authorization header
+      },
+      data: {
+        id: contact.id, // Pass the contact ID in the request body
+      },
+    });
+    console.log(response)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  console.log("folders in mainbox are ", folders);
   let newmails;
   let path = window.location.pathname;
   let normalizedPath =
@@ -20,14 +47,14 @@ function Mainbox({ folders, searchQuery, setFolders , contacts }) {
 
   // Remove '+' characters from the current normalized path
   normalizedPath = normalizedPath.replace(/\+/g, " ");
-  normalizedPath = normalizedPath.trim()
+  normalizedPath = normalizedPath.trim();
 
   // console.log("Normalized Path:", normalizedPath);
 
   // Now you can find the folder that matches the normalized path
   const matchedFolder = folders.find((folder) => {
     // Normalize folder name: Replace spaces with "+" and convert to lowercase
-    const normalizedFolderName = folder.name.toLowerCase()
+    const normalizedFolderName = folder.name.toLowerCase();
     // console.log("Folder Normalized Name:", normalizedFolderName); // Log the normalized folder name
     // console.log("Normalized Path for Comparison:", normalizedPath); // Log the normalized path for comparison
     return normalizedFolderName === normalizedPath;
@@ -182,6 +209,7 @@ function Mainbox({ folders, searchQuery, setFolders , contacts }) {
   const uniqueSubjects = [...new Set(emails.map((email) => email.subject))];
   const [paginationNumber, setpaginationNumber] = useState(5);
   const uniqueImportance = ["DELAYABLE", "NORMAL", "IMPORTANT", "URGENT"]; // Unique importance options
+
   return (
     <div
       id="main-box"
@@ -196,23 +224,23 @@ function Mainbox({ folders, searchQuery, setFolders , contacts }) {
           id="sort"
           value={sortBy}
           onChange={handleSort}
-          className="p-2 bg-[#824e4e] text-white rounded-md hover:bg-[#714848]"
+          className="p-2 bg-[#bf6360] text-white rounded-md hover:bg-[#a55755]"
         >
           <option
             value="dateString"
-            className="bg-[#824e4e] hover:bg-[#714848]"
+            className="bg-[#bf6360] hover:bg-[#a55755]"
           >
             Date
           </option>
-          <option value="subject" className="bg-[#824e4e] hover:bg-[#714848]">
+          <option value="subject" className="bg-[#bf6360] hover:bg-[#a55755]">
             Subject
           </option>
-          <option value="sender" className="bg-[#824e4e] hover:bg-[#714848]">
+          <option value="sender" className="bg-[#bf6360] hover:bg-[#a55755]">
             Sender
           </option>
           <option
             value="importance"
-            className="bg-[#824e4e] hover:bg-[#714848]"
+            className="bg-[#bf6360] hover:bg-[#a55755]"
           >
             Importance
           </option>
@@ -220,7 +248,7 @@ function Mainbox({ folders, searchQuery, setFolders , contacts }) {
 
         <button
           onClick={toggleSortOrder}
-          className="ml-4 p-2 bg-[#824e4e] text-white rounded-md hover:bg-[#714848]"
+          className="ml-4 p-2 bg-[#bf6360] text-white rounded-md hover:bg-[#a55755]"
         >
           {isDescending ? "Descending" : "Ascending"}
         </button>
@@ -236,7 +264,7 @@ function Mainbox({ folders, searchQuery, setFolders , contacts }) {
             id="sender"
             value={filterSender}
             onChange={(e) => setFilterSender(e.target.value)}
-            className="p-2 bg-[#824e4e] text-white rounded-md hover:bg-[#714848]"
+            className="p-2 bg-[#bf6360] text-white rounded-md hover:bg-[#a55755]"
           >
             <option value="">All Senders</option>
             {uniqueSenders.map((sender, index) => (
@@ -256,7 +284,7 @@ function Mainbox({ folders, searchQuery, setFolders , contacts }) {
             id="start-date"
             value={filterStartDate}
             onChange={(e) => setFilterStartDate(e.target.value)}
-            className="p-2 bg-[#824e4e] text-white rounded-md hover:bg-[#714848]"
+            className="p-2 bg-[#bf6360] text-white rounded-md hover:bg-[#a55755]"
           />
           <span className="mx-2 text-white">to</span>
           <input
@@ -264,7 +292,7 @@ function Mainbox({ folders, searchQuery, setFolders , contacts }) {
             id="end-date"
             value={filterEndDate}
             onChange={(e) => setFilterEndDate(e.target.value)}
-            className="p-2 bg-[#824e4e] text-white rounded-md hover:bg-[#714848]"
+            className="p-2 bg-[#bf6360] text-white rounded-md hover:bg-[#a55755]"
           />
         </div>
 
@@ -276,7 +304,7 @@ function Mainbox({ folders, searchQuery, setFolders , contacts }) {
             id="subject"
             value={filterSubject}
             onChange={(e) => setFilterSubject(e.target.value)}
-            className="p-2 bg-[#824e4e] text-white rounded-md hover:bg-[#714848]"
+            className="p-2 bg-[#bf6360] text-white rounded-md hover:bg-[#a55755]"
           >
             <option value="">All Subjects</option>
             {uniqueSubjects.map((subject, index) => (
@@ -294,7 +322,7 @@ function Mainbox({ folders, searchQuery, setFolders , contacts }) {
             id="importance"
             value={filterImportance}
             onChange={(e) => setFilterImportance(e.target.value)}
-            className="p-2 bg-[#824e4e] text-white rounded-md hover:bg-[#714848]"
+            className="p-2 bg-[#bf6360] text-white rounded-md hover:bg-[#a55755]"
           >
             <option value="">All Importance</option>
             {uniqueImportance.map((importance, index) => (
@@ -309,7 +337,7 @@ function Mainbox({ folders, searchQuery, setFolders , contacts }) {
             name="pagination-select"
             value={paginationNumber}
             id=""
-            className="p-2 bg-[#824e4e] text-white rounded-md hover:bg-[#714848]"
+            className="p-2 bg-[#bf6360] text-white rounded-md hover:bg-[#a55755]"
             onChange={(e) => {
               setpaginationNumber(Number(e.target.value));
             }}
@@ -325,7 +353,7 @@ function Mainbox({ folders, searchQuery, setFolders , contacts }) {
         </div>
         <button
           onClick={clearFilters}
-          className="p-2 bg-transparent hover:bg-[#714848] text-white border-2 rounded-3xl"
+          className="p-2 bg-transparent hover:bg-[#a55755] text-white border-2 rounded-3xl"
         >
           Clear Filters
         </button>
@@ -336,8 +364,60 @@ function Mainbox({ folders, searchQuery, setFolders , contacts }) {
           emailsPerPage={paginationNumber}
           setFolders={setFolders}
           folders={folders}
-          contacts = {contacts}
+          contacts={contacts}
         ></EmailList>
+      </div>
+
+      <div className="relative">
+        {/* Contactbar */}
+        <div
+          className={`Contactbar fixed bottom-0 right-0 h-[90%] w-64 bg-[#223047] shadow-gray-500 transform transition-transform duration-150 ease-in-out ${
+            showContactbar ? "translate-x-0" : "translate-x-full"
+          }`}
+        >
+          {/* Header */}
+          <div className="flex justify-between items-center p-4 border-b border-gray-600 text-white font-bold text-lg">
+            <span>Contacts</span>
+          </div>
+
+          {/* Contact Cards */}
+          <div className="p-4 space-y-4 overflow-y-auto h-[calc(100%-50px)]">
+            <div>
+              <button>add contact</button>
+            </div>
+            {contacts.map((contact, index) => (
+              <div
+                key={index}
+                className="p-4 space-y-2 bg-[#2f4562] text-white rounded-lg shadow-md hover:bg-[#3b5575] transform hover:scale-105 transition duration-200"
+              >
+                <div className="font-bold text-[16px]">{contact.name}</div>
+                <div className="text-[14px] text-gray-300">
+                  {contact.emailAddress}
+                </div>
+                <div className="space-x-4">
+                  <button onClick={() => deleteContact(contact)}>
+                    <FontAwesomeIcon icon={faTrash}></FontAwesomeIcon>
+                  </button>
+                  <button>
+                    <FontAwesomeIcon icon={faEdit}></FontAwesomeIcon>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Floating Button */}
+        <button
+          onClick={toggleContactbar}
+          className={`contact-button fixed bottom-8 transition-all duration-300 ease-in-out ${
+            isButtonClicked
+              ? "bg-[#8e4b48] left-[calc(95%-256px)] " // Moves button left when clicked
+              : "bg-[#bf6360] right-8" // Initial position of the button
+          } text-white p-4 hover:bg-[#a55755] rounded-2xl shadow-lg transform hover:scale-105 z-50`}
+        >
+          <FontAwesomeIcon icon={faAddressBook} size="lg" />
+        </button>
       </div>
     </div>
   );
