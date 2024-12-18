@@ -78,6 +78,7 @@ public class MailController {
       @RequestBody AttachedMailDTO attachedMailDto,
       @RequestHeader("Authorization") String token
    ) {
+      System.out.println(attachedMailDto.getAttachments());
       try {
          MailDTO mailDto = attachedMailDto.getMailDto();
          
