@@ -12,8 +12,12 @@ import { useNavigate } from "react-router-dom";
 import { useFolders } from "../components/FoldersContext";
 import { folders } from "fontawesome";
 
-function Compose({ closeModal, client , setFolders }) {
+function Compose({ closeModal, emailToEdit , setFolders , contacts }) {
+  console.log(contacts)
+  console.log(emailToEdit)
   const [attachments, setAttachments] = useState([]);
+  const [subject, setSubject] = useState(emailToEdit ? emailToEdit.subject : "");
+  const [content, setContent] = useState(emailToEdit ? emailToEdit.content : "");
   const [attachmentURLs, setAttachmentURLs] = useState([]);
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
@@ -25,10 +29,22 @@ function Compose({ closeModal, client , setFolders }) {
   const [contactInput, setContactInput] = useState("");
   const [selectedContacts, setSelectedContacts] = useState([]);
   const [filteredContacts, setFilteredContacts] = useState([]);
-
-  const [subject, setSubject] = useState(""); // State for the subject
-  const [content, setContent] = useState("");
-
+  console.log(emailToEdit)
+  const [id,setId] = useState(null)
+  useEffect(() => {
+    if (emailToEdit) {
+      setSubject(emailToEdit.subject);
+      setContent(emailToEdit.content);
+      setId(emailToEdit.id)
+      let field = document.getElementById("text-field")
+      field.innerHTML = content
+      setSelectedContacts(emailToEdit.receiversAddresses);
+    }
+  }, [emailToEdit]);
+  useEffect(() => {
+    console.log(content)
+  }, [content])
+  
   const handleContentChange = () => {
     setContent(editorRef.current.innerHTML); // Update content state
   };
@@ -38,59 +54,121 @@ function Compose({ closeModal, client , setFolders }) {
     setSubject(e.target.value); // Update subject state
   };
   
-  const contacts = [
-    "Alice Smith",
-    "Bob Johnson",
-    "Charlie Brown",
-    "Diana Prince",
-    "Eve Adams",
-    "Frank Castle",
-  ];
+  
   const handleContactInput = (e) => {
     const value = e.target.value;
     setContactInput(value);
+  
     if (value.trim()) {
-      const matches = contacts.filter((contact) =>
-        contact.toLowerCase().includes(value.toLowerCase())
-      );
-      setFilteredContacts(matches);
+      console.log("contacts are ", contacts);
+  
+      const matches = contacts.filter((contact) => {
+        console.log(contact.name);
+        return contact.name.toLowerCase().includes(value.toLowerCase());
+      });
+  
+      // Only store the emails of matching contacts
+      setFilteredContacts(matches.map(contact => contact.name));
+      console.log(matches);
     } else {
       setFilteredContacts([]);
     }
   };
-
-  const addContact = (contact) => {
-    if (!selectedContacts.includes(contact)) {
-      setSelectedContacts((prev) => [...prev, contact]);
-    }
-    setContactInput("");
-    setFilteredContacts([]);
+  const sendToDrafts = async () =>{
+  let time_options = document.getElementById("time-options");
+  let importance = document.getElementById("importance");
+  let token = localStorage.getItem("token");
+  let decodedtoken = jwtDecode(token);
+  let email = decodedtoken.email;
+  console.log(token);
+  const mailDto = {
+    senderAddress: email,
+    receiversAddresses: selectedContacts,
+    content: content,
+    subject: subject,
+    importance: importance.value,
+    dateString: time_options.value,
   };
+  
+  
+  // Combine both into a final payload
+  const data_sent = {
+    mailDto: mailDto,
+    attachments: attachments,
+  };
+  console.log("data sent : ",data_sent);
+  console.log("boolean" , data_sent.dateString == "now")
+  try {
+    let response = await axios.put(
+      "http://localhost:8080/mail/create",
+      data_sent, // Send the data in the request body
+      {
+        headers: {
+          Authorization: token, // Add the token to the Authorization header
+          "Content-Type": "application/json", // Ensure the content type is JSON
+        },
+      }
+    );
+    const getMails = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/mail/all", {
+          headers: { Authorization: token },
+        });
+        console.log(response);
+        setFolders(response.data); // Update the folders state here
+      } catch (error) {
+        console.error("Error fetching emails:", error);
+      }
+    };
+
+    getMails();
+    closeModal();
+  } catch (error) {
+    alert(error)
+  }
+  
+  // navigate("/");
+  
+}; 
+const addContact = (contactName) => {
+  // Find the contact with the matching name in the contacts state
+  
+  const contact = contacts.find((contact) => contact.name === contactName);
+  if (contact && !selectedContacts.includes(contact.emailAddress)) {
+    // Add the emailAddress to the selectedContacts array
+    setSelectedContacts((prev) => [...prev, contact.emailAddress]);
+  }
+
+  setContactInput("");
+  setFilteredContacts([]);
+};
 
   const removeContact = (contact) => {
     setSelectedContacts((prev) => prev.filter((c) => c !== contact));
   };
 
   const upload = async () => {
-    let e = document.getElementById("text-field");
-    let subject_field = document.getElementById("subject");
     let time_options = document.getElementById("time-options");
     let importance = document.getElementById("importance");
     let token = localStorage.getItem("token");
     let decodedtoken = jwtDecode(token);
     let email = decodedtoken.email;
     console.log(token);
-    let data_sent = {
+    const mailDto = {
       senderAddress: email,
       receiversAddresses: selectedContacts,
       content: content,
       subject: subject,
       importance: importance.value,
-      // "attachments": attachments,
       dateString: time_options.value,
     };
-    console.log(data_sent);
-    console.log("boolean" , data_sent.dateString == "now")
+    
+    // Combine both into a final payload
+    const data_sent = {
+      mailDto: mailDto,
+      attachments: attachments,
+    };
+    console.log("data sent : ",data_sent);
     try {
       let response = await axios.post(
         "http://localhost:8080/mail/send",
@@ -269,6 +347,7 @@ function Compose({ closeModal, client , setFolders }) {
         <div
             ref={editorRef}
             contentEditable
+            id="text-field"
             className="w-full h-40 p-2 border border-gray-300 rounded-lg outline-none"
             placeholder="Write your message here"
             role="textbox"
@@ -420,7 +499,7 @@ function Compose({ closeModal, client , setFolders }) {
 
           {/* Send and Save Buttons */}
           <div className="flex space-x-2">
-            <button className="flex items-center space-x-2 px-4 py-2 bg-[#5d7fd7] text-white rounded-full hover:bg-[#415a98] active:scale-95">
+            <button onClick={sendToDrafts} className="flex items-center space-x-2 px-4 py-2 bg-[#5d7fd7] text-white rounded-full hover:bg-[#415a98] active:scale-95">
               <FontAwesomeIcon icon={faFile} />
               <span>Save to drafts</span>
             </button>

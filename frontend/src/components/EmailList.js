@@ -1,22 +1,23 @@
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar } from '@fortawesome/free-solid-svg-icons'; // Solid star icon
-import { faStar as faRegStar } from '@fortawesome/free-regular-svg-icons'; // Regular star icon
+import { faStar } from '@fortawesome/free-solid-svg-icons';
+import { faStar as faRegStar } from '@fortawesome/free-regular-svg-icons';
 import { useNavigate } from 'react-router-dom';
+import Compose from '../pages/Compose';  // Import the Compose component
 
-function EmailList({ emails, emailsPerPage , setFolders , folders }) {
+function EmailList({ emails, emailsPerPage , setFolders , folders , contacts }) {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
-  
-  // State to track starred emails locally
   const [starredEmailIds, setStarredEmailIds] = useState(new Set());
+  const [isComposeOpen, setIsComposeOpen] = useState(false);
+  const [emailToEdit, setEmailToEdit] = useState(null);
 
   const isStarredFolder = window.location.pathname === "/starred";
+  const isDraftsFolder = window.location.pathname === "/drafts"; // Check if the folder is drafts
 
   useEffect(() => {
     if (isStarredFolder) {
       const starredEmails = new Set();
-      // Mark emails as starred if they are in the "Starred" folder
       folders.forEach((folder) => {
         if (folder.name === "Starred") {
           folder.mails.forEach((email) => starredEmails.add(email.id));
@@ -29,18 +30,13 @@ function EmailList({ emails, emailsPerPage , setFolders , folders }) {
   const handleStarClick = (emailId, event) => {
     event.stopPropagation(); // Prevent email navigation when star is clicked
 
-    // Toggle the star state for the email
     setStarredEmailIds((prev) => {
       const newStarredEmails = new Set(prev);
-
-      // Find the email
       const email = emails.find((email) => email.id === emailId);
 
-      // Unstar the email
       if (newStarredEmails.has(emailId)) {
         newStarredEmails.delete(emailId);
 
-        // Remove email from the "Starred" folder
         setFolders((prevFolders) => {
           return prevFolders.map((folder) => {
             if (folder.name === "Starred") {
@@ -55,7 +51,6 @@ function EmailList({ emails, emailsPerPage , setFolders , folders }) {
       } else {
         newStarredEmails.add(emailId);
 
-        // Remove email from its original folder and add it to the "Starred" folder
         setFolders((prevFolders) => {
           return prevFolders.map((folder) => {
             if (folder.name !== "Starred") {
@@ -82,13 +77,23 @@ function EmailList({ emails, emailsPerPage , setFolders , folders }) {
   const totalPages = Math.ceil(emails.length / emailsPerPage);
   const paginatedEmails = emails.slice((currentPage - 1) * emailsPerPage, currentPage * emailsPerPage);
 
+  const handleEmailClick = (email) => {
+    if (isDraftsFolder) {
+      // Open the compose modal with email data
+      setEmailToEdit(email);
+      setIsComposeOpen(true);
+    } else {
+      navigate(`/email/${email.id}`);  // Navigate to the full email view if not drafts
+    }
+  };
+
   return (
     <div>
       {paginatedEmails.map((email) => (
         <div
           key={email.id}
           className="group bg-[#2a3f59] mb-4 rounded-2xl p-4 shadow-2xl hover:cursor-pointer hover:bg-[#203045] transition-all flex justify-between items-center"
-          onClick={() => navigate(`/email/${email.id}`)} // Navigate to full email view
+          onClick={() => handleEmailClick(email)}  // Use the new handler
         >
           <div className="flex-1">
             <h3 className="text-xl font-bold group-hover:text-white transition-colors">
@@ -102,15 +107,14 @@ function EmailList({ emails, emailsPerPage , setFolders , folders }) {
             <h3 className="text-xs text-gray-500">{email.dateString}</h3>
           </div>
 
-          {/* Star Icon on the Right */}
           <button
             onClick={(e) => handleStarClick(email.id, e)}
             className="text-2xl text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
           >
             {starredEmailIds.has(email.id) ? (
-              <FontAwesomeIcon icon={faStar} /> // Solid star when clicked
+              <FontAwesomeIcon icon={faStar} /> 
             ) : (
-              <FontAwesomeIcon icon={faRegStar} /> // Outline star when not clicked
+              <FontAwesomeIcon icon={faRegStar} /> 
             )}
           </button>
         </div>
@@ -134,6 +138,18 @@ function EmailList({ emails, emailsPerPage , setFolders , folders }) {
           Next
         </button>
       </div>
+
+      {/* Conditionally render Compose Modal if in Drafts folder */}
+      {isComposeOpen && (
+        <div className='text-black'>
+        <Compose
+          closeModal={() => setIsComposeOpen(false)}
+          emailToEdit={emailToEdit}
+          setFolders={setFolders}
+          contacts={contacts}
+        />
+        </div>
+      )}
     </div>
   );
 }

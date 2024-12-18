@@ -15,11 +15,11 @@ import {
   faClock,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Compose from "../pages/Compose";
 import { RemoveScrollBar } from "react-remove-scroll-bar"; // Import the package
 import axios from "axios";
+import Compose from "../pages/Compose";
 
-function Sidebar({ client, updateFolders, mainFolders }) {
+function Sidebar({ client, updateFolders, mainFolders , contacts }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [showComposeModal, setShowComposeModal] = useState(false);
@@ -67,13 +67,13 @@ function Sidebar({ client, updateFolders, mainFolders }) {
 
   const handleFolderClick = (folder) => {
     const formattedPath = folder.name.toLowerCase().replace(/\s+/g, "+");
-    console.log(formattedPath);
+    // console.log(formattedPath);
     setActiveButton(folder.name);
     navigate(`/${formattedPath}`);
   };
-
+  
   const handleAddFolder = async () => {
-    const newFolderName = prompt("Enter folder name:");
+    const newFolderName = prompt("Enter folder name: \n(if the folder is named after one of your friends \nit will be a Friend Zone");
     try {
       let token = localStorage.getItem("token");
       let response = await axios.put(
@@ -287,14 +287,8 @@ function Sidebar({ client, updateFolders, mainFolders }) {
           closeModal={closeModal}
           client={client}
           setFolders={updateFolders}
+          contacts = {contacts}
         /> // Pass closeModal as a prop
-      )}
-      {showComposeModal && (
-        <Compose
-          closeModal={closeModal}
-          client={client}
-          setFolders={updateFolders}
-        />
       )}
     </div>
   );

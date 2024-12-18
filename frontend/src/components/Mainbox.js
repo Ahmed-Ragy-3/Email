@@ -11,8 +11,8 @@ import axios from "axios";
 import Scheduled from "../pages/Scheduled";
 import EmailList from "./EmailList";
 
-function Mainbox({ folders, searchQuery, setFolders }) {
-  console.log("folders in mainbox are ", folders);
+function Mainbox({ folders, searchQuery, setFolders , contacts }) {
+  // console.log("folders in mainbox are ", folders);
   let newmails;
   let path = window.location.pathname;
   let normalizedPath =
@@ -22,18 +22,18 @@ function Mainbox({ folders, searchQuery, setFolders }) {
   normalizedPath = normalizedPath.replace(/\+/g, " ");
   normalizedPath = normalizedPath.trim()
 
-  console.log("Normalized Path:", normalizedPath);
+  // console.log("Normalized Path:", normalizedPath);
 
   // Now you can find the folder that matches the normalized path
   const matchedFolder = folders.find((folder) => {
     // Normalize folder name: Replace spaces with "+" and convert to lowercase
-    const normalizedFolderName = folder.name
-    console.log("Folder Normalized Name:", normalizedFolderName); // Log the normalized folder name
-    console.log("Normalized Path for Comparison:", normalizedPath); // Log the normalized path for comparison
+    const normalizedFolderName = folder.name.toLowerCase()
+    // console.log("Folder Normalized Name:", normalizedFolderName); // Log the normalized folder name
+    // console.log("Normalized Path for Comparison:", normalizedPath); // Log the normalized path for comparison
     return normalizedFolderName === normalizedPath;
   });
 
-  console.log("Matched Folder:", matchedFolder);
+  // console.log("Matched Folder:", matchedFolder);
 
   // Get mails from the matched folder, or default to an empty array
   newmails = matchedFolder?.mails || [];
@@ -77,7 +77,7 @@ function Mainbox({ folders, searchQuery, setFolders }) {
   const sortByDate = (a, b) => {
     const dateA = parseCustomDate(a.dateString);
     const dateB = parseCustomDate(b.dateString);
-    console.log(dateA, dateB);
+    // console.log(dateA, dateB);
     return isDescending ? dateB - dateA : dateA - dateB;
   };
 
@@ -336,6 +336,7 @@ function Mainbox({ folders, searchQuery, setFolders }) {
           emailsPerPage={paginationNumber}
           setFolders={setFolders}
           folders={folders}
+          contacts = {contacts}
         ></EmailList>
       </div>
     </div>

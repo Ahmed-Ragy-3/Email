@@ -25,6 +25,7 @@ import axios from "axios";
 // Layout component (to wrap common layout components like Sidebar and Navbar)
 const Layout = ({ emails }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [contacts, setContacts] = useState([])
   const [stompClient, setStompClient] = useState(null);
   const [folders, setFolders] = useState([]); // Initialize state as empty array
   const [userName, setUserName] = useState();
@@ -103,13 +104,25 @@ const Layout = ({ emails }) => {
     };
 
     getMails();
+    const getContacts = async()=> {
+      try {
+        const response = await axios.get("http://localhost:8080/user/contacts", {
+          headers: { Authorization: token },
+        });
+        console.log(response);
+        setContacts(response.data); // Update the folders state here
+      } catch (error) {
+        console.error("Error fetching emails:", error);
+      }
+    }
+    getContacts()
   }, []); // Empty dependency array ensures this only runs once on mount
 
   return (
     <div className="h-screen overflow-clip bg-[#223047]">
         <Navbar setSearchQuery={setSearchQuery} username={userName}/>
       <div className="h-full flex">
-        <Sidebar emails={emails} client={stompClient} updateFolders={setFolders} mainFolders ={folders}/>
+        <Sidebar emails={emails} client={stompClient} updateFolders={setFolders} mainFolders ={folders} contacts={contacts}/>
         <Routes>
           <Route
             path="/email/:id"
@@ -123,6 +136,7 @@ const Layout = ({ emails }) => {
                 folders={folders}
                 searchQuery={searchQuery}
                 setFolders = {setFolders}
+                contacts = {contacts}
               />
             }
           ></Route>
