@@ -28,7 +28,7 @@ function FullEmailView({  }) {
 
   if (!email) {
     return (
-      <div className="h-full px-6 py-6 bg-[#529199] rounded-3xl text-white">
+      <div className="h-full px-6 py-6 bg-[#2f4562] rounded-3xl text-white">
         <button
           onClick={handleGoBack}
           className="text-white hover:scale-125 ease-in-out active:scale-90 transition-transform duration-300"
@@ -43,7 +43,7 @@ function FullEmailView({  }) {
   return (
     <div
       id="main-box"
-      className="h-full basis-[89%] px-6 py-6 bg-[#529199] overflow-auto rounded-3xl shadow-inner shadow-gray-800 pb-[5%] text-white"
+      className="h-full basis-[89%] px-6 py-6 bg-[#2f4562] overflow-auto rounded-3xl shadow-inner shadow-gray-800 pb-[5%] text-white"
     >
       <button
         onClick={handleGoBack}

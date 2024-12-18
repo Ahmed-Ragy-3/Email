@@ -95,11 +95,11 @@ function Registration() {
     };
 
     return (
-        <div className='h-screen overflow-clip bg-[#003C43] flex-col flex items-center justify-center space-y-10 text-white'>
+        <div className='h-screen overflow-clip bg-[#223047] flex-col flex items-center justify-center space-y-10 text-white'>
             <div className='font-bold text-3xl'>
                 Sign Up
             </div>
-            <div className='bg-[#135D66] rounded-3xl shadow-2xl shadow-black w-[30%] h-auto px-10 py-10 font-semibold'>
+            <div className='bg-[#2f4562] rounded-3xl shadow-2xl shadow-gray-800 w-[30%] h-auto px-10 py-10 font-semibold'>
                 <form onSubmit={submit} className='space-y-4'>
                     <div>
                         <label htmlFor="username">Username</label>
@@ -109,10 +109,10 @@ function Registration() {
                             name="name"
                             value={form.name}
                             onChange={handleChange}
-                            className='rounded-2xl bg-[#239cac] shadow-2xl shadow-black px-2 py-2 w-full'
+                            className='rounded-2xl bg-[#2a3f59] shadow-inner px-2 py-2 w-full'
                             required
                         />
-                        {error.username && <p className="text-red-500 text-sm mt-2">*{error.username}</p>}
+                        {error.username && <p className="text-red-700 text-sm mt-2">*{error.username}</p>}
                     </div>
                     <div>
                         <label htmlFor="email">Email</label>
@@ -122,10 +122,10 @@ function Registration() {
                             name="emailAddress"
                             value={form.emailAddress}
                             onChange={handleChange}
-                            className='rounded-2xl bg-[#239cac] shadow-2xl shadow-black px-2 py-2 w-full'
+                            className='rounded-2xl bg-[#2a3f59] shadow-inner px-2 py-2 w-full'
                             required
                         />
-                        {error.email && <p className="text-red-500 text-sm mt-2">*{error.email}</p>}
+                        {error.email && <p className="text-red-700 text-sm mt-2">*{error.email}</p>}
                     </div>
                     <div>
                         <label htmlFor="password">Password</label>
@@ -135,16 +135,16 @@ function Registration() {
                             name="password"
                             value={form.password}
                             onChange={handleChange}
-                            className='rounded-2xl bg-[#239cac] shadow-2xl shadow-black px-2 py-2 w-full'
+                            className='rounded-2xl bg-[#2a3f59] shadow-inner px-2 py-2 w-full'
                             required
                         />
-                        {error.password && <p className="text-red-500 text-sm mt-2">*{error.password}</p>} {/* Display error message */}
+                        {error.password && <p className="text-red-700 text-sm mt-2">*{error.password}</p>} {/* Display error message */}
                     </div>
                     <div className='space-y-4 flex flex-col justify-center'>
                         <input
                             type="submit"
-                            value="Log In"
-                            className='rounded-2xl bg-[#2335ac] px-2 py-2 active:scale-95 transition-transform duration-150'
+                            value="Sign Up"
+                            className='rounded-2xl bg-[#bf6360] px-2 py-2 active:scale-95 transition-transform duration-150'
                         />
                         <div className='text-sm flex justify-center space-x-4'>
                         <span>Already have an account ?</span>  
