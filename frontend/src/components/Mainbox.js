@@ -11,29 +11,32 @@ import axios from "axios";
 import Scheduled from "../pages/Scheduled";
 import EmailList from "./EmailList";
 
-function Mainbox({ folders, searchQuery , setFolders}) {
+function Mainbox({ folders, searchQuery, setFolders }) {
   console.log("folders in mainbox are ", folders);
-  let path = window.location.pathname;
-  console.log(path);
   let newmails;
+  let path = window.location.pathname;
+  let normalizedPath =
+    path === "/" ? "inbox" : path.slice(1).replace(/\+/g, " ").toLowerCase();
 
-  if (path === "/") {
-    newmails = folders[0]?.mails || [];
-  } else if (path === "/drafts") {
-    newmails = folders[1]?.mails || [];
-  } else if (path === "/sent") {
-    newmails = folders[2]?.mails || [];
-  } else if (path === "/trash") {
-    newmails = folders[3]?.mails || [];
-  } else if (path === "/starred") {
-    newmails = folders[4]?.mails || [];
-  } else if (path === "/scheduled") {
-    newmails = folders[5]?.mails || [];
-  } else if (path === "/spam") {
-    newmails = folders[6]?.mails || [];
-  } else if (path === "/scheduled") {
-    newmails = folders[7]?.mails || [];
-  }
+  // Remove '+' characters from the current normalized path
+  normalizedPath = normalizedPath.replace(/\+/g, " ");
+  normalizedPath = normalizedPath.trim()
+
+  console.log("Normalized Path:", normalizedPath);
+
+  // Now you can find the folder that matches the normalized path
+  const matchedFolder = folders.find((folder) => {
+    // Normalize folder name: Replace spaces with "+" and convert to lowercase
+    const normalizedFolderName = folder.name
+    console.log("Folder Normalized Name:", normalizedFolderName); // Log the normalized folder name
+    console.log("Normalized Path for Comparison:", normalizedPath); // Log the normalized path for comparison
+    return normalizedFolderName === normalizedPath;
+  });
+
+  console.log("Matched Folder:", matchedFolder);
+
+  // Get mails from the matched folder, or default to an empty array
+  newmails = matchedFolder?.mails || [];
   let emails = newmails;
   console.log(emails);
   const importancePriority = {
@@ -186,36 +189,42 @@ function Mainbox({ folders, searchQuery , setFolders}) {
     >
       {/* Sorting options */}
       <div className="mb-4 flex items-center">
-  <label htmlFor="sort" className="text-white mr-2">
-    Sort By
-  </label>
-  <select
-    id="sort"
-    value={sortBy}
-    onChange={handleSort}
-    className="p-2 bg-[#824e4e] text-white rounded-md hover:bg-[#714848]"
-  >
-    <option value="dateString" className="bg-[#824e4e] hover:bg-[#714848]">
-      Date
-    </option>
-    <option value="subject" className="bg-[#824e4e] hover:bg-[#714848]">
-      Subject
-    </option>
-    <option value="sender" className="bg-[#824e4e] hover:bg-[#714848]">
-      Sender
-    </option>
-    <option value="importance" className="bg-[#824e4e] hover:bg-[#714848]">
-      Importance
-    </option>
-  </select>
+        <label htmlFor="sort" className="text-white mr-2">
+          Sort By
+        </label>
+        <select
+          id="sort"
+          value={sortBy}
+          onChange={handleSort}
+          className="p-2 bg-[#824e4e] text-white rounded-md hover:bg-[#714848]"
+        >
+          <option
+            value="dateString"
+            className="bg-[#824e4e] hover:bg-[#714848]"
+          >
+            Date
+          </option>
+          <option value="subject" className="bg-[#824e4e] hover:bg-[#714848]">
+            Subject
+          </option>
+          <option value="sender" className="bg-[#824e4e] hover:bg-[#714848]">
+            Sender
+          </option>
+          <option
+            value="importance"
+            className="bg-[#824e4e] hover:bg-[#714848]"
+          >
+            Importance
+          </option>
+        </select>
 
-  <button
-    onClick={toggleSortOrder}
-    className="ml-4 p-2 bg-[#824e4e] text-white rounded-md hover:bg-[#714848]"
-  >
-    {isDescending ? "Descending" : "Ascending"}
-  </button>
-</div>
+        <button
+          onClick={toggleSortOrder}
+          className="ml-4 p-2 bg-[#824e4e] text-white rounded-md hover:bg-[#714848]"
+        >
+          {isDescending ? "Descending" : "Ascending"}
+        </button>
+      </div>
 
       {/* Filter options */}
       <div className="mb-4 flex items-center space-x-4">
@@ -296,16 +305,22 @@ function Mainbox({ folders, searchQuery , setFolders}) {
           </select>
         </div>
         <div>
-          <select name="pagination-select" value={paginationNumber} id="" className="p-2 bg-[#824e4e] text-white rounded-md hover:bg-[#714848]" onChange={(e)=>{
-              setpaginationNumber(Number(e.target.value))
-          }}>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="20">20</option>
+          <select
+            name="pagination-select"
+            value={paginationNumber}
+            id=""
+            className="p-2 bg-[#824e4e] text-white rounded-md hover:bg-[#714848]"
+            onChange={(e) => {
+              setpaginationNumber(Number(e.target.value));
+            }}
+          >
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
           </select>
         </div>
         <button
@@ -315,9 +330,14 @@ function Mainbox({ folders, searchQuery , setFolders}) {
           Clear Filters
         </button>
       </div>
-          <div className="text-white">
-            <EmailList emails={filteredEmails} emailsPerPage={paginationNumber} setFolders={setFolders} folders={folders}></EmailList>
-          </div>
+      <div className="text-white">
+        <EmailList
+          emails={filteredEmails}
+          emailsPerPage={paginationNumber}
+          setFolders={setFolders}
+          folders={folders}
+        ></EmailList>
+      </div>
     </div>
   );
 }

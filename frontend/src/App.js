@@ -109,7 +109,7 @@ const Layout = ({ emails }) => {
     <div className="h-screen overflow-clip bg-[#223047]">
         <Navbar setSearchQuery={setSearchQuery} username={userName}/>
       <div className="h-full flex">
-        <Sidebar emails={emails} client={stompClient} updateFolders={setFolders} />
+        <Sidebar emails={emails} client={stompClient} updateFolders={setFolders} mainFolders ={folders}/>
         <Routes>
           <Route
             path="/email/:id"

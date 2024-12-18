@@ -13,7 +13,6 @@ import { useFolders } from "../components/FoldersContext";
 import { folders } from "fontawesome";
 
 function Compose({ closeModal, client , setFolders }) {
-  console.log("compose " , setFolders)
   const [attachments, setAttachments] = useState([]);
   const [attachmentURLs, setAttachmentURLs] = useState([]);
   const [isBold, setIsBold] = useState(false);
@@ -103,42 +102,19 @@ function Compose({ closeModal, client , setFolders }) {
           },
         }
       );
-      let now = new Date();
-      let formattedDate = now.toLocaleString("en-GB", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true, // Set to `false` for 24-hour format
-      });
-      console.log(response);
-      let dest;
-      console.log("dat ",data_sent.dateString)
-      if (data_sent.dateString == 'now')
-      {
-        dest = 2
-      }
-      else
-      {
-        dest = 5
-      }
-      data_sent.dataString = formattedDate.replace(',' , '|')
-      
-      setFolders((prevFolders) => {
-        if (!prevFolders || prevFolders.length === 0) {
-          console.error("Folders are empty or undefined");
-          return prevFolders; // Early return to prevent errors
+      const getMails = async () => {
+        try {
+          const response = await axios.get("http://localhost:8080/mail/all", {
+            headers: { Authorization: token },
+          });
+          console.log(response);
+          setFolders(response.data); // Update the folders state here
+        } catch (error) {
+          console.error("Error fetching emails:", error);
         }
-      
-        // Ensure `mails` exists
-        const updatedFolders = [...prevFolders];
-        const firstFolder = { ...updatedFolders[dest] };
-        firstFolder.mails = [...(firstFolder.mails || []), data_sent]; // Add newMail immutably
-        
-        updatedFolders[dest] = firstFolder;
-        return updatedFolders;
-      });
+      };
+  
+      getMails();
       closeModal();
     } catch (error) {
       alert(error)
