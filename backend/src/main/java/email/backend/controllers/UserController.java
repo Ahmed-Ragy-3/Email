@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import email.backend.DTO.ContactDTO;
+import email.backend.DTO.UserDTO;
 import email.backend.services.UserService;
 
 
@@ -71,7 +72,7 @@ public class UserController {
          userService.deleteContact(userService.getUser(token), contactDto);
           return ResponseEntity
             .status(HttpStatus.ACCEPTED)
-            .body("Contact Deleted");
+            .body("Contact Deleted Successfully");
       } catch (Exception e) {
          return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
@@ -93,8 +94,17 @@ public class UserController {
       }
    }
 
-   @DeleteMapping("/delete/{userId}")
-   public void deleteUser(@PathVariable Long userId) {
-      // userService.deleteUser(userService.getUser(userId));
+   @DeleteMapping("/delete")
+   public ResponseEntity<?> deleteUser(@RequestHeader("Authorization") String token ) {
+      try {
+         userService.deleteUser(userService.getUser(token));
+         return ResponseEntity
+            .status(HttpStatus.ACCEPTED)
+            .body("User Deleted Successfully");
+      } catch (Exception e) {
+         return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(e.getMessage());
+      }
    }
 }

@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import ch.qos.logback.core.pattern.parser.OptionTokenizer;
 import email.backend.DTO.MailDTO;
 import email.backend.DTO.MailboxDTO;
 import email.backend.DTO.WebSocketMsgDTO;
@@ -20,6 +21,7 @@ import email.backend.controllers.EmailWebSocketController;
 import email.backend.databaseAccess.MailRepository;
 // import email.backend.databaseAccess.UserRepository;
 import email.backend.databaseAccess.MailboxRepository;
+import email.backend.databaseAccess.UserRepository;
 import email.backend.databaseAccess.ContactRepository;
 import email.backend.tables.Contact;
 import email.backend.tables.Mail;
@@ -44,8 +46,8 @@ public class MailService {
    @Autowired
    private MailboxRepository mailboxRepository;
    
-   // @Autowired
-   // private MailSenderProxy mailSenderProxy;
+   @Autowired
+   private UserRepository userRepository;
 
    @Autowired
    private UserService userService;
@@ -62,23 +64,49 @@ public class MailService {
     * @param Mail mail 
     */
    @Transactional
-   public Mail createMailToDrafts(Mail mail) {
-      
+   public MailDTO createDraftMail(MailDTO mailDto, User user) {
+      Mail mail = mailDto.toMail(user, userService, this);
+
+      mail = mailRepository.save(mail);
+
       User sender = mail.getSender();
-      // System.out.println("1 =================" + mail.getContent() + "===================" );
+      
       sender.getMailboxes().get(MailboxService.DRAFTS_INDEX).getMails().add(mail);
-      // System.out.println("2 =================" + mail.getContent() + "===================" );
-      // System.out.println(sender.getId());
-      // System.out.println(sender.getName());
-      // System.out.println(sender.getEmailAddress());
-      // System.out.println(sender.getPassword());
-      // System.out.println("2 =================" + mail.getContent() + "===================" );
+
+      mailboxRepository.save(sender.getMailboxes().get(MailboxService.DRAFTS_INDEX));
       
-      // userRepository.save(sender);
+      userRepository.save(user);
       
-      // System.out.println("3 =================" + mail.getContent() + "===================" );
-      // mailRepository.save(mail);
-      return mail;
+      mailDto.setId(mail.getId());
+
+      return mailDto;
+   }
+
+   @Transactional
+   public MailDTO editDraftMail(MailDTO mailDto, User user) throws IllegalArgumentException {
+
+      Optional<Mail> OpMail = mailRepository.findById(mailDto.getId());
+
+      if(OpMail.isPresent()) {
+         Mail mail = mailDto.toMail(user, userService, this);
+   
+         mail.setId(mailDto.getId());
+         
+         mail = mailRepository.save(mail);
+   
+         User sender = mail.getSender();
+
+         // should old mail from list of drafts ?
+
+         mailboxRepository.save(sender.getMailboxes().get(MailboxService.DRAFTS_INDEX));
+
+         userRepository.save(user);
+   
+         return mailDto;
+      } else {
+         throw new IllegalArgumentException("Mail doesn't exists");
+      }
+      
    }
 
    public List<MailboxDTO> getAllMails(User user) {
@@ -118,19 +146,6 @@ public class MailService {
       return mailRepository.findBySender(userService.getUser(senderId));
    }
 
-   public void deleteEmail(Long mailId) {
-      if (!mailRepository.existsById(mailId)) {
-         throw new IllegalArgumentException("Mail not found");
-      }
-      mailRepository.deleteById(mailId);
-   }
-
-   // public void sendMails(Mail mail) {
-   //    // MailSenderProxy mailSenderProxy;
-
-   //    mailRepository.save(mail);
-   // }
-
    @Scheduled(cron = "0 0 0 * * ?") // Runs daily at midnight
    public void deleteTrashMails() {
       List<User> users = userService.getAllUsers();
@@ -141,9 +156,14 @@ public class MailService {
 
          Date today = Date.getTodaysDate();
 
-         trashMails.removeIf(mail -> mail.getDate().getDay() == today.getDay());
+         for (Mail mail : trashMails) {
+            if(mail.getDate().getDay() == today.getDay()){
+               mailboxService.delete(mail, user);
+            }
+            
+         }
       }
-      // we never actualy delete from data ba
+      // we never actualy delete from data base
    }
 
    public Importance getImportanceFromString(String importance) {

@@ -92,6 +92,10 @@ public class UserService {
          throw new IllegalArgumentException("Invalid Email Address");
       }
 
+      if(user.getEmailAddress().equals(contactDto.getEmailAddress())) {
+         throw new IllegalArgumentException("User can't add himself as a contact");
+      }
+
       User contact = getUserFromAddress(contactDto.getEmailAddress());
       
       if(contactRepository.findByUserAndContactUser(user, contact).isPresent()) {
@@ -135,6 +139,7 @@ public class UserService {
       } else {
          user.getContacts().remove(givenContact.get());
          userRepository.save(user);
+         contactRepository.delete(givenContact.get());
       }
    }
 
@@ -168,12 +173,10 @@ public class UserService {
    }
 
    public User getUser(String token) {
-      System.out.println("entered get user by token");
       return getUser(JwtUtil.getUserFromToken(token));
    }
    
    public User getUser(UserDTO userDto) {
-      System.out.println("entered get user by dto");
       Optional<User> user = userRepository.findById(userDto.getId());
       return user.isPresent() ? user.get() : null;
    }
@@ -182,8 +185,12 @@ public class UserService {
       return userRepository.findAll();
    }
 
-   // @Transactional
-   public void deleteUser(User user) {
-      userRepository.delete(user);
+   @Transactional // don't work
+   public void deleteUser(User user) throws IllegalArgumentException {
+      if(userRepository.findById(user.getId()).isPresent()){ 
+         userRepository.deleteById(user.getId());
+      } else {
+         throw new IllegalArgumentException("User doesn't exist");
+      }
    }
 }

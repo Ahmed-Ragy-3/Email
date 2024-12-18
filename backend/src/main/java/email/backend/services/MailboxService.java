@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import email.backend.DTO.MailboxDTO;
 import email.backend.databaseAccess.MailboxRepository;
 import email.backend.databaseAccess.UserRepository;
 import email.backend.services.filter.AttachmentCriteria;
@@ -52,9 +53,24 @@ public class MailboxService {
    
    @Transactional // i added those for now to work
    // schedueling still works fine 
-   public void moveTo(Mailbox from, Mailbox to, Mail mail) {
-      copyTo(to, mail);
-      deleteFrom(from, mail);
+   public void moveTo(Mailbox from, Mailbox to, Mail mail, User user) throws IllegalArgumentException{
+      if(from.getOwner() == user) {
+         if(to.getOwner() == user) {
+            if(from.getMails().contains(mail)) {
+               deleteFrom(from, mail);
+            } else {
+               throw new IllegalArgumentException("mail don't even exist in the source mailbox");
+            }
+            if(to.getMails().contains(mail)) {
+               throw new IllegalArgumentException("mail already exists in the destination mailbox");
+            }
+            copyTo(to, mail);
+         } else {
+            throw new IllegalArgumentException("the from mailbox don't belong to given user");
+         }
+      } else {
+         throw new IllegalArgumentException("the from mailbox don't belong to given user");
+      }
    }
    
    @Transactional // i added those for now to work
@@ -63,13 +79,23 @@ public class MailboxService {
       mailbox.getMails().remove(mail);
    }
 
-   public void moveToTrash(Mailbox mailbox, Mail mail) {
-      deleteFrom(mailbox, mail);
-      addTo(getMailbox(mail.getSender(), TRASH_INDEX), mail);
+   @Transactional
+   public void moveToTrash(Mailbox mailbox, Mail mail, User user) throws IllegalArgumentException{
+      if (mailbox.getOwner() == user) {
+         deleteFrom(mailbox, mail);
+         addTo(getMailbox(mail.getSender(), TRASH_INDEX), mail);
+      } else {
+         throw new IllegalArgumentException("The from mailbox don't belong to given user");
+      }
    }
    
-   public void delete(Mail mail) { // delete from trash only
-      deleteFrom(getMailbox(mail.getSender(), TRASH_INDEX), mail);
+   @Transactional 
+   public void delete(Mail mail, User user) throws IllegalArgumentException { // delete from trash only
+      if(getMailbox(user, TRASH_INDEX).getMails().contains(mail)) {
+         deleteFrom(getMailbox(mail.getSender(), TRASH_INDEX), mail); 
+      } else {
+         throw new IllegalArgumentException("this mail doesn't belong to the trash of the user");
+      }
    }
 
    public Mailbox getMailbox(Long mailboxId) {
@@ -88,8 +114,8 @@ public class MailboxService {
       return user.getMailboxes().get(index);
    }
    
-   // @Transactional
-   public Mailbox createMailbox(User user, String name) {
+   @Transactional
+   public Mailbox createMailbox(User user, String name) throws IllegalArgumentException{
 
       Optional<Mailbox> opMailbox = mailboxRepository.findByOwnerAndName(user, name);
 
@@ -107,11 +133,26 @@ public class MailboxService {
 
       return mailbox;
    }
-   
-   // public List<Mail> search(String regex) {
-   //    return mailboxRepository.searchMailsByKeyword(regex);
-   // }
 
+   @Transactional
+   public Mailbox editMailbox(User user, MailboxDTO mailboxDto) throws IllegalArgumentException{
+
+      Optional<Mailbox> opMailbox = mailboxRepository.findByOwnerAndName(user, mailboxDto.getName());
+
+      if(opMailbox.isPresent()) {
+         throw new IllegalArgumentException("Mailbox Name already exists");
+      }
+
+      Mailbox mailbox = getMailbox(mailboxDto.getId());
+      mailbox.setName(mailboxDto.getName());
+
+      mailboxRepository.save(mailbox);
+      
+      userRepository.save(user);
+
+      return mailbox;
+   }
+   
    public List<Mail> filter(Long mailboxId, Importance importance, Boolean attachment, Date date1, Date date2) {
       List<Mail> filteredMails = new ArrayList<>();
       Criteria criteria;
