@@ -109,7 +109,7 @@ const Layout = ({ emails }) => {
         const response = await axios.get("http://localhost:8080/user/contacts", {
           headers: { Authorization: token },
         });
-        console.log(response);
+        console.log("I got new folders " , response);
         setContacts(response.data); // Update the folders state here
       } catch (error) {
         console.error("Error fetching emails:", error);
@@ -120,7 +120,7 @@ const Layout = ({ emails }) => {
 
   return (
     <div className="h-screen overflow-clip bg-[#223047]">
-        <Navbar setSearchQuery={setSearchQuery} username={userName}/>
+        <Navbar setSearchQuery={setSearchQuery} username={userName} setFolders={setFolders}/>
       <div className="h-full flex">
         <Sidebar emails={emails} client={stompClient} updateFolders={setFolders} mainFolders ={folders} contacts={contacts}/>
         <Routes>

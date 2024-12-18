@@ -6,7 +6,7 @@ import { useParams, useNavigate } from "react-router-dom";
 function FullEmailView({  }) {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [email, setemail] = useState()
+  const [incoming, setIncoming] = useState()
   const handleGoBack = () => {
     navigate(-1); // Go back to the previous page
   };
@@ -19,13 +19,15 @@ function FullEmailView({  }) {
           "id" : id
         }
       )
-      console.log(response.data)
-      setemail(response.data)
+      console.log("I AM COMING " , response.data)
+      setIncoming(response.data)
     }
     getEmail()
   }, [])
   
-
+  let email = incoming.mailDto
+  let attachments = incoming.attachments
+  
   if (!email) {
     return (
       <div className="h-full px-6 py-6 bg-[#2f4562] rounded-3xl text-white">
@@ -51,7 +53,7 @@ function FullEmailView({  }) {
       >
         <FontAwesomeIcon icon={faArrowLeft} /> Back
       </button>
-      <p className="text-2xl">From: {email.sender.emailAddress}</p>
+      <p className="text-2xl">From: {email.senderAddress}</p>
       <p className="text-opacity-40 text-white">Sent: {email.dateString}</p>
       <p className="text-2xl">Subject: {email.subject}</p>
       <hr />

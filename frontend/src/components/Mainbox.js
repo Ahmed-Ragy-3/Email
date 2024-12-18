@@ -118,6 +118,39 @@ function Mainbox({ folders, searchQuery, setFolders, contacts, setContacts }) {
     // Convert to valid ISO string
     return new Date(year, month - 1, day, hour, minute);
   };
+  const updateContact = async(contact) =>
+  {
+    let newName = prompt("Enter new name for this contact")
+    try {
+      let token = localStorage.getItem('token')
+      let response = await axios.put("http://localhost:8080/user/contact/edit", 
+        {
+          name: newName,
+          emailAddress: contact.emailAddress
+        }, 
+        {
+          headers: {
+            Authorization: token // Replace token with your actual token
+          }
+        });
+      const getContacts = async()=> {
+        try {
+          let token = localStorage.getItem('token')
+          const response = await axios.get("http://localhost:8080/user/contacts", {
+            headers: { Authorization: token },
+          });
+          console.log(response);
+          setContacts(response.data); // Update the folders state here
+        } catch (error) {
+          console.error("Error fetching emails:", error);
+        }
+      }
+      getContacts()
+    } catch (error) {
+      console.log(error)
+    }
+    
+  }
   // Sorting functions
   const sortByDate = (a, b) => {
     const dateA = parseCustomDate(a.dateString);
@@ -450,7 +483,7 @@ function Mainbox({ folders, searchQuery, setFolders, contacts, setContacts }) {
                   <button onClick={() => deleteContact(contact)}>
                     <FontAwesomeIcon icon={faTrash}></FontAwesomeIcon>
                   </button>
-                  <button>
+                  <button onClick={() => updateContact(contact)}>
                     <FontAwesomeIcon icon={faEdit}></FontAwesomeIcon>
                   </button>
                 </div>

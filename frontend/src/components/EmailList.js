@@ -4,6 +4,8 @@ import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faRegStar } from '@fortawesome/free-regular-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import Compose from '../pages/Compose';  // Import the Compose component
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 function EmailList({ emails, emailsPerPage , setFolders , folders , contacts }) {
   const navigate = useNavigate();
@@ -11,7 +13,7 @@ function EmailList({ emails, emailsPerPage , setFolders , folders , contacts }) 
   const [starredEmailIds, setStarredEmailIds] = useState(new Set());
   const [isComposeOpen, setIsComposeOpen] = useState(false);
   const [emailToEdit, setEmailToEdit] = useState(null);
-
+  const [id,setId] = useState(null)
   const isStarredFolder = window.location.pathname === "/starred";
   const isDraftsFolder = window.location.pathname === "/drafts"; // Check if the folder is drafts
 
@@ -27,53 +29,113 @@ function EmailList({ emails, emailsPerPage , setFolders , folders , contacts }) 
     }
   }, [isStarredFolder, folders]);
 
-  const handleStarClick = (emailId, event) => {
-    event.stopPropagation(); // Prevent email navigation when star is clicked
+  const handleStarClick = async (email, event) => {
+    // Prevent email navigation when star is clicked
 
-    setStarredEmailIds((prev) => {
-      const newStarredEmails = new Set(prev);
-      const email = emails.find((email) => email.id === emailId);
+    const starredFolder = folders.find(folder => folder.name === "Starred");
 
-      if (newStarredEmails.has(emailId)) {
-        newStarredEmails.delete(emailId);
-
-        setFolders((prevFolders) => {
-          return prevFolders.map((folder) => {
-            if (folder.name === "Starred") {
-              return {
-                ...folder,
-                mails: folder.mails.filter(mail => mail.id !== emailId),
-              };
-            }
-            return folder;
-          });
-        });
-      } else {
-        newStarredEmails.add(emailId);
-
-        setFolders((prevFolders) => {
-          return prevFolders.map((folder) => {
-            if (folder.name !== "Starred") {
-              return {
-                ...folder,
-                mails: folder.mails.filter(mail => mail.id !== emailId), // Remove from other folders
-              };
-            }
-            if (folder.name === "Starred") {
-              return {
-                ...folder,
-                mails: [...folder.mails, email], // Add to the Starred folder
-              };
-            }
-            return folder;
-          });
-        });
+    if (window.location.pathname != '/starred')
+    {
+      const currentPath = window.location.pathname;
+      const folderName = getFolderNameFromPath(currentPath);
+      let correspondingFolder = null
+      if (currentPath == '/')
+      {
+        correspondingFolder = folders.find(folder => folder.name.toLowerCase() === 'inbox');
       }
-
-      return newStarredEmails;
-    });
+      else
+      {
+        correspondingFolder = folders.find(folder => folder.name.toLowerCase() === folderName.toLowerCase());
+      }
+      
+      console.log(email)
+      console.log(correspondingFolder.id)
+      console.log(starredFolder.id)
+      try {
+        let token = localStorage.getItem('token')
+        let response = await axios.post(
+          `http://localhost:8080/mail/moveTo/${correspondingFolder.id}/${starredFolder.id}`,
+          email, {
+            headers: {
+              Authorization: token
+            }
+          }
+        );
+        
+      } catch (error) {
+        alert(error)
+      }
+     await getMails();
+    }
+    else
+    { let token = localStorage.getItem('token')
+      let decoded_token = jwtDecode(token)
+      let myMail = decoded_token.email
+      if (email.senderAddress != myMail)
+      {
+        const inboxFolder = folders.find(folder => folder.name.toLowerCase() === "inbox");
+      try {
+        let token = localStorage.getItem('token')
+        let response = await axios.post(
+          `http://localhost:8080/mail/moveTo/${starredFolder.id}/${inboxFolder.id}`,
+          email, {
+            headers: {
+              Authorization: token
+            }
+          }
+        );
+      
+      } catch (error) {
+        alert(error)
+      }
+    await  getMails();
+    }
+    else
+    {
+      const sentFolder = folders.find(folder => folder.name.toLowerCase() === "sent");
+      try {
+        let token = localStorage.getItem('token')
+        let response = await axios.post(
+          `http://localhost:8080/mail/moveTo/${starredFolder.id}/${sentFolder.id}`,
+          email, {
+            headers: {
+              Authorization: token
+            }
+          }
+        );
+      } catch (error) {
+        alert(error)
+      }
+      await getMails();
+    }
+      }
+      
+      
   };
-
+  useEffect(() => {
+    console.log("PLEASE UPDATE" , folders)
+  }, [])
+  
+  const getMails = async () => {
+    let token = localStorage.getItem('token')
+    try {
+      const response = await axios.get("http://localhost:8080/mail/all", {
+        headers: { Authorization: token },
+      });
+      console.log(response);
+      setFolders(response.data); // Update the folders state here
+    } catch (error) {
+      console.error("Error fetching emails:", error);
+    }
+  };
+  
+  const getFolderNameFromPath = (path) => {
+    // Replace '+' in the URL path with spaces for folder names with spaces
+    return path
+      .substring(1) // Remove leading '/' from the path
+      .replace(/\+/g, ' ') // Replace '+' with space
+      .replace('/', ''); // Ensure we clean up any remaining slashes
+  };
   const totalPages = Math.ceil(emails.length / emailsPerPage);
   const paginatedEmails = emails.slice((currentPage - 1) * emailsPerPage, currentPage * emailsPerPage);
 
@@ -93,9 +155,9 @@ function EmailList({ emails, emailsPerPage , setFolders , folders , contacts }) 
         <div
           key={email.id}
           className="group bg-[#2a3f59] mb-4 rounded-2xl p-4 shadow-2xl hover:cursor-pointer hover:bg-[#203045] transition-all flex justify-between items-center"
-          onClick={() => handleEmailClick(email)}  // Use the new handler
+            // Use the new handler
         >
-          <div className="flex-1">
+          <div className="flex-1" onClick={() => handleEmailClick(email)}>
             <h3 className="text-xl font-bold group-hover:text-white transition-colors">
               {email.subject}
             </h3>
@@ -108,7 +170,7 @@ function EmailList({ emails, emailsPerPage , setFolders , folders , contacts }) 
           </div>
 
           <button
-            onClick={(e) => handleStarClick(email.id, e)}
+            onClick={(e) => handleStarClick(email, e)}
             className="text-2xl text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
           >
             {starredEmailIds.has(email.id) ? (

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faArrowsRotate, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
-
-function Navbar({ setSearchQuery , username }) {
+import axios from 'axios';
+function Navbar({ setSearchQuery , username , setFolders }) {
   const [query, setQuery] = useState(""); // State to track search input
   const navigate = useNavigate()
   const logout = ()=>
@@ -28,13 +28,27 @@ function Navbar({ setSearchQuery , username }) {
       // Add your search logic here if you want to trigger the search explicitly on Enter
     }
   };
-
+  const getMails = async () => {
+    let token = localStorage.getItem('token')
+    try {
+      const response = await axios.get("http://localhost:8080/mail/all", {
+        headers: { Authorization: token },
+      });
+      console.log(response);
+      setFolders(response.data); // Update the folders state here
+    } catch (error) {
+      console.error("Error fetching emails:", error);
+    }
+  };
   return (
     <div className="w-full h-[10%] bg-[#223047] p-9 flex items-center justify-between">
       <div>
-
+        
       </div>
-      <div className="flex items-center w-1/3 h-[80%] ml-[11%]">
+      <div className="flex items-center w-1/3 h-[80%] ml-[11%] space-x-4">
+      <button onClick={getMails} className='text-3xl text-white active:scale-95 hover:scale-105'>
+          <FontAwesomeIcon icon={faArrowsRotate}></FontAwesomeIcon>
+        </button>
         {/* Search bar */}
         <div className="flex items-center bg-[#2f4562] p-3 rounded-full w-full shadow-2xl">
           <FontAwesomeIcon
