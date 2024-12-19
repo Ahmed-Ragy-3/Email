@@ -1,0 +1,44 @@
+/* Button active and morph effect */
+button.active-button {
+  transform: scale(1.05);
+  box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.2);
+  background-color: #2f4562; /* Active background color */
+}
+
+/* Folder item active effect */
+button.folder-item-active {
+  transform: scale(1.05);
+  background-color: #2f4562; /* Active background color */
+}
+
+/* Arrow rotation effect */
+.arrow-rotate {
+  transition: transform 0.3s ease-in-out;
+}
+
+.arrow-rotate.down {
+  transform: rotate(90deg); /* Rotate for dropdown */
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.custom-scroll {
+    margin-right: -10px; /* Adjust based on the browser scrollbar width */
+    padding-right: 10px; /* Balance the content inside */
+    overflow-y: scroll; /* Enable scrolling */
+    height: 100%;
+  }
+  
+  .custom-scroll::-webkit-scrollbar {
+    width: 0; /* Make the scrollbar width zero */
+    height: 0; /* For horizontal scrollbar */
+  }
+  
+  .custom-scroll {
+    scrollbar-width: none; /* Firefox: Removes scrollbar */
+    -ms-overflow-style: none; /* IE/Edge: Removes scrollbar */
+  }
+  
+  

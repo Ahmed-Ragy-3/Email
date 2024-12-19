@@ -1,0 +1,229 @@
+{
+  "emails": [
+    {
+      "id": 1,
+      "subject": "Meeting Reminder",
+      "sender": "john@example.com",
+      "body": "This is a reminder about the meeting tomorrow at 3 PM.",
+      "folder": "inbox",
+      "attachments": [
+        { "name": "agenda.pdf", "type": "pdf", "size": "1.2MB" },
+        { "name": "notes.docx", "type": "docx", "size": "500KB" }
+      ],
+      "picture": "https://example.com/images/john.jpg",
+      "date": "2024-12-13"
+    },
+    {
+      "id": 2,
+      "subject": "Project Update",
+      "sender": "mary@example.com",
+      "body": "We have an important update about the project deadline.",
+      "folder": "sent",
+      "attachments": [
+        { "name": "project_update.pdf", "type": "pdf", "size": "2MB" }
+      ],
+      "picture": "https://example.com/images/mary.jpg",
+      "date": "2024-12-12"
+    },
+    {
+      "id": 3,
+      "subject": "Lunch Plans",
+      "sender": "susan@example.com",
+      "body": "Are we still on for lunch at 1 PM tomorrow?",
+      "folder": "trash",
+      "attachments": [],
+      "picture": "https://example.com/images/susan.jpg",
+      "date": "2024-12-11"
+    },
+    {
+      "id": 4,
+      "subject": "Invoice for Services",
+      "sender": "billing@example.com",
+      "body": "Please find the invoice for your recent services.",
+      "folder": "trash",
+      "attachments": [
+        { "name": "invoice.pdf", "type": "pdf", "size": "700KB" }
+      ],
+      "picture": "https://example.com/images/billing.jpg",
+      "date": "2024-12-10"
+    },
+    {
+      "id": 5,
+      "subject": "Vacation Plans",
+      "sender": "jane@example.com",
+      "body": "I'm looking forward to our vacation next month!",
+      "folder": "spam",
+      "attachments": [],
+      "picture": "",
+      "date": "2024-12-09"
+    },
+    {
+      "id": 6,
+      "subject": "New Features in the App",
+      "sender": "support@example.com",
+      "body": "Check out the latest features we just added to the app.",
+      "folder": "starred",
+      "attachments": [
+        { "name": "release_notes.pdf", "type": "pdf", "size": "1MB" }
+      ],
+      "picture": "https://example.com/images/support.jpg",
+      "date": "2024-12-08"
+    },
+    {
+      "id": 7,
+      "subject": "Your Order Confirmation",
+      "sender": "shop@example.com",
+      "body": "Thank you for your purchase. Your order will arrive soon.",
+      "folder": "sent",
+      "attachments": [
+        { "name": "receipt.pdf", "type": "pdf", "size": "300KB" }
+      ],
+      "picture": "https://example.com/images/shop.jpg",
+      "date": "2024-12-07"
+    },
+    {
+      "id": 8,
+      "subject": "Your Subscription Expiring Soon",
+      "sender": "subscription@example.com",
+      "body": "Don't forget, your subscription will expire in 3 days.",
+      "folder": "starred",
+      "attachments": [],
+      "picture": "https://example.com/images/subscription.jpg",
+      "date": "2024-12-06"
+    },
+    {
+      "id": 9,
+      "subject": "Birthday Invitation",
+      "sender": "alice@example.com",
+      "body": "You're invited to my birthday party next weekend!",
+      "folder": "drafts",
+      "attachments": [
+        { "name": "invitation.pdf", "type": "pdf", "size": "500KB" }
+      ],
+      "picture": "https://example.com/images/alice.jpg",
+      "date": "2024-12-05"
+    },
+    {
+      "id": 10,
+      "subject": "Meeting Follow-up",
+      "sender": "bob@example.com",
+      "body": "Following up on our discussion last week about the project.",
+      "folder": "drafts",
+      "attachments": [],
+      "picture": "https://example.com/images/bob.jpg",
+      "date": "2024-12-04"
+    },
+    {
+      "id": 11,
+      "subject": "Urgent: Action Required",
+      "sender": "admin@example.com",
+      "body": "Please take immediate action on the following matter.",
+      "folder": "spam",
+      "attachments": [
+        { "name": "action_required.pdf", "type": "pdf", "size": "900KB" }
+      ],
+      "picture": "",
+      "date": "2024-12-03"
+    },
+    {
+      "id": 12,
+      "subject": "Network Maintenance Notice",
+      "sender": "it@example.com",
+      "body": "Scheduled network maintenance will occur tonight from 12 AM to 3 AM.",
+      "folder": "inbox",
+      "attachments": [],
+      "picture": "https://example.com/images/it.jpg",
+      "date": "2024-12-02"
+    },
+    {
+      "id": 13,
+      "subject": "Shipping Confirmation",
+      "sender": "shipping@example.com",
+      "body": "Your item has been shipped and is on its way.",
+      "folder": "inbox",
+      "attachments": [
+        { "name": "tracking_info.pdf", "type": "pdf", "size": "200KB" }
+      ],
+      "picture": "https://example.com/images/shipping.jpg",
+      "date": "2024-12-01"
+    },
+    {
+      "id": 14,
+      "subject": "Job Application Confirmation",
+      "sender": "hr@example.com",
+      "body": "Thank you for your application. We will be in touch soon.",
+      "folder": "sent",
+      "attachments": [],
+      "picture": "https://example.com/images/hr.jpg",
+      "date": "2024-11-30"
+    },
+    {
+      "id": 15,
+      "subject": "Project Review",
+      "sender": "lisa@example.com",
+      "body": "Let's schedule a time for project review this week.",
+      "folder": "inbox",
+      "attachments": [],
+      "picture": "https://example.com/images/lisa.jpg",
+      "date": "2024-11-29"
+    },
+    {
+      "id": 16,
+      "subject": "Holiday Sale!",
+      "sender": "store@example.com",
+      "body": "Get 50% off during our holiday sale, don't miss out!",
+      "folder": "spam",
+      "attachments": [
+        { "name": "sale_flyer.pdf", "type": "pdf", "size": "1MB" }
+      ],
+      "picture": "https://example.com/images/store.jpg",
+      "date": "2024-11-28"
+    },
+    {
+      "id": 17,
+      "subject": "Monthly Report",
+      "sender": "ceo@example.com",
+      "body": "Please find the monthly financial report attached.",
+      "folder": "sent",
+      "attachments": [
+        { "name": "monthly_report.xlsx", "type": "xlsx", "size": "3MB" }
+      ],
+      "picture": "https://example.com/images/ceo.jpg",
+      "date": "2024-11-27"
+    },
+    {
+      "id": 18,
+      "subject": "Terms of Service Update",
+      "sender": "support@example.com",
+      "body": "We have updated our terms of service. Please review.",
+      "folder": "inbox",
+      "attachments": [],
+      "picture": "https://example.com/images/terms.jpg",
+      "date": "2024-11-26"
+    },
+    {
+      "id": 19,
+      "subject": "Event Invitation",
+      "sender": "events@example.com",
+      "body": "You're invited to our annual conference this year.",
+      "folder": "inbox",
+      "attachments": [
+        { "name": "conference_schedule.pdf", "type": "pdf", "size": "500KB" }
+      ],
+      "picture": "https://example.com/images/events.jpg",
+      "date": "2024-11-25"
+    },
+    {
+      "id": 20,
+      "subject": "Account Security Alert",
+      "sender": "security@example.com",
+      "body": "We noticed unusual activity on your account. Please check your settings.",
+      "folder": "spam",
+      "attachments": [
+        { "name": "security_report.pdf", "type": "pdf", "size": "2MB" }
+      ],
+      "picture": "https://example.com/images/security.jpg",
+      "date": "2024-11-24"
+    }
+  ]
+}

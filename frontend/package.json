@@ -1,0 +1,59 @@
+{
+  "name": "mail",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@fortawesome/free-regular-svg-icons": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/react-fontawesome": "^0.2.2",
+    "@mui/system": "^6.2.1",
+    "@stomp/stompjs": "^7.0.0",
+    "axios": "^1.7.9",
+    "cra-template": "1.2.0",
+    "fontawesome": "^5.6.3",
+    "fortawesome": "^0.0.1-security",
+    "jwt-decode": "^4.0.0",
+    "mail": "file:",
+    "react": "^18.0.0",
+    "react-color": "^2.19.3",
+    "react-dom": "^18.0.0",
+    "react-remove-scroll-bar": "^2.3.8",
+    "react-router-dom": "^7.0.2",
+    "react-scripts": "5.0.1",
+    "react-toastify": "^11.0.1",
+    "sockjs": "^0.3.24",
+    "sockjs-client": "^1.6.1",
+    "styled-components": "^6.1.13",
+    "web-vitals": "^4.2.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17"
+  },
+  "proxy": "http://localhost:8080"
+}
