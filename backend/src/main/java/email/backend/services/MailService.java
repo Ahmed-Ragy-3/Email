@@ -253,10 +253,8 @@ public class MailService {
          }
          
          try {
-            for (String recieverAddress : mailDto.getReceiversAddresses()) {
                socketSender.sendEmail(new WebSocketMsgDTO(new MailDTO(mail), receiverMailboxName),
-               recieverAddress, mailDto.getSenderAddress());
-            }
+               receiver.getEmailAddress(), mailDto.getSenderAddress());
          } catch(Exception e) {
             System.out.println("Error in sending websocket message");
             System.out.println(e.getMessage());
