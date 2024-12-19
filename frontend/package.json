@@ -20,6 +20,7 @@
     "react-remove-scroll-bar": "^2.3.8",
     "react-router-dom": "^7.0.2",
     "react-scripts": "5.0.1",
+    "react-toastify": "^11.0.1",
     "sockjs": "^0.3.24",
     "sockjs-client": "^1.6.1",
     "styled-components": "^6.1.13",

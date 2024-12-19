@@ -20,6 +20,7 @@ import Login from "./pages/Login";
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
 
 // Define NoPage component to handle undefined routes
 // Layout component (to wrap common layout components like Sidebar and Navbar)
@@ -32,9 +33,14 @@ const Layout = ({ emails }) => {
   console.log(setFolders)
   const navigate = useNavigate();
   function playNotificationSound() {
-    const audio = new Audio("/files/notif.mp3"); // Path to the notif.mp3 file inside the 'files' folder
+    const audio = new Audio("/notif.mp3"); // Path to the notif.mp3 file inside the 'files' folder
     audio.play().catch((error) => {
       console.error("Error playing the sound:", error);
+      toast.success('New notification received!', {
+        position: toast.POSITION.BOTTOM_CENTER,
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
     });
   }
   useEffect(() => {
@@ -122,6 +128,7 @@ const Layout = ({ emails }) => {
     <div className="h-screen overflow-clip bg-[#223047]">
         <Navbar setSearchQuery={setSearchQuery} username={userName} setFolders={setFolders}/>
       <div className="h-full flex">
+        <ToastContainer></ToastContainer>
         <Sidebar emails={emails} client={stompClient} updateFolders={setFolders} mainFolders ={folders} contacts={contacts}/>
         <Routes>
           <Route
