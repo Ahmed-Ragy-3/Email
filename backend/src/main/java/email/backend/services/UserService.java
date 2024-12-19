@@ -11,13 +11,9 @@ import org.springframework.stereotype.Service;
 import email.backend.DTO.ContactDTO;
 import email.backend.DTO.JwtUtil;
 import email.backend.DTO.UserDTO;
-import email.backend.databaseAccess.ContactRepository;
-import email.backend.databaseAccess.MailRepository;
-import email.backend.databaseAccess.MailboxRepository;
-import email.backend.databaseAccess.UserRepository;
-import email.backend.services.MailboxService;
+import email.backend.repo.ContactRepository;
+import email.backend.repo.UserRepository;
 import email.backend.tables.Contact;
-import email.backend.tables.Mailbox;
 import email.backend.tables.User;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -33,21 +29,17 @@ public class UserService {
    private ContactRepository contactRepository;
    
    @Autowired
-   private MailboxRepository mailboxRepository;
-
-   @Autowired
-   private MailRepository mailRepository;
-
-   @Autowired
    private MailboxService mailboxService;
 
    public String encodePassword(String rawPassword) {
       return BCrypt.hashpw(rawPassword, BCrypt.gensalt());
    }
 
+
    public boolean checkPassword(String rawPassword, String storedHashedPassword) {
       return BCrypt.checkpw(rawPassword, storedHashedPassword);
    }
+
 
    public User login(String address, String password) throws IllegalArgumentException {
       if(!validate(address)) {
@@ -65,6 +57,7 @@ public class UserService {
       }
 
    }
+
 
    public User createNewAccount(String name, String address, String password) throws IllegalArgumentException {
       if(!validate(address)) {
@@ -94,6 +87,7 @@ public class UserService {
       
       return userRepository.save(newUser);
    }
+
 
    @Transactional
    public ContactDTO addContact(User user, ContactDTO contactDto) {
@@ -125,6 +119,7 @@ public class UserService {
       }
    }
 
+
    @Transactional
    public ContactDTO editContact(User user, ContactDTO contactDto) {
 
@@ -136,6 +131,7 @@ public class UserService {
 
       return contactDto;
    }
+
 
    @Transactional
    public void deleteContact(User user, ContactDTO contactDto) {
@@ -152,6 +148,7 @@ public class UserService {
       }
    }
 
+
    public List<ContactDTO> getContacts(User user) {
       List<Contact> contacts = user.getContacts();
 
@@ -164,43 +161,39 @@ public class UserService {
       return contactsDTO;
    }
 
+
    public boolean validate(String emailAddress) {
-      // anywords@mail.com
       String[] atSplit = emailAddress.split("@");
       return atSplit.length == 2 && atSplit[1].equals("mail.com") && 
             !atSplit[0].contains(".") && Character.isLetter(atSplit[0].charAt(0));
    }
 
+
    public User getUser(Long userId) {
       Optional<User> user = userRepository.findById(userId);
       return user.isPresent() ? user.get() : null;
    }
+
    
    public User getUserFromAddress(String userAddress) {
       Optional<User> user = userRepository.findByEmailAddress(userAddress);
       return user.isPresent() ? user.get() : null;
    }
 
+
    public User getUser(String token) {
       return getUser(JwtUtil.getUserFromToken(token));
    }
+
    
    public User getUser(UserDTO userDto) {
       Optional<User> user = userRepository.findById(userDto.getId());
       return user.isPresent() ? user.get() : null;
    }
+   
 
    public List<User> getAllUsers() {
       return userRepository.findAll();
    }
 
-   @Transactional // don't work
-   public void deleteUser(User user) throws IllegalArgumentException {
-      if(userRepository.findById(user.getId()).isPresent()){ 
-         userRepository.save(user);
-         userRepository.deleteById(user.getId());
-      } else {
-         throw new IllegalArgumentException("User doesn't exist");
-      }
-   }
 }

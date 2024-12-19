@@ -3,12 +3,9 @@ package email.backend.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
-
 import email.backend.DTO.AttachedMailDTO;
-import email.backend.DTO.MailDTO;
-import email.backend.databaseAccess.ContactRepository;
-import email.backend.databaseAccess.MailRepository;
-import email.backend.databaseAccess.MailboxRepository;
+import email.backend.repo.MailRepository;
+import email.backend.repo.MailboxRepository;
 import email.backend.tables.Mail;
 import email.backend.tables.Mailbox;
 import email.backend.tables.User;
@@ -49,8 +46,6 @@ public class MailSenderProxy {
    @Autowired
    private UserService userService;
 
-   @Autowired
-   private ContactRepository contactRepository;
 
    public Mail sendMail(User user, AttachedMailDTO attachedMailDto) {
 
@@ -67,7 +62,6 @@ public class MailSenderProxy {
          mail = attachedMailDto.toMail(user, userService, mailService);
       }
       
-      System.out.println(mail.getId());
       mailRepository.save(mail);
       sendMail(mail);
       mailRepository.save(mail);
@@ -79,16 +73,6 @@ public class MailSenderProxy {
       return mail.getDate().future();
    }
 
-   /**
-    * @param user that have mailbox
-    * @param user2 is
-    * returns true if user has a friend zone mailbox containing user2
-    */
-   // private Mailbox getFriendZone(User user, User user2) {
-   //    // Friend zone logic
-   //    Optional<Contact> contact = contactRepository.findByUserAndContactUser(user, user2);
-   //    return contact.map(c -> mailboxService.getMailbox(user, c.getContactName())).orElse(null);
-   // }
 
    private boolean isReady(Mail mail) throws IllegalArgumentException {
       if(mail.getSender() == null) {
@@ -109,12 +93,12 @@ public class MailSenderProxy {
       return true;
    }
 
+
    public Mail sendMail(Mail mail) {          // Gate 1
       if(!isReady(mail)) {
          return null;
       }
       if(isScheduled(mail)) {
-         // sent to scheduled folder
          mailboxService.addTo(mailboxService.getMailbox(mail.getSender(), MailboxService.SCHEDULED_INDEX), mail);
 
          handleScheduling(mail);
@@ -124,6 +108,7 @@ public class MailSenderProxy {
       mailService.sendToDatabase(mail);
       return mail;
    }
+
    
    private Mail handleScheduling(Mail mail) {
       Runnable task = new Runnable() {
@@ -144,7 +129,5 @@ public class MailSenderProxy {
       
       return mail;
   }
-  
-
 
 }

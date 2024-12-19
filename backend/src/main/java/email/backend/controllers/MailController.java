@@ -1,7 +1,7 @@
 package email.backend.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import email.backend.DTO.AttachedMailDTO;
+import email.backend.DTO.JwtUtil;
 import email.backend.DTO.MailDTO;
 import email.backend.DTO.MailboxDTO;
 import email.backend.services.MailSenderProxy;
@@ -25,6 +25,7 @@ import email.backend.services.MailboxService;
 import email.backend.services.UserService;
 import email.backend.tables.Attachment;
 import email.backend.tables.Mail;
+import email.backend.tables.User;
 
 @RestController
 @CrossOrigin("*")
@@ -39,40 +40,41 @@ public class MailController {
    
    @Autowired
    private UserService userService;
+   
    @Autowired
    private MailboxService mailboxService;
    
+
    @PutMapping("/create")
-   public ResponseEntity<?> createDraftMail(@RequestBody AttachedMailDTO attachedMailDto, 
-   @RequestHeader("Authorization") String token) {
+   public ResponseEntity<?> createDraftMail(
+      @RequestBody AttachedMailDTO attachedMailDto, 
+      @RequestHeader("Authorization") String token
+   ) {
       try {
          AttachedMailDTO dto = mailService.createDraftMail(attachedMailDto, userService.getUser(token));
-         return ResponseEntity
-               .status(HttpStatus.ACCEPTED)
-               .body(dto);
+         return ResponseEntity.status(HttpStatus.ACCEPTED).body(dto);
       
       } catch (Exception e) {
-         return ResponseEntity
-            .status(HttpStatus.BAD_REQUEST)
-            .body(e.getMessage());
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
       }
    }
 
+
    @PostMapping("/edit")
-   public ResponseEntity<?> editDraftMail(@RequestBody MailDTO mailDto, 
-   @RequestHeader("Authorization") String token) {
+   public ResponseEntity<?> editDraftMail(
+      @RequestBody AttachedMailDTO attachedMailDto, 
+      @RequestHeader("Authorization") String token
+   ) {
+
       try {
-         MailDTO dto = mailService.editDraftMail(mailDto, userService.getUser(token));
-         return ResponseEntity
-               .status(HttpStatus.ACCEPTED)
-               .body(dto);
+         AttachedMailDTO dto = mailService.editDraftMail(attachedMailDto, userService.getUser(token));
+         return ResponseEntity.status(HttpStatus.ACCEPTED).body(dto);
       
       } catch (Exception e) {
-         return ResponseEntity
-            .status(HttpStatus.BAD_REQUEST)
-            .body(e.getMessage());
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
       }
    }
+
 
    @PostMapping("/send")
    public ResponseEntity<?> sendMail(
@@ -85,49 +87,42 @@ public class MailController {
       // }
       try {
          MailDTO mailDto = attachedMailDto.getMailDto();
-         
-         System.out.println(mailDto.getContent());
-         
          Mail mail = mailSenderProxy.sendMail(
          userService.getUserFromAddress(mailDto.getSenderAddress()), 
          attachedMailDto);
          
          
-         return ResponseEntity
-               .status(HttpStatus.ACCEPTED)
-               .body(new MailDTO(mail));
+         return ResponseEntity.status(HttpStatus.ACCEPTED).body(new MailDTO(mail));
       
       } catch (Exception e) {
-         System.out.println("error message : " +e.getMessage());
-         
+         System.out.println(e.getMessage());
          return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
             .body(e.getMessage());
       }
    }
+
 
    @GetMapping("/all")
    public ResponseEntity<?> getAllMails(@RequestHeader("Authorization") String token) {
       try {
          List<MailboxDTO> mailboxes = mailService.getAllMails(userService.getUser(token));
-         return ResponseEntity
-               .status(HttpStatus.ACCEPTED)
-               .body(mailboxes);
+         return ResponseEntity.status(HttpStatus.ACCEPTED).body(mailboxes);
+      
       } catch (Exception e) {
-         return ResponseEntity
-            .status(HttpStatus.BAD_REQUEST)
-            .body(e.getMessage());
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
       }
    }
+
    
    @GetMapping("/getmail")
    public AttachedMailDTO getSingleMail(@RequestParam long id) {
-      // System.out.println("here");
       Mail mail = mailService.getMailById(id);
       return new AttachedMailDTO(mail);
    }
 
-   @PostMapping("/moveToTrash/{fromMailboxId}")
+
+   @PostMapping("/move-to-trash/{fromMailboxId}")
    public ResponseEntity<?> moveToTrash(
       @RequestHeader("Authorization") String token, 
       @RequestBody MailDTO mailDto,
@@ -140,65 +135,116 @@ public class MailController {
             mailService.getMailById(mailDto.getId()),
             userService.getUser(token)
          );
-         return ResponseEntity
-               .status(HttpStatus.ACCEPTED)
-               .body("Moved to trash");
+         return ResponseEntity.status(HttpStatus.ACCEPTED).body("Moved to trash");
+      
       } catch (Exception e) {
-         return ResponseEntity
-            .status(HttpStatus.BAD_REQUEST)
-            .body(e.getMessage());
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
       }
    }
 
-   @PostMapping("/delete")
-   public ResponseEntity<?> delete( @RequestHeader("Authorization") String token, 
-                                    @RequestBody MailDTO mailDto) {
+
+   @PostMapping("/move-mails-to-trash/{fromMailboxId}")
+   public ResponseEntity<?> moveMailsToTrash(
+      @RequestHeader("Authorization") String token, 
+      @RequestBody ArrayList<Long> ids,
+      @PathVariable Long fromMailboxId
+   ) {
+
       try {
-         mailboxService.deleteFromTrash(mailService.getMailById(mailDto.getId()), userService.getUser(token));
-         return ResponseEntity
-               .status(HttpStatus.ACCEPTED)
-               .body("Deleted the mail permenantly");
+         User user = userService.getUser(token);
+         System.out.println(user.getName());
+         mailboxService.moveMailsToTrash(
+            mailboxService.getMailbox(fromMailboxId),
+            ids, userService.getUser(token)
+         );
+         System.out.println("here");
+         return ResponseEntity.status(HttpStatus.ACCEPTED).body("Mails are moved to trash");
+      
       } catch (Exception e) {
-         return ResponseEntity
-            .status(HttpStatus.BAD_REQUEST)
-            .body(e.getMessage());
+         System.out.println(e.getMessage());
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
       }
    }
   
-   @PostMapping("/moveTo/{fromMailboxId}/{toMailboxId}")
-      public ResponseEntity<?> moveMailToMailbox( 
-                                    @RequestHeader("Authorization") String token,
-                                    @RequestBody MailDTO mailDto,
-                                    @PathVariable Long fromMailboxId,
-                                    @PathVariable Long toMailboxId) {
+
+   @PostMapping("/move/{fromMailboxId}/{toMailboxId}")
+   public ResponseEntity<?> moveMailToMailbox(
+      @RequestHeader("Authorization") String token,
+      @RequestBody MailDTO mailDto,
+      @PathVariable Long fromMailboxId,
+      @PathVariable Long toMailboxId
+   ) {
+
       try {
-         mailboxService.moveTo(  mailboxService.getMailbox(fromMailboxId),
-                                 mailboxService.getMailbox(toMailboxId),
-                                 mailService.getMailById(mailDto.getId()),
-                                 userService.getUser(token));
-         return ResponseEntity
-               .status(HttpStatus.ACCEPTED)
-               .body("Moved Successfully");
+         mailboxService.moveTo(
+            mailboxService.getMailbox(fromMailboxId),
+            mailboxService.getMailbox(toMailboxId),
+            mailService.getMailById(mailDto.getId()),
+            userService.getUser(token)
+         );
+
+         return ResponseEntity.status(HttpStatus.ACCEPTED).body("Moved Successfully");
+      
       } catch (Exception e) {
-         return ResponseEntity
-            .status(HttpStatus.BAD_REQUEST)
-            .body(e.getMessage());
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
       }
    }
 
-    // @PostMapping("/copyTo")
-   //    public ResponseEntity<?> copyMailToMailbox( @RequestHeader("Authorization") String token, 
-   //                                  @RequestBody MailDTO mailDto,
-   //                                  @RequestBody MailboxDTO mailboxDto) {
-   //    try {
-   //       mailboxService.copyTo(mailboxService.getMailbox(mailboxDto.getId()), mailService.getMailById(mailDto.getId()));
-   //       return ResponseEntity
-   //             .status(HttpStatus.ACCEPTED)
-   //             .body("Copied to" + mailboxDto.getName());
-   //    } catch (Exception e) {
-   //       return ResponseEntity
-   //          .status(HttpStatus.BAD_REQUEST)
-   //          .body(e.getMessage());
-   //    }
-   // }
+
+   @PostMapping("/move-mails/{fromMailboxId}/{toMailboxId}")
+   public ResponseEntity<?> moveMailsToMailbox( 
+      @RequestHeader("Authorization") String token,
+      @RequestBody ArrayList<Long> ids,
+      @PathVariable Long fromMailboxId,
+      @PathVariable Long toMailboxId
+   ) {
+      try {
+         mailboxService.moveMailsToMailbox(
+            mailboxService.getMailbox(fromMailboxId),
+            mailboxService.getMailbox(toMailboxId),
+            ids, userService.getUser(token)
+         );
+         
+         return ResponseEntity.status(HttpStatus.ACCEPTED).body("Moved Successfully");
+
+      } catch (Exception e) {
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+      }
+   }
+
+
+   @PostMapping("/delete")
+   public ResponseEntity<?> delete(
+      @RequestHeader("Authorization") String token,
+      @RequestBody MailDTO mailDto
+   ) {
+
+      try {
+         mailboxService.deleteFromTrash(mailService.getMailById(mailDto.getId()), userService.getUser(token));
+         return ResponseEntity.status(HttpStatus.ACCEPTED).body("Deleted mail permenantly");
+
+      } catch (Exception e) {
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+      }
+   }
+
+   
+   @PostMapping("/delete-mails")
+   public ResponseEntity<?> deleteMultipleMails(
+      @RequestHeader("Authorization") String token,
+      @RequestBody ArrayList<Long> ids
+   ) {
+
+      try {
+
+         for (Long id : ids) {
+            mailboxService.deleteFromTrash(mailService.getMailById(id), userService.getUser(token));
+         }
+         return ResponseEntity.status(HttpStatus.ACCEPTED).body("Deleted selected mails permenantly");
+
+      } catch (Exception e) {
+         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+      }
+   }
+
 }

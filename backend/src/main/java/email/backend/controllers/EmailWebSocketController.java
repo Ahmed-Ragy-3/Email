@@ -17,13 +17,8 @@ public class EmailWebSocketController {
     
     @MessageMapping("/send-email") // Maps to "/app/send-email"
     public void sendEmail(@RequestBody WebSocketMsgDTO message, String recieverAddress, @Header("email") String emailAddress) {
-        // System.out.println(emailAddress);
-        // for(String recieverAddress : .getReceiversAddresses()) {
-        //     // recieverAddress = recieverAddress.split("@mail.com")[0];
         String destination = "/topic/emails/" + recieverAddress;
-        //     System.out.println(destination);
         simpMessagingTemplate.convertAndSend(destination, message);
-        // }
         System.out.println("Done sending by websockets to reciever");
     }
 }

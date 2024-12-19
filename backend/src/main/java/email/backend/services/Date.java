@@ -2,7 +2,6 @@ package email.backend.services;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,10 +14,13 @@ import lombok.NoArgsConstructor;
 public class Date {
 
    private int year;
+
    private int month;
+
    private int day;
 
    private int hour;
+   
    private int minute;
 
    public Date(LocalDateTime dateTime) {
@@ -28,6 +30,7 @@ public class Date {
       this.hour = dateTime.getHour();
       this.minute = dateTime.getMinute();
    }
+
 
    public static Date getTodaysDate() {
       LocalDateTime localTime = LocalDateTime.now();
@@ -39,6 +42,7 @@ public class Date {
          localTime.getMinute() 
       );
    }
+
    
    public static Date getDateFromString(String dateString) {
       LocalDateTime now = LocalDateTime.now();
@@ -76,14 +80,17 @@ public class Date {
                         .toInstant();
    }
 
+
    public boolean future() {
       return this.compareTo(getTodaysDate()) > 0;
    }
+
 
    @Override
    public String toString() {
       return "%s / %s / %s  |  %s: %s ".formatted(day, month, year, hour, minute);
    }
+
 
    public boolean isBetween(Date date1, Date date2) {
       if(year < date1.year || year > date2.year)            return false;
@@ -93,6 +100,7 @@ public class Date {
       return true;
    }
 
+   
    public int compareTo(Date that) {
       if (this.year < that.year)          return -1;
       else if(this.year > that.year)      return 1;

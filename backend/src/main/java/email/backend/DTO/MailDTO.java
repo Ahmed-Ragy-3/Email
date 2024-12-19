@@ -2,7 +2,6 @@ package email.backend.DTO;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import email.backend.services.Date;
 import email.backend.services.MailService;
 import email.backend.tables.Mail;
@@ -25,7 +24,6 @@ public class MailDTO {
    private String senderAddress;
    private String importance;
    private String dateString;
-   // private List<Long> attachmentsIds = new ArrayList<>();
    private List<String> receiversAddresses = new ArrayList<>();
 
    /**
@@ -44,7 +42,6 @@ public class MailDTO {
             this.receiversAddresses.add(user.getEmailAddress());
          }
       }
-      // this.attachments = mail.getAttachments();
    }
 
    /**
@@ -67,7 +64,7 @@ public class MailDTO {
       for (String userAddress : this.getReceiversAddresses()) {
          receivers.add(userService.getUserFromAddress(userAddress));
       }
-      // System.out.println(this.content + "===========================");
+
       return Mail.builder()
             .content(this.content)
             .subject(this.subject)
@@ -76,6 +73,5 @@ public class MailDTO {
             .date(date)
             .receivers(receivers)
             .build();
-            // .attachments(attachments)
    }
 }
