@@ -300,30 +300,30 @@ function Mainbox({ folders, searchQuery, setFolders, contacts, setContacts }) {
     >
       {/* Sorting options */}
       <div className="mb-4 flex items-center">
-        <label htmlFor="sort" className="text-white mr-2">
+        <label htmlFor="sort" className="text-white mr-2 font-semibold">
           Sort By
         </label>
         <select
           id="sort"
           value={sortBy}
           onChange={handleSort}
-          className="p-2 bg-[#bf6360] text-white rounded-md hover:bg-[#a55755]"
+          className="p-2 bg-transparent text-white hover:bg-[#2a3f59] active:bg-[#203045] rounded-full border border-white"
         >
           <option
             value="dateString"
-            className="bg-[#bf6360] hover:bg-[#a55755]"
+            className="bg-[#2a3f59] hover:bg-[#203045] rounded-full"
           >
             Date
           </option>
-          <option value="subject" className="bg-[#bf6360] hover:bg-[#a55755]">
+          <option value="subject" className="bg-[#2a3f59] hover:bg-[#203045] rounded-full">
             Subject
           </option>
-          <option value="sender" className="bg-[#bf6360] hover:bg-[#a55755]">
+          <option value="sender" className="bg-[#2a3f59] hover:bg-[#203045] rounded-full">
             Sender
           </option>
           <option
             value="importance"
-            className="bg-[#bf6360] hover:bg-[#a55755]"
+            className="bg-[#2a3f59] hover:bg-[#203045] rounded-full"
           >
             Importance
           </option>
@@ -331,116 +331,134 @@ function Mainbox({ folders, searchQuery, setFolders, contacts, setContacts }) {
 
         <button
           onClick={toggleSortOrder}
-          className="ml-4 p-2 bg-[#bf6360] text-white rounded-md hover:bg-[#a55755]"
+          className="ml-4 p-2 bg-transparent text-white hover:bg-[#2a3f59] active:bg-[#203045] rounded-full border border-white"
         >
           {isDescending ? "Descending" : "Ascending"}
         </button>
       </div>
 
       {/* Filter options */}
-      <div className="mb-4 flex items-center space-x-4">
-        <div>
-          <label htmlFor="sender" className="text-white mr-2">
-            Sender
-          </label>
-          <select
-            id="sender"
-            value={filterSender}
-            onChange={(e) => setFilterSender(e.target.value)}
-            className="p-2 bg-[#bf6360] text-white rounded-md hover:bg-[#a55755]"
-          >
-            <option value="">All Senders</option>
-            {uniqueSenders.map((sender, index) => (
-              <option key={index} value={sender}>
-                {sender}
-              </option>
-            ))}
-          </select>
+      <div className="flex justify-between">
+        {/* First Inner Div */}
+        <div className="flex space-x-10">
+          <div>
+            <label htmlFor="sender" className="block text-white font-semibold mb-1">
+              Sender
+            </label>
+            <div className="flex items-center">
+              <select
+                id="sender"
+                value={filterSender}
+                onChange={(e) => setFilterSender(e.target.value)}
+                className="p-2 bg-transparent text-white hover:bg-[#2a3f59] active:bg-[#203045] rounded-full border border-white"
+              >
+                <option value="">All Senders</option>
+                {uniqueSenders.map((sender, index) => (
+                  <option key={index} value={sender}>
+                    {sender}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="start-date" className="block text-white font-semibold mb-1">
+              Date Range
+            </label>
+            <div className="flex items-center">
+              <input
+                type="date"
+                id="start-date"
+                value={filterStartDate}
+                onChange={(e) => setFilterStartDate(e.target.value)}
+                className="p-2 bg-transparent text-white hover:bg-[#2a3f59] active:bg-[#203045] rounded-full border border-white"
+              />
+              <span className="mx-2 text-white">to</span>
+              <input
+                type="date"
+                id="end-date"
+                value={filterEndDate}
+                onChange={(e) => setFilterEndDate(e.target.value)}
+                className="p-2 bg-transparent text-white hover:bg-[#2a3f59] active:bg-[#203045] rounded-full border border-white"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="subject" className="block text-white font-semibold mb-1">
+              Subject
+            </label>
+            <div className="flex items-center">
+              <select
+                id="subject"
+                value={filterSubject}
+                onChange={(e) => setFilterSubject(e.target.value)}
+                className="p-2 bg-transparent text-white hover:bg-[#2a3f59] active:bg-[#203045] rounded-full border border-white"
+              >
+                <option value="">All Subjects</option>
+                {uniqueSubjects.map((subject, index) => (
+                  <option key={index} value={subject}>
+                    {subject}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="importance" className="block text-white font-semibold mb-1">
+              Importance
+            </label>
+            <div className="flex items-center">
+              <select
+                id="importance"
+                value={filterImportance}
+                onChange={(e) => setFilterImportance(e.target.value)}
+                className="p-2 bg-transparent text-white hover:bg-[#2a3f59] active:bg-[#203045] rounded-full border border-white"
+              >
+                <option value="">All Importance</option>
+                {uniqueImportance.map((importance, index) => (
+                  <option key={index} value={importance}>
+                    {importance}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
 
-        <div>
-          <label htmlFor="start-date" className="text-white mr-2">
-            Date Range
-          </label>
-          <input
-            type="date"
-            id="start-date"
-            value={filterStartDate}
-            onChange={(e) => setFilterStartDate(e.target.value)}
-            className="p-2 bg-[#bf6360] text-white rounded-md hover:bg-[#a55755]"
-          />
-          <span className="mx-2 text-white">to</span>
-          <input
-            type="date"
-            id="end-date"
-            value={filterEndDate}
-            onChange={(e) => setFilterEndDate(e.target.value)}
-            className="p-2 bg-[#bf6360] text-white rounded-md hover:bg-[#a55755]"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="subject" className="text-white mr-2">
-            Subject
-          </label>
-          <select
-            id="subject"
-            value={filterSubject}
-            onChange={(e) => setFilterSubject(e.target.value)}
-            className="p-2 bg-[#bf6360] text-white rounded-md hover:bg-[#a55755]"
+        {/* Second Inner Div */}
+        <div className="flex items-center space-x-3 ml-auto">
+          <div>
+            <select
+              name="pagination-select"
+              value={paginationNumber}
+              id=""
+              className="p-3 bg-[#2a3f59] text-white font-semibold hover:bg-[#203045] rounded-2xl text-[16px]  shadow-inner shadow-gray-800"
+              onChange={(e) => {
+                setpaginationNumber(Number(e.target.value));
+              }}
+            >
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+            </select>
+          </div>
+          <button
+            onClick={clearFilters}
+            className="p-3 bg-[#bf6360] hover:bg-[#a55755] active:bg-[#8e4b48] hover:scale-105 transform transition duration-200 ease-in-out shadow-md shadow-gray-800 text-white font-semibold rounded-2xl text-[16px]"
           >
-            <option value="">All Subjects</option>
-            {uniqueSubjects.map((subject, index) => (
-              <option key={index} value={subject}>
-                {subject}
-              </option>
-            ))}
-          </select>
+            Clear Filters
+          </button>
         </div>
-        <div>
-          <label htmlFor="importance" className="text-white mr-2">
-            Importance
-          </label>
-          <select
-            id="importance"
-            value={filterImportance}
-            onChange={(e) => setFilterImportance(e.target.value)}
-            className="p-2 bg-[#bf6360] text-white rounded-md hover:bg-[#a55755]"
-          >
-            <option value="">All Importance</option>
-            {uniqueImportance.map((importance, index) => (
-              <option key={index} value={importance}>
-                {importance}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <select
-            name="pagination-select"
-            value={paginationNumber}
-            id=""
-            className="p-2 bg-[#bf6360] text-white rounded-md hover:bg-[#a55755]"
-            onChange={(e) => {
-              setpaginationNumber(Number(e.target.value));
-            }}
-          >
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="20">20</option>
-          </select>
-        </div>
-        <button
-          onClick={clearFilters}
-          className="p-2 bg-transparent hover:bg-[#a55755] text-white border-2 rounded-3xl"
-        >
-          Clear Filters
-        </button>
       </div>
+
+
       <div className="text-white">
         <EmailList
           emails={filteredEmails}
@@ -495,11 +513,11 @@ function Mainbox({ folders, searchQuery, setFolders, contacts, setContacts }) {
         {/* Floating Button */}
         <button
           onClick={toggleContactbar}
-          className={`contact-button fixed bottom-8 transition-all duration-300 ease-in-out ${
+          className={`contact-button fixed bottom-8 shadow-md shadow-gray-800 transition-all duration-300 ease-in-out ${
             isButtonClicked
               ? "bg-[#8e4b48] left-[calc(95%-256px)] " // Moves button left when clicked
-              : "bg-[#bf6360] right-8" // Initial position of the button
-          } text-white p-4 hover:bg-[#a55755] rounded-2xl shadow-lg transform hover:scale-105 z-50`}
+              : "bg-[#2a3f59] right-8" // Initial position of the button
+          } text-white p-4 hover:bg-[#203045] rounded-2xl shadow-lg transform hover:scale-105 z-50`}
         >
           <FontAwesomeIcon icon={faAddressBook} size="lg" />
         </button>

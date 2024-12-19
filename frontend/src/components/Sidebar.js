@@ -186,7 +186,7 @@ function Sidebar({ client, updateFolders, mainFolders , contacts }) {
       <div className="w-full flex justify-center mb-10">
         <button
           onClick={() => handleButtonClick("compose")}
-          className="text-[20px] px-4 py-2 bg-[#bf6360] rounded-2xl hover:scale-105 text-white hover:bg-[#a55755] active:bg-[#8e4b48] transform transition duration-200 ease-in-out shadow-gray-900"
+          className="text-[20px] px-4 py-2 bg-[#bf6360] rounded-2xl hover:scale-105 text-white hover:bg-[#a55755] active:bg-[#8e4b48] transform transition duration-200 ease-in-out shadow-md shadow-gray-800"
         >
           <FontAwesomeIcon icon={faPenToSquare} /> Compose
         </button>
