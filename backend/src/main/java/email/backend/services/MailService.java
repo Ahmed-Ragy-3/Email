@@ -13,6 +13,7 @@ import email.backend.DTO.MailDTO;
 import email.backend.DTO.MailboxDTO;
 import email.backend.DTO.WebSocketMsgDTO;
 import email.backend.controllers.EmailWebSocketController;
+import email.backend.repo.AttachmentRepository;
 import email.backend.repo.ContactRepository;
 import email.backend.repo.MailRepository;
 import email.backend.repo.MailboxRepository;
@@ -24,11 +25,13 @@ import email.backend.tables.Mailbox;
 import email.backend.tables.User;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 
 @Service
 @AllArgsConstructor
 @Configuration
 @EnableScheduling
+@Data
 public class MailService {
 
    @Autowired
@@ -52,6 +55,8 @@ public class MailService {
    @Autowired
    private EmailWebSocketController socketSender;
 
+   @Autowired
+   private AttachmentRepository attachmentRepository;
 
    public void moveMailsToTrash(Mailbox mailbox, List<Long> ids, User user) throws IllegalArgumentException {
       for (Long mailId : ids) {
@@ -82,7 +87,7 @@ public class MailService {
     */
    @Transactional
    public AttachedMailDTO createDraftMail(AttachedMailDTO attachedMailDto, User user) {
-      Mail mail = attachedMailDto.toMail(user, userService, this);
+      Mail mail = attachedMailDto.toMail(user, userService, this, attachmentRepository);
 
       mail = mailRepository.save(mail);
 
@@ -106,7 +111,7 @@ public class MailService {
       Optional<Mail> OpMail = mailRepository.findById(attachedMailDto.getMailDto().getId());
 
       if(OpMail.isPresent()) {
-         Mail mail = attachedMailDto.toMail(user, userService, this);
+         Mail mail = attachedMailDto.toMail(user, userService, this, attachmentRepository);
    
          mail.setId(attachedMailDto.getMailDto().getId());
          
@@ -224,7 +229,6 @@ public class MailService {
 
       String receiverMailboxName = "";
       System.out.println(mail.getContent());
-      
       for (User receiver : mail.getReceivers()) {
          friendMailbox = getFriendZone(sender, receiver);
          System.out.println(receiver.getEmailAddress());
@@ -233,9 +237,9 @@ public class MailService {
             mailboxRepository.save(friendMailbox);
          
          } else if (!inSent) {
-            
             mailboxService.addTo(sender.getMailboxes().get(MailboxService.SENT_INDEX), mail);
             mailboxRepository.save(sender.getMailboxes().get(MailboxService.SENT_INDEX));
+
             inSent = true;
          }
          

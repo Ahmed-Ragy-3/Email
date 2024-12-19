@@ -55,14 +55,4 @@ public class Mail {
    )
    private List<User> receivers;
 
-   @Transient
-   private List<Long> attachmentIds;
-
-   public List<Long> getAttachmentIds() {
-      if (attachments == null) {
-         return List.of();
-      }
-      return attachments.stream().map(Attachment::getId).toList();
-   }
-
 }

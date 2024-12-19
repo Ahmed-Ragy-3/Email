@@ -25,7 +25,7 @@ public class Attachment {
    private String name;
 
    @Lob
-   private byte[] file;
+   private String file;
 
    @Column(nullable = false)
    private String type;

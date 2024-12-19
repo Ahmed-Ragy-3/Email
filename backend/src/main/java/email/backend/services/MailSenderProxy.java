@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import email.backend.DTO.AttachedMailDTO;
+import email.backend.repo.AttachmentRepository;
 import email.backend.repo.MailRepository;
 import email.backend.repo.MailboxRepository;
 import email.backend.tables.Mail;
@@ -46,12 +47,14 @@ public class MailSenderProxy {
    @Autowired
    private UserService userService;
 
+   @Autowired
+   private AttachmentRepository attachmentRepository;
 
    public Mail sendMail(User user, AttachedMailDTO attachedMailDto) {
 
       Mail mail;
       if(attachedMailDto.getMailDto().getId() == null) {
-         mail = attachedMailDto.toMail(user, userService, mailService);
+         mail = attachedMailDto.toMail(user, userService, mailService , attachmentRepository);
       } else {
          mail = mailRepository.findById(attachedMailDto.getMailDto().getId()).get();
          user.getMailboxes().get(MailboxService.DRAFTS_INDEX).getMails().remove(mail);
@@ -59,9 +62,8 @@ public class MailSenderProxy {
          mailRepository.save(mail);
          
          mailboxRepository.save(user.getMailboxes().get(MailboxService.DRAFTS_INDEX));
-         mail = attachedMailDto.toMail(user, userService, mailService);
+         mail = attachedMailDto.toMail(user, userService, mailService, attachmentRepository);
       }
-      
       mailRepository.save(mail);
       sendMail(mail);
       mailRepository.save(mail);
@@ -104,7 +106,6 @@ public class MailSenderProxy {
          handleScheduling(mail);
          return mail;
       }
-      
       mailService.sendToDatabase(mail);
       return mail;
    }

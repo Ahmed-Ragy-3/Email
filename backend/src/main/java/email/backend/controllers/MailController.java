@@ -81,10 +81,11 @@ public class MailController {
       @RequestBody AttachedMailDTO attachedMailDto,
       @RequestHeader("Authorization") String token
    ) {
-      // List<Attachment> attachments = attachedMailDto.getAttachments();
-      // for (Attachment attachment : attachments) {
-      //    System.out.println(attachment.getId()  + attachment.getName());
-      // }
+      List<Attachment> attachments = attachedMailDto.getAttachments();
+      for (Attachment attachment : attachments) {
+         System.out.println(attachment.getId()  + attachment.getFile());
+      }
+      
       try {
          MailDTO mailDto = attachedMailDto.getMailDto();
          Mail mail = mailSenderProxy.sendMail(
